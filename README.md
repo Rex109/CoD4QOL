@@ -32,7 +32,7 @@ A Call of Duty 4 X plugin that adds new settings, unlocks essential dvars and ad
 ## Download and installation 
 To download the pre-compiled binaries you can grab the latest version in the [Releases Page](https://github.com/Rex109/Cod4QOL/releases)
 
-To install it simply drag n drop both of the folders inside the downloaded zip file inside your Call of Duty 4 root folder (in the same folder as iw3mp.exe), and simply run the game, no extra tools needed!
+To install it simply drag n drop both of the folders from the downloaded zip file in your Call of Duty 4 root folder (in the same folder as iw3mp.exe), and simply run the game, no extra tools needed!
 
 ## Limitations
 - Does not work in single player
