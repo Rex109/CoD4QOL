@@ -1,23 +1,27 @@
 #include <Windows.h>
 #include <cstdio>
 #include "hooks.hpp"
+#include <iostream>
 
 void Initialize();
 
-HMODULE s_hModule;
+HMODULE dummy;
 
 BOOL APIENTRY DllMain( HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
 {
     switch (ul_reason_for_call)
     {
         case DLL_PROCESS_ATTACH:
-            s_hModule = hModule;
+            DisableThreadLibraryCalls(hModule);
 
             #ifdef _DEBUG
                 FILE* _con;
                 AllocConsole();
                 freopen_s(&_con, "CONOUT$", "w", stdout);
             #endif
+
+            //THIS IS FUCKING NECESSARY
+            GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_PIN, "cod4qol.asi", &dummy);
 
             Initialize();
             break;
@@ -34,11 +38,7 @@ void Initialize()
     const HMODULE iw3mp = GetModuleHandleA("iw3mp.exe");
 
     if (!iw3mp)
-    {
-        FreeConsole();
-        FreeLibraryAndExitThread(s_hModule, 0);
         return;
-    }
     
     hooks::InitializeHooks();
 }

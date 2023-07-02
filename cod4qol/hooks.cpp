@@ -4,7 +4,7 @@
 void hooks::InitializeHooks()
 {
 	//Cod4x safe checks
-	hooks::write_addr(game::cod4x_entry + 0x1E7EC, "\xEB", 1);
+	//hooks::write_addr(21101250, "\xEB", 1);
 
 	//Game start
 	game::pDB_LoadXZoneFromGfxConfig = (game::DB_LoadXZoneFromGfxConfig)(game::cod4x_entry + 0x8327E);
