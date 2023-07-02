@@ -19,7 +19,7 @@ A Call of Duty 4 X plugin that adds new settings, unlocks essential dvars and ad
 - Adds "Additional graphics" menu:
   - Fov slider
   - Fovscale slider
-  - Fulbright switch
+  - Fullbright switch
   - Fullscreen switch
   - Maxfps selector
   - Drawfps selector
