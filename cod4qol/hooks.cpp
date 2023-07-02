@@ -3,9 +3,6 @@
 
 void hooks::InitializeHooks()
 {
-	//Cod4x safe checks
-	//hooks::write_addr(21101250, "\xEB", 1);
-
 	//Game start
 	game::pDB_LoadXZoneFromGfxConfig = (game::DB_LoadXZoneFromGfxConfig)(game::cod4x_entry + 0x8327E);
 	hooks::install(&(PVOID&)game::pDB_LoadXZoneFromGfxConfig, (PBYTE)game::hookedDB_LoadXZoneFromGfxConfig);
@@ -33,8 +30,6 @@ void hooks::InitializeHooks()
 	//ScreenshotRequest
 	game::pScreenshotRequest = (game::ScreenshotRequest)(game::cod4x_entry + 0xEA610);
 	hooks::install(&(PVOID&)game::pScreenshotRequest, (PBYTE)game::hookedScreenshotRequest);
-
-
 }
 
 LONG hooks::install(void** ppPointer, void* pDetour)
