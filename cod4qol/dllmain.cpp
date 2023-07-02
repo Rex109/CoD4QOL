@@ -16,9 +16,11 @@ BOOL APIENTRY DllMain( HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpRese
         case DLL_PROCESS_ATTACH:
             s_hModule = hModule;
 
-            FILE* _con;
-            AllocConsole();
-            freopen_s(&_con, "CONOUT$", "w", stdout);
+            #ifdef _DEBUG
+                FILE* _con;
+                AllocConsole();
+                freopen_s(&_con, "CONOUT$", "w", stdout);
+            #endif
 
             std::thread(Initialize).detach();
             break;
