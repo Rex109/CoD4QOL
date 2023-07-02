@@ -1,0 +1,10 @@
+menufile,ui/options_game_pc.menu
+menufile,ui/options_graphics_defaults.menu
+menufile,ui/options_graphics_pc.menu
+menufile,ui/options_sound_pc.menu
+
+menufile,ui_mp/leftside_options_mod.inc
+menufile,ui_mp/main.menu
+menufile,ui_mp/options.menu
+menufile,ui_mp/options_multi.menu
+menufile,ui_mp/options_voice.menu
