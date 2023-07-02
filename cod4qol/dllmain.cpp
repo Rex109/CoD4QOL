@@ -1,8 +1,5 @@
 #include <Windows.h>
 #include <cstdio>
-#include <thread>
-#include "game.hpp"
-#include "commands.hpp"
 #include "hooks.hpp"
 
 void Initialize();
@@ -22,7 +19,7 @@ BOOL APIENTRY DllMain( HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpRese
                 freopen_s(&_con, "CONOUT$", "w", stdout);
             #endif
 
-            std::thread(Initialize).detach();
+            Initialize();
             break;
         case DLL_THREAD_ATTACH:
         case DLL_THREAD_DETACH:
