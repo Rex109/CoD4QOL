@@ -4,6 +4,17 @@
 
 game::dvar_s* fs_game = game::Find("fs_game");
 
+__declspec(naked) const char* game::hookedCon_LinePrefix()
+{
+	const static uint32_t retn_addr = 0x460618;
+
+	__asm
+	{
+		mov		eax, prefix;
+		jmp		retn_addr;
+	}
+}
+
 void game::hookedDB_LoadXZoneFromGfxConfig()
 {
 	startup = false;

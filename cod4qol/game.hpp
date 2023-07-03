@@ -2,6 +2,7 @@
 #include <cstdint>
 #include <Windows.h>
 #include <iostream>
+#include "defines.hpp"
 
 namespace game
 {
@@ -116,6 +117,13 @@ namespace game
 	inline bool startup = true;
 
 	const static DWORD cod4x_entry = (DWORD)GetModuleHandleA("cod4x_021.dll");
+
+	const static char* prefix = COD4QOL_CONSOLE_PREFIX;
+
+	typedef const char*(*Con_LinePrefix)();
+	inline Con_LinePrefix pCon_LinePrefix;
+
+	const char* hookedCon_LinePrefix();
 
 	typedef void(*DB_LoadXZoneFromGfxConfig)();
 	inline DB_LoadXZoneFromGfxConfig pDB_LoadXZoneFromGfxConfig;

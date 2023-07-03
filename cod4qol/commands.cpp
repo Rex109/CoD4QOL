@@ -15,6 +15,9 @@ void commands::InitializeCommands()
     r_zfar = game::Find("r_zfar");
     r_zfar->flags = game::none;
 
+    developer_script = game::Find("developer_script");
+    developer_script->flags = game::none;
+
     qol_getss = game::Find("qol_getss");
     if (!qol_getss)
     {

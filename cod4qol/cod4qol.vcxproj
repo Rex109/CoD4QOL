@@ -99,6 +99,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="commands.hpp" />
+    <ClInclude Include="defines.hpp" />
     <ClInclude Include="game.hpp" />
     <ClInclude Include="hooks.hpp" />
   </ItemGroup>

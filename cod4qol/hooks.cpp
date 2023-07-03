@@ -3,6 +3,10 @@
 
 void hooks::InitializeHooks()
 {
+	//Console name
+	game::pCon_LinePrefix = (game::Con_LinePrefix)(0x460613);
+	hooks::install(&(PVOID&)game::pCon_LinePrefix, (PBYTE)game::hookedCon_LinePrefix);
+
 	//Game start
 	game::pDB_LoadXZoneFromGfxConfig = (game::DB_LoadXZoneFromGfxConfig)(game::cod4x_entry + 0x8327E);
 	hooks::install(&(PVOID&)game::pDB_LoadXZoneFromGfxConfig, (PBYTE)game::hookedDB_LoadXZoneFromGfxConfig);

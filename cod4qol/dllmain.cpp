@@ -1,8 +1,6 @@
 #include <Windows.h>
 #include <cstdio>
 #include "hooks.hpp"
-#include <iostream>
-#include <fstream>
 
 void Initialize();
 
