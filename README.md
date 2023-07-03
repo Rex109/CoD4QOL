@@ -1,4 +1,5 @@
-[![Discord](https://img.shields.io/discord/953653773962739793?color=%237289DA&label=Members&logo=discord&logoColor=%23FFFFFF)](https://discord.gg/QDYk75vBBk)
+[![Personal Discord](https://img.shields.io/discord/953653773962739793?color=%237289DA&label=Personal%20Discord&logo=discord&logoColor=%23FFFFFF)](https://discord.gg/QDYk75vBBk)
+[![ManyAsset](https://img.shields.io/discord/585171589750849538?color=%23FF8711&label=ManyAsset&logo=discord&logoColor=%23FFFFFF)](https://discord.gg/v2TWkeR)
 
 # CoD4QOL
 
@@ -39,5 +40,5 @@ To install it simply drag n drop both of the folders from the downloaded zip fil
 - Does not work with cod4 stock 1.7
 
 ## Pull requests and issues
-If you have any suggestions i encourage you to open a pull request, same goes for issues: do not hesitate to open a issue if you encounter a problem
-If you need further support you can contact me directly in my discord server linked on top of the page
+If you have any suggestions i encourage you to open a pull request, same goes for issues: do not hesitate to open a issue if you encounter a problem.
+For further support you can contact me directly in my personal discord server linked on top of the page or join ManyAsset, a community made entirely for CoD4 Modders.
