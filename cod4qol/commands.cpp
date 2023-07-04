@@ -22,21 +22,21 @@ void commands::InitializeCommands()
     qol_getss = game::Find("qol_getss");
     if (!qol_getss)
     {
-        game::Cbuf_AddText("seta qol_getss 0\n", 0);
+        game::Cmd_ExecuteSingleCommand(0, 0, "seta qol_getss 0\n");
         qol_getss = game::Find("qol_getss");
     }
         
     qol_vstr_block = game::Find("qol_vstr_block");
     if (!qol_vstr_block)
     {
-        game::Cbuf_AddText("seta qol_vstr_block 0\n", 0);
+        game::Cmd_ExecuteSingleCommand(0, 0, "seta qol_vstr_block 0\n");
         qol_vstr_block = game::Find("qol_vstr_block");
-    }     
+    }
 
     qol_show_console = game::Find("qol_show_console");
     if (!qol_show_console)
     {
-        game::Cbuf_AddText("seta qol_show_console 0\n", 0);
+        game::Cmd_ExecuteSingleCommand(0, 0, "seta qol_show_console 0\n");
         qol_show_console = game::Find("qol_show_console");
     }
 }
@@ -77,7 +77,7 @@ void commands::iPrintLnBold(const char* text)
 
 void commands::ReadProtectedConfig()
 {
-    game::Cbuf_AddText("exec protected.cfg\n", 0);
+    game::Cmd_ExecuteSingleCommand(0, 0, "exec protected.cfg\n");
 }
 
 void commands::WriteProtectedConfig()
@@ -102,5 +102,5 @@ void commands::WriteProtectedConfig()
 
 void commands::ToggleConsoleUpdate()
 {
-    ShowWindow(game::s_wcd->hwndBuffer, !strcmp(commands::qol_show_console->current.string, "1") ? SW_SHOWNOACTIVATE : SW_HIDE);
+    ShowWindow(*game::hwnd, !strcmp(game::Find("qol_show_console")->current.string, "1") ? SW_SHOWNOACTIVATE : SW_HIDE);
 }

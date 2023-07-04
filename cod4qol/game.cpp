@@ -19,15 +19,15 @@ void game::hookedDB_LoadXZoneFromGfxConfig()
 {
 	startup = false;
 
-	game::Sys_CreateConsole();
+	game::Sys_CreateConsole(0x0);
 
 	if (!strcmp(fs_game->current.string, ""))
-		game::Cbuf_AddText("loadzone qol\n", 0);
+		game::Cmd_ExecuteSingleCommand(0, 0, "loadzone qol\n");
 
 	commands::InitializeCommands();
-	commands::ToggleConsoleUpdate();
 
-	game::Cbuf_AddText("readprotectedconfig\n", 0);
+	game::Cmd_ExecuteSingleCommand(0, 0, "toggleconsoleupdate\n");
+	game::Cmd_ExecuteSingleCommand(0, 0, "readprotectedconfig\n");
 	
 	return game::pDB_LoadXZoneFromGfxConfig();
 }
@@ -35,14 +35,14 @@ void game::hookedDB_LoadXZoneFromGfxConfig()
 void game::hookedCom_LoadUiFastFile()
 {
 	if (!strcmp(fs_game->current.string, ""))
-		game::Cbuf_AddText("loadzone qol\n", 0);
+		game::Cmd_ExecuteSingleCommand(0, 0, "loadzone qol\n");
 		
 	return game::pCom_LoadUiFastFile();
 }
 
 void game::hookedCL_InitCGame()
 {
-	game::Cbuf_AddText("loadzone qol\n", 0);
+	game::Cmd_ExecuteSingleCommand(0, 0, "loadzone qol\n");
 
 	return game::pCL_InitCGame();
 }
@@ -55,7 +55,7 @@ void game::hookedCL_RegisterDvars()
 
 void game::hookedCG_Respawn()
 {
-	game::Cbuf_AddText("readprotectedconfig\n", 0);
+	game::Cmd_ExecuteSingleCommand(0, 0, "readprotectedconfig\n");
 
 	return game::pCG_Respawn();
 }
@@ -111,17 +111,4 @@ __declspec(naked) game::dvar_s* game::Find(const char*)
 game::cmd_function_s* game::Cmd_AddCommand(const char* cmdname, void(__cdecl* function)())
 {
 	return ((game::cmd_function_s * (__cdecl*)(const char* cmd, void* function))game::Cmd_AddCommand_fnc)(cmdname, function);
-}
-
-void game::Cbuf_AddText(const char* text, int localClientNum)
-{
-	__asm {
-		mov eax, text;
-		push eax;
-		mov ecx, localClientNum;
-		push ecx;
-		mov esi, 0x4F8D90;
-		call esi;
-		add esp, 0x8;
-	}
 }
