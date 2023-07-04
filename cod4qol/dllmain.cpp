@@ -1,6 +1,8 @@
 #include <Windows.h>
 #include <cstdio>
 #include "hooks.hpp"
+#include "updater.hpp"
+#include <iostream>
 
 void Initialize();
 

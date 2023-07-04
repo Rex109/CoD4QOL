@@ -1,6 +1,7 @@
 #include "game.hpp"
 #include "commands.hpp"
 #include "hooks.hpp"
+#include "updater.hpp"
 
 game::dvar_s* fs_game = game::Find("fs_game");
 
@@ -17,7 +18,14 @@ __declspec(naked) const char* game::hookedCon_LinePrefix()
 
 void game::hookedDB_LoadXZoneFromGfxConfig()
 {
-	startup = false;
+	if (startup)
+	{
+		#ifndef _DEBUG
+			updater::CheckForUpdates();
+		#endif
+
+		startup = false;
+	}
 
 	game::Sys_CreateConsole(0x0);
 

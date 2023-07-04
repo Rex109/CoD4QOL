@@ -1,4 +1,5 @@
 #include "commands.hpp"
+#include "updater.hpp"
 
 void commands::InitializeCommands()
 {
@@ -6,6 +7,7 @@ void commands::InitializeCommands()
     game::Cmd_AddCommand("readprotectedconfig", ReadProtectedConfig);
     game::Cmd_AddCommand("writeprotectedconfig", WriteProtectedConfig);
     game::Cmd_AddCommand("toggleconsoleupdate", ToggleConsoleUpdate);
+    game::Cmd_AddCommand("updatecod4qol", updater::Update);
 
     cg_fovscale = game::Find("cg_fovscale");
     cg_fovscale->flags = game::none;
