@@ -16,6 +16,9 @@ void commands::InitializeCommands()
     r_zfar = game::Find("r_zfar");
     r_zfar->flags = game::none;
 
+    r_filmusetweaks = game::Find("r_filmusetweaks");
+    r_filmusetweaks->flags = game::none;
+
     developer_script = game::Find("developer_script");
     developer_script->flags = game::none;
 
@@ -77,7 +80,7 @@ void commands::iPrintLnBold(const char* text)
 
 void commands::ReadProtectedConfig()
 {
-    game::Cmd_ExecuteSingleCommand(0, 0, "exec protected.cfg\n");
+    game::Cbuf_AddText("exec protected.cfg\n", 0);
 }
 
 void commands::WriteProtectedConfig()
@@ -96,6 +99,7 @@ void commands::WriteProtectedConfig()
     protectedconf << "set" << " cg_fovscale \"" << cg_fovscale->current.value << "\"" << std::endl;
     protectedconf << "set" << " r_fullbright \"" << r_fullbright->current.enabled << "\"" << std::endl;
     protectedconf << "set" << " r_zfar \"" << r_zfar->current.value << "\"" << std::endl;
+    protectedconf << "set" << " r_filmusetweaks \"" << r_filmusetweaks->current.enabled << "\"" << std::endl;
 
     protectedconf.close();
 }
