@@ -5,6 +5,7 @@ void commands::InitializeCommands()
 	game::Cmd_AddCommand("loadzone", LoadZone);
     game::Cmd_AddCommand("readprotectedconfig", ReadProtectedConfig);
     game::Cmd_AddCommand("writeprotectedconfig", WriteProtectedConfig);
+    game::Cmd_AddCommand("toggleconsoleupdate", ToggleConsoleUpdate);
 
     cg_fovscale = game::Find("cg_fovscale");
     cg_fovscale->flags = game::none;
@@ -31,6 +32,13 @@ void commands::InitializeCommands()
         game::Cbuf_AddText("seta qol_vstr_block 0\n", 0);
         qol_vstr_block = game::Find("qol_vstr_block");
     }     
+
+    qol_show_console = game::Find("qol_show_console");
+    if (!qol_show_console)
+    {
+        game::Cbuf_AddText("seta qol_show_console 0\n", 0);
+        qol_show_console = game::Find("qol_show_console");
+    }
 }
 
 void commands::LoadZone()
@@ -74,6 +82,8 @@ void commands::ReadProtectedConfig()
 
 void commands::WriteProtectedConfig()
 {
+    
+
     TCHAR path[MAX_PATH];
     GetCurrentDirectory(MAX_PATH, path);
 
@@ -88,4 +98,9 @@ void commands::WriteProtectedConfig()
     protectedconf << "set" << " r_zfar \"" << r_zfar->current.value << "\"" << std::endl;
 
     protectedconf.close();
+}
+
+void commands::ToggleConsoleUpdate()
+{
+    ShowWindow(game::s_wcd->hwndBuffer, !strcmp(commands::qol_show_console->current.string, "1") ? SW_SHOWNOACTIVATE : SW_HIDE);
 }

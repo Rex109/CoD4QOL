@@ -19,12 +19,15 @@ void game::hookedDB_LoadXZoneFromGfxConfig()
 {
 	startup = false;
 
+	game::Sys_CreateConsole();
+
 	if (!strcmp(fs_game->current.string, ""))
 		game::Cbuf_AddText("loadzone qol\n", 0);
 
 	commands::InitializeCommands();
-	game::Cbuf_AddText("readprotectedconfig\n", 0);
+	commands::ToggleConsoleUpdate();
 
+	game::Cbuf_AddText("readprotectedconfig\n", 0);
 	
 	return game::pDB_LoadXZoneFromGfxConfig();
 }

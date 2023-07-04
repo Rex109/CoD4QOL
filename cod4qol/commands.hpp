@@ -12,6 +12,7 @@ namespace commands
 
 	inline game::dvar_s* qol_getss;
 	inline game::dvar_s* qol_vstr_block;
+	inline game::dvar_s* qol_show_console;
 
 	void InitializeCommands();
 
@@ -19,4 +20,5 @@ namespace commands
 	void iPrintLnBold(const char* text);
 	void WriteProtectedConfig();
 	void ReadProtectedConfig();
+	void ToggleConsoleUpdate();
 }

@@ -114,6 +114,40 @@ namespace game
 		int freeFlags;
 	};
 
+	typedef struct
+	{
+		HWND		hWnd;
+		HWND		hwndBuffer;
+
+		HWND		hwndButtonClear;
+		HWND		hwndButtonCopy;
+		HWND		hwndButtonQuit;
+
+		HWND		hwndErrorBox;
+		HWND		hwndErrorText;
+
+		HBITMAP		hbmLogo;
+		HBITMAP		hbmClearBitmap;
+
+		HBRUSH		hbrEditBackground;
+		HBRUSH		hbrErrorBackground;
+
+		HFONT		hfBufferFont;
+		HFONT		hfButtonFont;
+
+		HWND		hwndInputLine;
+
+		char		errorString[80];
+
+		char		consoleText[512], returnedText[512];
+		int			visLevel;
+		int			quitOnClose;
+		int			windowWidth, windowHeight;
+
+		WNDPROC		SysInputLineWndProc;
+
+	} WinConData;
+
 	inline bool startup = true;
 
 	const static DWORD cod4x_entry = (DWORD)GetModuleHandleA("cod4x_021.dll");
@@ -173,9 +207,14 @@ namespace game
 	typedef void(*DB_LoadXAssets_t)(XZoneInfo* zoneInfo, unsigned int zone_count, int sync);
 		extern DB_LoadXAssets_t DB_LoadXAssets;
 
+	typedef void(*Sys_CreateConsole_t)();
+		extern Sys_CreateConsole_t Sys_CreateConsole;
+
 	inline void* Cmd_AddCommand_fnc = (void*)(cod4x_entry + 0x2116C);
 	inline game::CmdArgs* cmd_args = reinterpret_cast<game::CmdArgs*>(0x1410B40);
 
 	inline game::Com_PrintMessage_t Com_PrintMessage = game::Com_PrintMessage_t(0x4FCA50);
 	inline game::DB_LoadXAssets_t DB_LoadXAssets = DB_LoadXAssets_t(0x48A2B0);
+	inline game::Sys_CreateConsole_t Sys_CreateConsole = Sys_CreateConsole_t(cod4x_entry + 0x7F503);
+	inline WinConData* s_wcd = reinterpret_cast<WinConData*>(game::cod4x_entry + 0x43FE99C);
 }
