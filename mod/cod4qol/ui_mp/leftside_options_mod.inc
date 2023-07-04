@@ -30,19 +30,20 @@ CHOICE_BUTTON_VIS( 2, "@MENU_GRAPHICS", LOCAL_CLOSE_ALL open options_graphics, w
 CHOICE_DBUTTON_VIS( 2, "@MENU_GRAPHICS", when( ( dvarint( sv_running ) && dvarInt(ui_allow_graphic_change)==0 ) || dvarBool( arcademode ) ); )
 CHOICE_BUTTON( 3, "Additional graphics...", LOCAL_CLOSE_ALL open options_sound; setLocalVarBool ui_showApply 0; setLocalVarInt ui_qol 1; )
 CHOICE_BUTTON( 4, "Privacy settings...", LOCAL_CLOSE_ALL open options_sound; setLocalVarBool ui_showApply 0; setLocalVarInt ui_qol 2; )
-CHOICE_BUTTON_VIS( 5, "@MENU_TEXTURE_SETTINGS", LOCAL_CLOSE_ALL  open options_graphics_texture, when( ( !dvarint( sv_running ) || dvarInt( ui_allow_graphic_change ) ) && dvarInt( arcademode ) == 0 ); )
-CHOICE_DBUTTON_VIS( 5, "@MENU_TEXTURE_SETTINGS", when( ( dvarint( sv_running ) && dvarInt(ui_allow_graphic_change)==0 ) || dvarBool( arcademode ) ); )
-CHOICE_BUTTON( 6, "@MENU_SOUND", LOCAL_CLOSE_ALL open options_sound; setLocalVarInt ui_qol 0; )
-CHOICE_BUTTON_VIS( 7, "@MENU_VOICECHAT", LOCAL_CLOSE_ALL open options_voice, when( dvarint( ui_multiplayer ) ) )
-CHOICE_DBUTTON_VIS( 7, "@MENU_VOICECHAT", when( !dvarint( ui_multiplayer ) ); )
-CHOICE_BUTTON( 8, "@MENU_GAME_OPTIONS", LOCAL_CLOSE_ALL open options_game )
+CHOICE_BUTTON( 5, "CoD4QOL settings...", LOCAL_CLOSE_ALL open options_sound; setLocalVarBool ui_showApply 0; setLocalVarInt ui_qol 3; )
+CHOICE_BUTTON_VIS( 6, "@MENU_TEXTURE_SETTINGS", LOCAL_CLOSE_ALL  open options_graphics_texture, when( ( !dvarint( sv_running ) || dvarInt( ui_allow_graphic_change ) ) && dvarInt( arcademode ) == 0 ); )
+CHOICE_DBUTTON_VIS( 6, "@MENU_TEXTURE_SETTINGS", when( ( dvarint( sv_running ) && dvarInt(ui_allow_graphic_change)==0 ) || dvarBool( arcademode ) ); )
+CHOICE_BUTTON( 7, "@MENU_SOUND", LOCAL_CLOSE_ALL open options_sound; setLocalVarInt ui_qol 0; )
+CHOICE_BUTTON_VIS( 8, "@MENU_VOICECHAT", LOCAL_CLOSE_ALL open options_voice, when( dvarint( ui_multiplayer ) ) )
+CHOICE_DBUTTON_VIS( 8, "@MENU_VOICECHAT", when( !dvarint( ui_multiplayer ) ); )
+CHOICE_BUTTON( 9, "@MENU_GAME_OPTIONS", LOCAL_CLOSE_ALL open options_game )
 
-CHOICE_BUTTON_VIS( 9, "@MENU_CHEATS_LOWCASE", open menu_special_features; close self;, when( dvarBool( sv_running ) && !dvarBool(ui_multiplayer) && !dvarBool( arcademode ) && !dvarBool( arcademode_full ) ); )
-CHOICE_BUTTON_VIS( 9, "@MENU_MULTIPLAYER_OPTIONS", LOCAL_CLOSE_ALL open options_multi, when( dvarint( ui_multiplayer ) ) )
-CHOICE_DBUTTON_VIS( 9, "@MENU_CHEATS_LOWCASE", when( ( !dvarBool( sv_running ) || dvarBool( arcademode ) || dvarBool( arcademode_full ) ) && !dvarBool(ui_multiplayer) ); )
+CHOICE_BUTTON_VIS( 10, "@MENU_CHEATS_LOWCASE", open menu_special_features; close self;, when( dvarBool( sv_running ) && !dvarBool(ui_multiplayer) && !dvarBool( arcademode ) && !dvarBool( arcademode_full ) ); )
+CHOICE_BUTTON_VIS( 10, "@MENU_MULTIPLAYER_OPTIONS", LOCAL_CLOSE_ALL open options_multi, when( dvarint( ui_multiplayer ) ) )
+CHOICE_DBUTTON_VIS( 10, "@MENU_CHEATS_LOWCASE", when( ( !dvarBool( sv_running ) || dvarBool( arcademode ) || dvarBool( arcademode_full ) ) && !dvarBool(ui_multiplayer) ); )
 
-CHOICE_BUTTON_VIS( 10, "@MENU_RESET_SYSTEM_DEFAULTS", LOCAL_CLOSE_ALL open options_graphics_defaults, when( ( !dvarint( sv_running ) || dvarInt( ui_allow_graphic_change ) ) && dvarInt( arcademode ) == 0 ); )
-CHOICE_DBUTTON_VIS( 10, "@MENU_RESET_SYSTEM_DEFAULTS", when( ( dvarint( sv_running ) && dvarInt(ui_allow_graphic_change)==0 ) || dvarBool( arcademode ) ); )
+CHOICE_BUTTON_VIS( 11, "@MENU_RESET_SYSTEM_DEFAULTS", LOCAL_CLOSE_ALL open options_graphics_defaults, when( ( !dvarint( sv_running ) || dvarInt( ui_allow_graphic_change ) ) && dvarInt( arcademode ) == 0 ); )
+CHOICE_DBUTTON_VIS( 11, "@MENU_RESET_SYSTEM_DEFAULTS", when( ( dvarint( sv_running ) && dvarInt(ui_allow_graphic_change)==0 ) || dvarBool( arcademode ) ); )
 
 // ---
 
