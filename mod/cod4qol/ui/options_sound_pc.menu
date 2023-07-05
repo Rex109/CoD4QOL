@@ -102,7 +102,7 @@
         //CoD4QOL settings
         
         CHOICE_SECTION_TITLE_VIS( 21, "CoD4QOL settings...", when( localVarInt ( ui_qol ) == 3 ))
-        CHOICE_DVARFLOATLIST_VIS( 22, "Show console", qol_show_console, { "@MENU_OFF" 0 "@MENU_ON" 1 }, exec "toggleconsoleupdate";, when( localVarInt ( ui_qol ) == 3 ))
+        CHOICE_DVARFLOATLIST_VIS( 22, "Show external console", qol_show_console, { "@MENU_OFF" 0 "@MENU_ON" 1 }, exec "toggleconsoleupdate";, when( localVarInt ( ui_qol ) == 3 ))
 
 		itemDef 
 		{
