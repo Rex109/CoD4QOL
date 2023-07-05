@@ -119,6 +119,7 @@ namespace game
 	const static DWORD cod4x_entry = (DWORD)GetModuleHandleA("cod4x_021.dll");
 	const static HWND* hwnd = reinterpret_cast<HWND*>(game::cod4x_entry + 0x43FE9A0);
 	const static char* prefix = COD4QOL_CONSOLE_PREFIX;
+	const static char* localization = *reinterpret_cast<const char**>(0xCC147D4);
 
 	typedef const char*(*Con_LinePrefix)();
 	inline Con_LinePrefix pCon_LinePrefix;

@@ -41,7 +41,6 @@ bool updater::CheckForUpdates()
 
     download_url = parsed["assets"][0]["browser_download_url"];
 
-    std::cout << download_url.c_str() << std::endl;
     std::cout << "A new version of " << COD4QOL_NAME << " is available: " << parsed["tag_name"] << std::endl;
     game::Cmd_ExecuteSingleCommand(0, 0, "set qol_update_available 1\n");
     return true;
@@ -88,7 +87,9 @@ void updater::Update()
 
     zip_extract(COD4QOL_FILE_NAME, "./download", NULL, NULL);
 
-    system("cmd.exe /Q /c \"@echo off & echo Updating CoD4QOL... & taskkill /f /im iw3mp.exe >nul 2>&1 & ping 127.0.0.1 -n 5 > nul & move /y download\\miles\\* .\\miles & move /y download\\zone\\english\\* .\\zone\\english \" & rmdir /s /q download & start iw3mp.exe & exit");
+    char command[1024];
+    snprintf(command, sizeof(command), "\"cmd.exe /Q /c \"@echo off & echo Updating CoD4QOL... & taskkill /f /im iw3mp.exe >nul 2>&1 & ping 127.0.0.1 -n 5 > nul & move /y download\\miles\\cod4qol.asi .\\miles & move /y download\\qol.ff .\\zone\\%s \" & rmdir /s /q download & start iw3mp.exe & exit\"", game::localization);
+    system(command);
 }
 
 size_t updater::FileCallback(void* ptr, size_t size, size_t nmemb, void* stream)
