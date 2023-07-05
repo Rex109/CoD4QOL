@@ -45,7 +45,7 @@ So the final folder structure should be like this:
 ├── ...
 ├── 📁 Call of Duty 4
 │   ├── 📁 miles
-|      └── 📜 cod4qol.asi
+|   |  └── 📜 cod4qol.asi
 │   └── 📁 zone
 |      └── 📁 <your game language>
 |          └── 📜 qol.ff
