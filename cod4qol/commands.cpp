@@ -1,12 +1,16 @@
 #include "commands.hpp"
 #include "updater.hpp"
 
+
+
 void commands::InitializeCommands()
 {
 	game::Cmd_AddCommand("loadzone", LoadZone);
     game::Cmd_AddCommand("readprotectedconfig", ReadProtectedConfig);
     game::Cmd_AddCommand("writeprotectedconfig", WriteProtectedConfig);
     game::Cmd_AddCommand("toggleconsoleupdate", ToggleConsoleUpdate);
+    game::Cmd_AddCommand("vm_anim", VmAnim);
+
     game::Cmd_AddCommand("updatecod4qol", updater::Update);
 
     cg_fovscale = game::Find("cg_fovscale");
@@ -23,6 +27,8 @@ void commands::InitializeCommands()
 
     developer_script = game::Find("developer_script");
     developer_script->flags = game::none;
+
+    sv_running = game::Find("sv_running");
 
     qol_getss = game::Find("qol_getss");
     if (!qol_getss)
@@ -52,7 +58,7 @@ void commands::LoadZone()
     {
         game::Com_PrintMessage(0, "Usage: loadzone <zoneName>\n", 0);
         return;
-    }
+    }   
 
     game::XZoneInfo info[2];
     std::string zone = game::Cmd_Argv(1);
@@ -66,6 +72,31 @@ void commands::LoadZone()
     info[1].freeFlags = 0x0;
 
     game::DB_LoadXAssets(info, 2, 1);
+}
+
+void commands::VmAnim()
+{
+    if (!sv_running->current.enabled)
+    {
+        game::Com_PrintMessage(0, "You must be playing on a local server to use vm_anim\n", 0);
+        return;
+    }
+
+    if (game::Cmd_Argc() < 2)
+    {
+        game::Com_PrintMessage(0, "Usage: vm_anim <index (integer from 0 to 32)>\n", 0);
+        return;
+    }
+
+    int weaponIndex = std::atoi(game::Cmd_Argv(1));
+
+    game::g_clients->ps.weaponstate = 0x0;
+    game::g_clients->ps.weaponTime = 0;
+    int pm_flags = game::g_clients->ps.pm_flags;
+    if ((pm_flags & 1) != 0)
+        game::g_clients->ps.pm_flags = pm_flags | 0x200;
+    if (game::g_clients->ps.pm_type < 4)
+        game::g_clients->ps.weapAnim = weaponIndex | ~(unsigned __int16)game::g_clients->ps.weapAnim & 0x200;
 }
 
 void commands::iPrintLnBold(const char* text)
