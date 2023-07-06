@@ -41,7 +41,7 @@ To download the pre-compiled binaries you can grab the latest version in the [Re
 
 To install it simply download and extract the files from the .zip, then drag n drop the "miles" folder in your Call of Duty 4 root folder and the "qol.ff" file inside zone/\<your game language\>, and simply run the game, no extra tools needed!
 
-The final folder structure should be like this:
+The final folder structure should look like this:
 ```
 .
 ├── ...
