@@ -12,6 +12,9 @@ namespace commands
 	inline game::dvar_s* r_zfar;
 	inline game::dvar_s* r_filmusetweaks;
 	inline game::dvar_s* developer_script;
+	inline game::dvar_s* cg_gun_x;
+	inline game::dvar_s* cg_gun_y;
+	inline game::dvar_s* cg_gun_z;
 
 	inline game::dvar_s* qol_getss;
 	inline game::dvar_s* qol_vstr_block;

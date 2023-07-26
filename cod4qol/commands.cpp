@@ -28,6 +28,15 @@ void commands::InitializeCommands()
     developer_script = game::Find("developer_script");
     developer_script->flags = game::none;
 
+    cg_gun_x = game::Find("cg_gun_x");
+    cg_gun_x->flags = game::none;
+
+    cg_gun_y = game::Find("cg_gun_y");
+    cg_gun_y->flags = game::none;
+
+    cg_gun_z = game::Find("cg_gun_z");
+    cg_gun_z->flags = game::none;
+
     sv_running = game::Find("sv_running");
 
     qol_getss = game::Find("qol_getss");
@@ -133,6 +142,9 @@ void commands::WriteProtectedConfig()
     protectedconf << "set" << " r_fullbright \"" << r_fullbright->current.enabled << "\"" << std::endl;
     protectedconf << "set" << " r_zfar \"" << r_zfar->current.value << "\"" << std::endl;
     protectedconf << "set" << " r_filmusetweaks \"" << r_filmusetweaks->current.enabled << "\"" << std::endl;
+    protectedconf << "set" << " cg_gun_x \"" << cg_gun_x->current.value << "\"" << std::endl;
+    protectedconf << "set" << " cg_gun_y \"" << cg_gun_y->current.value << "\"" << std::endl;
+    protectedconf << "set" << " cg_gun_z \"" << cg_gun_z->current.value << "\"" << std::endl;
 
     protectedconf.close();
 }
