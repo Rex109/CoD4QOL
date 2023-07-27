@@ -1,8 +1,6 @@
 #include "commands.hpp"
 #include "updater.hpp"
 
-
-
 void commands::InitializeCommands()
 {
 	game::Cmd_AddCommand("loadzone", LoadZone);
@@ -58,6 +56,13 @@ void commands::InitializeCommands()
     {
         game::Cmd_ExecuteSingleCommand(0, 0, "seta qol_show_console 0\n");
         qol_show_console = game::Find("qol_show_console");
+    }
+
+    qol_show_loading = game::Find("qol_show_loading");
+    if (!qol_show_loading)
+    {
+        game::Cmd_ExecuteSingleCommand(0, 0, "seta qol_show_loading 1\n");
+        qol_show_loading = game::Find("qol_show_loading");
     }
 }
 
@@ -127,8 +132,6 @@ void commands::ReadProtectedConfig()
 
 void commands::WriteProtectedConfig()
 {
-    
-
     TCHAR path[MAX_PATH];
     GetCurrentDirectory(MAX_PATH, path);
 

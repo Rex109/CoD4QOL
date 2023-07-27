@@ -87,6 +87,14 @@ int game::hookedScreenshotRequest(int a1, int a2)
 	return pScreenshotRequest(a1, a2);
 }
 
+__declspec(naked) void game::hookedText_PaintCenter()
+{
+	if (!strcmp(commands::qol_show_loading->current.string, "0"))
+		__asm ret;
+		
+	__asm jmp game::pText_PaintCenter;
+}
+
 int	game::Cmd_Argc()
 {
 	return game::cmd_args->argc[game::cmd_args->nesting];

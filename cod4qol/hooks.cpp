@@ -34,6 +34,10 @@ void hooks::InitializeHooks()
 	//ScreenshotRequest
 	game::pScreenshotRequest = (game::ScreenshotRequest)(game::cod4x_entry + 0xEA610);
 	hooks::install(&(PVOID&)game::pScreenshotRequest, (PBYTE)game::hookedScreenshotRequest);
+
+	//Text_PaintCenter
+	game::pText_PaintCenter = (game::Text_PaintCenter)(0x549A60);
+	hooks::install(&(PVOID&)game::pText_PaintCenter, (PBYTE)game::hookedText_PaintCenter);
 }
 
 LONG hooks::install(void** ppPointer, void* pDetour)

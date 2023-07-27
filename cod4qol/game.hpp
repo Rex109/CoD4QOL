@@ -455,6 +455,11 @@ namespace game
 
 	int hookedScreenshotRequest(int a1, int a2);
 
+	typedef void(*Text_PaintCenter)();
+	inline Text_PaintCenter pText_PaintCenter;
+
+	void hookedText_PaintCenter();
+
 	int	Cmd_Argc();
 	const char* Cmd_Argv(int arg);
 

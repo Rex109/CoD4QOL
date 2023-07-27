@@ -19,6 +19,7 @@ namespace commands
 	inline game::dvar_s* qol_getss;
 	inline game::dvar_s* qol_vstr_block;
 	inline game::dvar_s* qol_show_console;
+	inline game::dvar_s* qol_show_loading;
 
 	void InitializeCommands();
 
