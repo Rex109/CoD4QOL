@@ -18,6 +18,8 @@ __declspec(naked) const char* game::hookedCon_LinePrefix()
 
 void game::hookedDB_LoadXZoneFromGfxConfig()
 {
+	std::cout << "Calling DB_LoadXZoneFromGfxConfig();" << std::endl;
+
 	if (startup)
 	{
 		#ifndef _DEBUG
@@ -42,6 +44,8 @@ void game::hookedDB_LoadXZoneFromGfxConfig()
 
 void game::hookedCom_LoadUiFastFile()
 {
+	std::cout << "Calling Com_LoadUiFastFile();" << std::endl;
+
 	if (!strcmp(fs_game->current.string, ""))
 		game::Cbuf_AddText("loadzone qol\n", 0);
 		
@@ -50,6 +54,8 @@ void game::hookedCom_LoadUiFastFile()
 
 void game::hookedCL_InitCGame()
 {
+	std::cout << "Calling CL_InitCGame();" << std::endl;
+
 	game::Cbuf_AddText("loadzone qol\n", 0);
 
 	return game::pCL_InitCGame();
@@ -57,12 +63,16 @@ void game::hookedCL_InitCGame()
 
 void game::hookedCL_RegisterDvars()
 {
+	std::cout << "Calling CL_RegisterDvars();" << std::endl;
+
 	if (startup)
 		return game::pCL_RegisterDvars();
 }
 
 void game::hookedCG_Respawn()
 {
+	std::cout << "Calling CG_Respawn();" << std::endl;
+
 	game::Cbuf_AddText("readprotectedconfig\n", 0);
 
 	return game::pCG_Respawn();
@@ -70,12 +80,16 @@ void game::hookedCG_Respawn()
 
 void game::hookedCmd_Vstr_f()
 {
+	std::cout << "Received vstr" << std::endl;
+
 	if (!strcmp(commands::qol_vstr_block->current.string, "0"))
 		return game::pCmd_Vstr_f();
 }
 
 int game::hookedScreenshotRequest(int a1, int a2)
 {
+	std::cout << "Received screenshot request" << std::endl;
+
 	if (strcmp(commands::qol_getss->current.string, "0"))
 		commands::iPrintLnBold("[^3CoD4QOL^7]: ^1You are currently being screenshotted");
 
