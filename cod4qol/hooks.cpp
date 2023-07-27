@@ -3,6 +3,8 @@
 
 void hooks::InitializeHooks()
 {
+	std::cout << "Initializing hooks..." << std::endl;
+
 	//Console name
 	game::pCon_LinePrefix = (game::Con_LinePrefix)(0x460613);
 	hooks::install(&(PVOID&)game::pCon_LinePrefix, (PBYTE)game::hookedCon_LinePrefix);
@@ -38,6 +40,8 @@ void hooks::InitializeHooks()
 	//Text_PaintCenter
 	game::pText_PaintCenter = (game::Text_PaintCenter)(0x549A60);
 	hooks::install(&(PVOID&)game::pText_PaintCenter, (PBYTE)game::hookedText_PaintCenter);
+
+	std::cout << "Hooks installed!" << std::endl;
 }
 
 LONG hooks::install(void** ppPointer, void* pDetour)

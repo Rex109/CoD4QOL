@@ -3,6 +3,8 @@
 
 void commands::InitializeCommands()
 {
+    std::cout << "Initializing commands..." << std::endl;
+
 	game::Cmd_AddCommand("loadzone", LoadZone);
     game::Cmd_AddCommand("readprotectedconfig", ReadProtectedConfig);
     game::Cmd_AddCommand("writeprotectedconfig", WriteProtectedConfig);
@@ -64,6 +66,8 @@ void commands::InitializeCommands()
         game::Cmd_ExecuteSingleCommand(0, 0, "seta qol_show_loading 1\n");
         qol_show_loading = game::Find("qol_show_loading");
     }
+
+    std::cout << "Commands initialized!" << std::endl;
 }
 
 void commands::LoadZone()
