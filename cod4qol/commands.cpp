@@ -67,6 +67,13 @@ void commands::InitializeCommands()
         qol_show_loading = game::Find("qol_show_loading");
     }
 
+    qol_mirrorgun = game::Find("qol_mirrorgun");
+    if (!qol_mirrorgun)
+    {
+        game::Cmd_ExecuteSingleCommand(0, 0, "seta qol_mirrorgun 0\n");
+        qol_mirrorgun = game::Find("qol_mirrorgun");
+    }
+
     std::cout << "Commands initialized!" << std::endl;
 }
 
@@ -159,4 +166,10 @@ void commands::WriteProtectedConfig()
 void commands::ToggleConsoleUpdate()
 {
     ShowWindow(*game::hwnd, !strcmp(game::Find("qol_show_console")->current.string, "1") ? SW_SHOWNOACTIVATE : SW_HIDE);
+}
+
+void commands::SetGun(game::GfxViewParms* view_parms)
+{
+    if (!strcmp(commands::qol_mirrorgun->current.string, "1"))
+        view_parms->projectionMatrix.m[0][0] = -view_parms->projectionMatrix.m[0][0];
 }

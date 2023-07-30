@@ -41,6 +41,10 @@ void hooks::InitializeHooks()
 	game::pText_PaintCenter = (game::Text_PaintCenter)(0x549A60);
 	hooks::install(&(PVOID&)game::pText_PaintCenter, (PBYTE)game::hookedText_PaintCenter);
 
+	//R_SetViewParmsForScene
+	game::pR_SetViewParmsForScene = (game::R_SetViewParmsForScene)(0x5FAA05);
+	hooks::install(&(PVOID&)game::pR_SetViewParmsForScene, (PBYTE)game::hookedR_SetViewParmsForScene);
+
 	std::cout << "Hooks installed!" << std::endl;
 }
 

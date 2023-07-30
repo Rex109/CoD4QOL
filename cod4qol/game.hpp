@@ -408,6 +408,24 @@ namespace game
 		playerState_s ps;
 	};
 
+	struct GfxMatrix
+	{
+		float m[4][4];
+	};
+
+	typedef struct
+	{
+		GfxMatrix viewMatrix;
+		GfxMatrix projectionMatrix;
+		GfxMatrix viewProjectionMatrix;
+		GfxMatrix inverseViewProjectionMatrix;
+		float origin[4];
+		float axis[3][3];
+		float depthHackNearClip;
+		float zNear;
+		float zFar;
+	}GfxViewParms;
+
 	inline bool startup = true;
 
 	const static DWORD cod4x_entry = (DWORD)GetModuleHandleA("cod4x_021.dll");
@@ -459,6 +477,11 @@ namespace game
 	inline Text_PaintCenter pText_PaintCenter;
 
 	void hookedText_PaintCenter();
+
+	typedef void(*R_SetViewParmsForScene)();
+	inline R_SetViewParmsForScene pR_SetViewParmsForScene;
+
+	void hookedR_SetViewParmsForScene();
 
 	int	Cmd_Argc();
 	const char* Cmd_Argv(int arg);

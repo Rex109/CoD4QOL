@@ -20,6 +20,7 @@ namespace commands
 	inline game::dvar_s* qol_vstr_block;
 	inline game::dvar_s* qol_show_console;
 	inline game::dvar_s* qol_show_loading;
+	inline game::dvar_s* qol_mirrorgun;
 
 	void InitializeCommands();
 
@@ -29,4 +30,5 @@ namespace commands
 	void ReadProtectedConfig();
 	void ToggleConsoleUpdate();
 	void VmAnim();
+	void SetGun(game::GfxViewParms* view_parms);
 }

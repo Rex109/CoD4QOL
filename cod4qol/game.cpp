@@ -109,6 +109,22 @@ __declspec(naked) void game::hookedText_PaintCenter()
 	__asm jmp game::pText_PaintCenter;
 }
 
+__declspec(naked) void game::hookedR_SetViewParmsForScene()
+{
+	const static uint32_t retn_addr = 0x5FAA0B;
+	__asm
+	{
+		pushad;
+		push	edi;
+		call	commands::SetGun;
+		add		esp, 4;
+		popad;
+
+		lea     ecx, [edi + 0C0h];
+		jmp		retn_addr;
+	}
+}
+
 int	game::Cmd_Argc()
 {
 	return game::cmd_args->argc[game::cmd_args->nesting];
