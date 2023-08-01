@@ -37,6 +37,7 @@ void game::hookedDB_LoadXZoneFromGfxConfig()
 	commands::InitializeCommands();
 
 	game::Cbuf_AddText("toggleconsoleupdate\n", 0);
+	game::Cbuf_AddText("toggleloadinginfoupdate\n", 0);
 	game::Cbuf_AddText("readprotectedconfig\n", 0);
 	
 	return game::pDB_LoadXZoneFromGfxConfig();
@@ -101,13 +102,13 @@ int game::hookedScreenshotRequest(int a1, int a2)
 	return pScreenshotRequest(a1, a2);
 }
 
-__declspec(naked) void game::hookedText_PaintCenter()
-{
-	if (!strcmp(commands::qol_show_loading->current.string, "0"))
-		__asm ret;
-		
-	__asm jmp game::pText_PaintCenter;
-}
+//__declspec(naked) void game::hookedText_PaintCenter()
+//{
+//	if (!strcmp(commands::qol_show_loading->current.string, "0"))
+//		__asm ret;
+//		
+//	__asm jmp game::pText_PaintCenter;
+//}
 
 __declspec(naked) void game::hookedR_SetViewParmsForScene()
 {

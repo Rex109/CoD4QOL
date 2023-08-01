@@ -1,5 +1,6 @@
 #include "commands.hpp"
 #include "updater.hpp"
+#include "hooks.hpp"
 
 void commands::InitializeCommands()
 {
@@ -9,6 +10,7 @@ void commands::InitializeCommands()
     game::Cmd_AddCommand("readprotectedconfig", ReadProtectedConfig);
     game::Cmd_AddCommand("writeprotectedconfig", WriteProtectedConfig);
     game::Cmd_AddCommand("toggleconsoleupdate", ToggleConsoleUpdate);
+    game::Cmd_AddCommand("toggleloadinginfoupdate", ToggleLoadingInfoUpdate);
     game::Cmd_AddCommand("vm_anim", VmAnim);
 
     game::Cmd_AddCommand("updatecod4qol", updater::Update);
@@ -172,4 +174,20 @@ void commands::SetGun(game::GfxViewParms* view_parms)
 {
     if (!strcmp(commands::qol_mirrorgun->current.string, "1"))
         view_parms->projectionMatrix.m[0][0] = -view_parms->projectionMatrix.m[0][0];
+}
+
+void commands::ToggleLoadingInfoUpdate()
+{
+    if (!strcmp(commands::qol_show_loading->current.string, "0"))
+    {
+        hooks::write_addr(0x54A6B6, "\x90\x90\x90\x90\x90", 5); //Gametype
+        hooks::write_addr(0x54A6FC, "\x90\x90\x90\x90\x90", 5); //Mapname
+        hooks::write_addr(0x54A990, "\x90\x90\x90\x90\x90", 5); //Modname
+    }
+    else
+    {
+        hooks::write_addr(0x54A6B6, "\xE8\xA5\xF3\xFF\xFF", 5); //Gametype
+        hooks::write_addr(0x54A6FC, "\xE8\x5F\xF3\xFF\xFF", 5); //Mapname
+        hooks::write_addr(0x54A990, "\xE8\xCB\xF0\xFF\xFF", 5); //Modname
+    }
 }

@@ -41,8 +41,8 @@ void hooks::InitializeHooks()
 	hooks::install(&(PVOID&)game::pScreenshotRequest, (PBYTE)game::hookedScreenshotRequest);
 
 	//Text_PaintCenter
-	game::pText_PaintCenter = (game::Text_PaintCenter)(0x549A60);
-	hooks::install(&(PVOID&)game::pText_PaintCenter, (PBYTE)game::hookedText_PaintCenter);
+	//game::pText_PaintCenter = (game::Text_PaintCenter)(0x549A60);
+	//hooks::install(&(PVOID&)game::pText_PaintCenter, (PBYTE)game::hookedText_PaintCenter);
 
 	//R_SetViewParmsForScene
 	game::pR_SetViewParmsForScene = (game::R_SetViewParmsForScene)(0x5FAA05);

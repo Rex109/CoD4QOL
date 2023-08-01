@@ -31,4 +31,5 @@ namespace commands
 	void ToggleConsoleUpdate();
 	void VmAnim();
 	void SetGun(game::GfxViewParms* view_parms);
+	void ToggleLoadingInfoUpdate();
 }
