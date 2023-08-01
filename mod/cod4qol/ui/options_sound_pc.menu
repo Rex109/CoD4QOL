@@ -95,7 +95,8 @@
         CHOICE_DVARSLIDER_VIS_EXTR( 32, "Gun X Position", cg_gun_x, 0, -100, 100, setLocalVarBool ui_showApply 1, ;, when( localVarInt ( ui_qol ) == 1 );)
         CHOICE_DVARSLIDER_VIS_EXTR( 33, "Gun Y Position", cg_gun_y, 0, -100, 100, setLocalVarBool ui_showApply 1, ;, when( localVarInt ( ui_qol ) == 1 );)
         CHOICE_DVARSLIDER_VIS_EXTR( 34, "Gun Z Position", cg_gun_z, 0, -100, 100, setLocalVarBool ui_showApply 1, ;, when( localVarInt ( ui_qol ) == 1 );)
-
+        CHOICE_DVARFLOATLIST_VIS( 35, "Gun handedness", qol_mirrorgun, { "Left" 1 "Right" 0 }, ;, when( localVarInt ( ui_qol ) == 1 ))
+        
         //Privacy settings
         
         CHOICE_SECTION_TITLE_VIS( 21, "Privacy settings...", when( localVarInt ( ui_qol ) == 2 ))
