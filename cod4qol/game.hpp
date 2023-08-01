@@ -3,6 +3,7 @@
 #include <Windows.h>
 #include <iostream>
 #include "defines.hpp"
+#include <d3d9.h>
 
 namespace game
 {
@@ -433,6 +434,8 @@ namespace game
 	const static char* prefix = COD4QOL_CONSOLE_PREFIX;
 	const static char* localization = *reinterpret_cast<const char**>(0xCC147D4);
 
+	static IDirect3DDevice9** dx9_device_ptr = reinterpret_cast<IDirect3DDevice9**>(0xCC9A408);
+
 	typedef const char*(*Con_LinePrefix)();
 	inline Con_LinePrefix pCon_LinePrefix;
 
@@ -482,6 +485,21 @@ namespace game
 	inline R_SetViewParmsForScene pR_SetViewParmsForScene;
 
 	void hookedR_SetViewParmsForScene();
+	
+	typedef void(*R_DrawXmodelSkinnedCached)(int a1, int a2, int a3);
+	inline R_DrawXmodelSkinnedCached pR_DrawXmodelSkinnedCached;
+
+	void hookedR_DrawXmodelSkinnedCached(int a1, int a2, int a3);
+
+	typedef void(*R_DrawXModelRigidModelSurf)();
+	inline R_DrawXModelRigidModelSurf pR_DrawXModelRigidModelSurf;
+
+	void hookedR_DrawXModelRigidModelSurf();
+
+	typedef void(*R_DrawXModelRigidModelSurf_End)();
+	inline R_DrawXModelRigidModelSurf_End pR_DrawXModelRigidModelSurf_End;
+
+	void hookedR_DrawXModelRigidModelSurf_End();
 
 	int	Cmd_Argc();
 	const char* Cmd_Argv(int arg);

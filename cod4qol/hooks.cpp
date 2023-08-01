@@ -5,6 +5,9 @@ void hooks::InitializeHooks()
 {
 	std::cout << "Initializing hooks..." << std::endl;
 
+	//Removing cod4x safechecks
+	hooks::write_addr((game::cod4x_entry + 0x43580), "\xC3", 1);
+
 	//Console name
 	game::pCon_LinePrefix = (game::Con_LinePrefix)(0x460613);
 	hooks::install(&(PVOID&)game::pCon_LinePrefix, (PBYTE)game::hookedCon_LinePrefix);
@@ -44,6 +47,18 @@ void hooks::InitializeHooks()
 	//R_SetViewParmsForScene
 	game::pR_SetViewParmsForScene = (game::R_SetViewParmsForScene)(0x5FAA05);
 	hooks::install(&(PVOID&)game::pR_SetViewParmsForScene, (PBYTE)game::hookedR_SetViewParmsForScene);
+
+	//R_DrawXmodelSkinnedCached
+	game::pR_DrawXmodelSkinnedCached = (game::R_DrawXmodelSkinnedCached)(0x646870);
+	hooks::install(&(PVOID&)game::pR_DrawXmodelSkinnedCached, (PBYTE)game::hookedR_DrawXmodelSkinnedCached);
+
+	//R_DrawXModelRigidModelSurf
+	game::pR_DrawXModelRigidModelSurf = (game::R_DrawXModelRigidModelSurf)(0x656974);
+	hooks::install(&(PVOID&)game::pR_DrawXModelRigidModelSurf, (PBYTE)game::hookedR_DrawXModelRigidModelSurf);
+
+	//R_DrawXModelRigidModelSurf_End
+	game::pR_DrawXModelRigidModelSurf_End = (game::R_DrawXModelRigidModelSurf_End)(0x6569BD);
+	hooks::install(&(PVOID&)game::pR_DrawXModelRigidModelSurf_End, (PBYTE)game::hookedR_DrawXModelRigidModelSurf_End);
 
 	std::cout << "Hooks installed!" << std::endl;
 }

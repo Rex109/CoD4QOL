@@ -125,6 +125,51 @@ __declspec(naked) void game::hookedR_SetViewParmsForScene()
 	}
 }
 
+void game::hookedR_DrawXmodelSkinnedCached(int a1, int a2, int a3)
+{
+	if (!strcmp(commands::qol_mirrorgun->current.string, "1"))
+	{
+		(*game::dx9_device_ptr)->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
+		game::pR_DrawXmodelSkinnedCached(a1, a2, a3);
+		(*game::dx9_device_ptr)->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+		return;
+	}
+
+	return game::pR_DrawXmodelSkinnedCached(a1, a2, a3);
+}
+
+__declspec(naked) void game::hookedR_DrawXModelRigidModelSurf()
+{
+	__asm pushad;
+
+	if (!strcmp(commands::qol_mirrorgun->current.string, "1"))
+	{
+		(*game::dx9_device_ptr)->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
+	}
+
+	__asm
+	{
+		popad;
+		jmp game::pR_DrawXModelRigidModelSurf;
+	}
+}
+
+__declspec(naked) void game::hookedR_DrawXModelRigidModelSurf_End()
+{
+	__asm pushad;
+
+	if (!strcmp(commands::qol_mirrorgun->current.string, "1"))
+	{
+		(*game::dx9_device_ptr)->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+	}
+
+	__asm
+	{
+		popad;
+		jmp game::pR_DrawXModelRigidModelSurf_End;
+	}
+}
+
 int	game::Cmd_Argc()
 {
 	return game::cmd_args->argc[game::cmd_args->nesting];
