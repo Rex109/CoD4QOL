@@ -62,5 +62,5 @@ The final folder structure should look like this:
 - Does not work with cod4 stock 1.7
 
 ## Pull requests and issues
-If you have any suggestions i encourage you to open a pull request, same goes for issues: do not hesitate to open an issue if you encounter a problem.
+If you have any suggestions i encourage you to open a pull request, same goes for issues: do not hesitate to open one if you encounter a problem.
 For further support you can contact me directly in my personal discord server linked on top of the page or join ManyAsset, a community made entirely for CoD4 Modders.
