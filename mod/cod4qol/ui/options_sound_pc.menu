@@ -106,8 +106,9 @@
         //CoD4QOL settings
         
         CHOICE_SECTION_TITLE_VIS( 21, "CoD4QOL settings...", when( localVarInt ( ui_qol ) == 3 ))
-        CHOICE_DVARFLOATLIST_VIS( 22, "Show external console", qol_show_console, { "@MENU_OFF" 0 "@MENU_ON" 1 }, exec "toggleconsoleupdate";, when( localVarInt ( ui_qol ) == 3 ))
-        CHOICE_DVARFLOATLIST_VIS( 23, "Display loading info", qol_show_loading, { "@MENU_OFF" 0 "@MENU_ON" 1 }, exec "toggleloadinginfoupdate";, when( localVarInt ( ui_qol ) == 3 ))
+        CHOICE_DVARFLOATLIST_VIS( 22, "Check for updates on startup", qol_check_updates, { "@MENU_OFF" 0 "@MENU_ON" 1 }, ;, when( localVarInt ( ui_qol ) == 3 ))
+        CHOICE_DVARFLOATLIST_VIS( 23, "Show external console", qol_show_console, { "@MENU_OFF" 0 "@MENU_ON" 1 }, exec "toggleconsoleupdate";, when( localVarInt ( ui_qol ) == 3 ))
+        CHOICE_DVARFLOATLIST_VIS( 24, "Display loading info", qol_show_loading, { "@MENU_OFF" 0 "@MENU_ON" 1 }, exec "toggleloadinginfoupdate";, when( localVarInt ( ui_qol ) == 3 ))
 
 		itemDef 
 		{

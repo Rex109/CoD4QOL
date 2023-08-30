@@ -20,21 +20,22 @@ void game::hookedDB_LoadXZoneFromGfxConfig()
 {
 	std::cout << "Calling DB_LoadXZoneFromGfxConfig();" << std::endl;
 
-	if (startup)
-	{
-		#ifndef _DEBUG
-			updater::CheckForUpdates();
-		#endif
-
-		startup = false;
-	}
-
 	game::Sys_CreateConsole(0x0);
 
 	if (!strcmp(fs_game->current.string, ""))
 		game::Cbuf_AddText("loadzone qol\n", 0);
 
 	commands::InitializeCommands();
+
+	if (startup)
+	{
+		#ifndef _DEBUG
+				if (!strcmp(commands::qol_check_updates->current.string, "1"))
+					updater::CheckForUpdates();
+		#endif
+
+		startup = false;
+	}
 
 	game::Cbuf_AddText("toggleconsoleupdate\n", 0);
 	game::Cbuf_AddText("toggleloadinginfoupdate\n", 0);

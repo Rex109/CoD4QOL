@@ -41,6 +41,13 @@ void commands::InitializeCommands()
 
     sv_running = game::Find("sv_running");
 
+    qol_check_updates = game::Find("qol_check_updates");
+    if (!qol_check_updates)
+    {
+        game::Cmd_ExecuteSingleCommand(0, 0, "seta qol_check_updates 1\n");
+        qol_check_updates = game::Find("qol_check_updates");
+    }
+
     qol_getss = game::Find("qol_getss");
     if (!qol_getss)
     {
