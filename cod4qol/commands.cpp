@@ -11,6 +11,7 @@ void commands::InitializeCommands()
     game::Cmd_AddCommand("writeprotectedconfig", WriteProtectedConfig);
     game::Cmd_AddCommand("toggleconsoleupdate", ToggleConsoleUpdate);
     game::Cmd_AddCommand("toggleloadinginfoupdate", ToggleLoadingInfoUpdate);
+    game::Cmd_AddCommand("togglesteamauthupdate", ToggleSteamAuthUpdate);
     game::Cmd_AddCommand("vm_anim", VmAnim);
 
     game::Cmd_AddCommand("updatecod4qol", updater::Update);
@@ -81,6 +82,13 @@ void commands::InitializeCommands()
     {
         game::Cmd_ExecuteSingleCommand(0, 0, "seta qol_mirrorgun 0\n");
         qol_mirrorgun = game::Find("qol_mirrorgun");
+    }
+
+    qol_disable_steam_auth = game::Find("qol_disable_steam_auth");
+    if (!qol_disable_steam_auth)
+    {
+        game::Cmd_ExecuteSingleCommand(0, 0, "seta qol_disable_steam_auth 0\n");
+        qol_disable_steam_auth = game::Find("qol_disable_steam_auth");
     }
 
     std::cout << "Commands initialized!" << std::endl;
@@ -196,5 +204,19 @@ void commands::ToggleLoadingInfoUpdate()
         hooks::write_addr(0x54A6B6, "\xE8\xA5\xF3\xFF\xFF", 5); //Gametype
         hooks::write_addr(0x54A6FC, "\xE8\x5F\xF3\xFF\xFF", 5); //Mapname
         hooks::write_addr(0x54A990, "\xE8\xCB\xF0\xFF\xFF", 5); //Modname
+    }
+}
+
+void commands::ToggleSteamAuthUpdate()
+{
+    if (!strcmp(commands::qol_disable_steam_auth->current.string, "1"))
+    {
+        hooks::write_addr(game::cod4x_entry + 0x1A70A, "\x90\x90\x90\x90\x90\x90", 6);
+        hooks::write_addr(game::cod4x_entry + 0x1A717, "\x90\x90\x90\x90\x90\x90", 6);
+    }
+    else
+    {
+        hooks::write_addr(game::cod4x_entry + 0x1A70A, "\x0F\x85\xDB\x00\x00\x00", 6);
+        hooks::write_addr(game::cod4x_entry + 0x1A717, "\x0F\x85\xCE\x00\x00\x00", 6);
     }
 }

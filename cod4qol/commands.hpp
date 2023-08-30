@@ -22,6 +22,7 @@ namespace commands
 	inline game::dvar_s* qol_show_console;
 	inline game::dvar_s* qol_show_loading;
 	inline game::dvar_s* qol_mirrorgun;
+	inline game::dvar_s* qol_disable_steam_auth;
 
 	void InitializeCommands();
 
@@ -33,4 +34,5 @@ namespace commands
 	void VmAnim();
 	void SetGun(game::GfxViewParms* view_parms);
 	void ToggleLoadingInfoUpdate();
+	void ToggleSteamAuthUpdate();
 }
