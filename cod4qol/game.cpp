@@ -30,8 +30,8 @@ void game::hookedDB_LoadXZoneFromGfxConfig()
 	if (startup)
 	{
 		#ifndef _DEBUG
-				if (!strcmp(commands::qol_check_updates->current.string, "1"))
-					updater::CheckForUpdates();
+			if (commands::qol_check_updates->current.enabled)
+				updater::CheckForUpdates();
 		#endif
 
 		startup = false;
@@ -85,7 +85,7 @@ void game::hookedCmd_Vstr_f()
 {
 	std::cout << "Received vstr" << std::endl;
 
-	if (!strcmp(commands::qol_vstr_block->current.string, "0"))
+	if (!commands::qol_vstr_block->current.enabled)
 		return game::pCmd_Vstr_f();
 }
 
@@ -93,10 +93,10 @@ int game::hookedScreenshotRequest(int a1, int a2)
 {
 	std::cout << "Received screenshot request" << std::endl;
 
-	if (strcmp(commands::qol_getss->current.string, "0"))
+	if (commands::qol_getss->current.integer != 0)
 		commands::iPrintLnBold("[^3CoD4QOL^7]: ^1You are currently being screenshotted");
 
-	if (!strcmp(commands::qol_getss->current.string, "2"))
+	if (commands::qol_getss->current.integer == 2)
 		hooks::write_addr(game::cod4x_entry + 0xEA62B, "\xEB", 1);
 	else
 		hooks::write_addr(game::cod4x_entry + 0xEA62B, "\x74", 1);
@@ -122,7 +122,7 @@ __declspec(naked) void game::hookedR_SetViewParmsForScene()
 
 void game::hookedR_DrawXmodelSkinnedCached(int a1, int a2, int a3)
 {
-	if (!strcmp(commands::qol_mirrorgun->current.string, "1"))
+	if (commands::qol_mirrorgun->current.enabled)
 	{
 		(*game::dx9_device_ptr)->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 		game::pR_DrawXmodelSkinnedCached(a1, a2, a3);
@@ -137,10 +137,8 @@ __declspec(naked) void game::hookedR_DrawXModelRigidModelSurf()
 {
 	__asm pushad;
 
-	if (!strcmp(commands::qol_mirrorgun->current.string, "1"))
-	{
+	if (commands::qol_mirrorgun->current.enabled)
 		(*game::dx9_device_ptr)->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
-	}
 
 	__asm
 	{
@@ -153,10 +151,8 @@ __declspec(naked) void game::hookedR_DrawXModelRigidModelSurf_End()
 {
 	__asm pushad;
 
-	if (!strcmp(commands::qol_mirrorgun->current.string, "1"))
-	{
+	if (commands::qol_mirrorgun->current.enabled)
 		(*game::dx9_device_ptr)->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
-	}
 
 	__asm
 	{

@@ -42,54 +42,20 @@ void commands::InitializeCommands()
 
     sv_running = game::Find("sv_running");
 
-    qol_check_updates = game::Find("qol_check_updates");
-    if (!qol_check_updates)
-    {
-        game::Cmd_ExecuteSingleCommand(0, 0, "seta qol_check_updates 1\n");
-        qol_check_updates = game::Find("qol_check_updates");
-    }
+    qol_check_updates = game::Dvar_RegisterBool("qol_check_updates", 1, game::dvar_flags::saved, "Enable cod4qol to check for updates at every startup.");
 
-    qol_getss = game::Find("qol_getss");
-    if (!qol_getss)
-    {
-        game::Cmd_ExecuteSingleCommand(0, 0, "seta qol_getss 0\n");
-        qol_getss = game::Find("qol_getss");
-    }
-        
-    qol_vstr_block = game::Find("qol_vstr_block");
-    if (!qol_vstr_block)
-    {
-        game::Cmd_ExecuteSingleCommand(0, 0, "seta qol_vstr_block 0\n");
-        qol_vstr_block = game::Find("qol_vstr_block");
-    }
+    static const char* qol_getss_names[] = { "Off", "Notify", "Notify + Block", NULL };
+    qol_getss = game::Dvar_RegisterEnum("qol_getss", qol_getss_names, 0, game::dvar_flags::saved, "Notify and block getss from servers.");
+    
+    qol_vstr_block = game::Dvar_RegisterBool("qol_vstr_block", 0, game::dvar_flags::saved, "Block every forced client commands from mods.");
 
-    qol_show_console = game::Find("qol_show_console");
-    if (!qol_show_console)
-    {
-        game::Cmd_ExecuteSingleCommand(0, 0, "seta qol_show_console 0\n");
-        qol_show_console = game::Find("qol_show_console");
-    }
+    qol_show_console = game::Dvar_RegisterBool("qol_show_console", 0, game::dvar_flags::saved, "Show the game's console on a separated window. In order to update it you need to execute \"toggleconsoleupdate\".");
 
-    qol_show_loading = game::Find("qol_show_loading");
-    if (!qol_show_loading)
-    {
-        game::Cmd_ExecuteSingleCommand(0, 0, "seta qol_show_loading 1\n");
-        qol_show_loading = game::Find("qol_show_loading");
-    }
+    qol_show_loading = game::Dvar_RegisterBool("qol_show_loading", 1, game::dvar_flags::saved, "Show mod and map info during loading.");
 
-    qol_mirrorgun = game::Find("qol_mirrorgun");
-    if (!qol_mirrorgun)
-    {
-        game::Cmd_ExecuteSingleCommand(0, 0, "seta qol_mirrorgun 0\n");
-        qol_mirrorgun = game::Find("qol_mirrorgun");
-    }
+    qol_mirrorgun = game::Dvar_RegisterBool("qol_mirrorgun", 0, game::dvar_flags::saved, "Flip the gun on the left side of the screen.");
 
-    qol_disable_steam_auth = game::Find("qol_disable_steam_auth");
-    if (!qol_disable_steam_auth)
-    {
-        game::Cmd_ExecuteSingleCommand(0, 0, "seta qol_disable_steam_auth 0\n");
-        qol_disable_steam_auth = game::Find("qol_disable_steam_auth");
-    }
+    qol_disable_steam_auth = game::Dvar_RegisterBool("qol_disable_steam_auth", 0, game::dvar_flags::saved, "Disables the authentication with steam if it is running on the computer.");
 
     std::cout << "Commands initialized!" << std::endl;
 }
@@ -182,18 +148,18 @@ void commands::WriteProtectedConfig()
 
 void commands::ToggleConsoleUpdate()
 {
-    ShowWindow(*game::hwnd, !strcmp(game::Find("qol_show_console")->current.string, "1") ? SW_SHOWNOACTIVATE : SW_HIDE);
+    ShowWindow(*game::hwnd, qol_show_console->current.enabled ? SW_SHOWNOACTIVATE : SW_HIDE);
 }
 
 void commands::SetGun(game::GfxViewParms* view_parms)
 {
-    if (!strcmp(commands::qol_mirrorgun->current.string, "1"))
+    if (commands::qol_mirrorgun->current.enabled)
         view_parms->projectionMatrix.m[0][0] = -view_parms->projectionMatrix.m[0][0];
 }
 
 void commands::ToggleLoadingInfoUpdate()
 {
-    if (!strcmp(commands::qol_show_loading->current.string, "0"))
+    if (!commands::qol_show_loading->current.enabled)
     {
         hooks::write_addr(0x54A6B6, "\x90\x90\x90\x90\x90", 5); //Gametype
         hooks::write_addr(0x54A6FC, "\x90\x90\x90\x90\x90", 5); //Mapname
@@ -209,7 +175,7 @@ void commands::ToggleLoadingInfoUpdate()
 
 void commands::ToggleSteamAuthUpdate()
 {
-    if (!strcmp(commands::qol_disable_steam_auth->current.string, "1"))
+    if (commands::qol_disable_steam_auth->current.enabled)
     {
         hooks::write_addr(game::cod4x_entry + 0x1A70A, "\x90\x90\x90\x90\x90\x90", 6);
         hooks::write_addr(game::cod4x_entry + 0x1A717, "\x90\x90\x90\x90\x90\x90", 6);
