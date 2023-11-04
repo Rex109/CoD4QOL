@@ -501,6 +501,11 @@ namespace game
 
 	void hookedR_DrawXModelRigidModelSurf_End();
 
+	typedef unsigned int(*CG_StartAmbient)(int a1);
+	inline CG_StartAmbient pCG_StartAmbient;
+
+	unsigned int hookedCG_StartAmbient(int a1);
+
 	int	Cmd_Argc();
 	const char* Cmd_Argv(int arg);
 

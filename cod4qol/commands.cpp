@@ -57,6 +57,8 @@ void commands::InitializeCommands()
 
     qol_disable_steam_auth = game::Dvar_RegisterBool("qol_disable_steam_auth", 0, game::dvar_flags::saved, "Disable the authentication with steam if it is running on the computer.");
 
+    qol_ambient = game::Dvar_RegisterBool("qol_ambient", 1, game::dvar_flags::saved, "Enable ambient sound/music cues.");
+
     std::cout << "Commands initialized!" << std::endl;
 }
 

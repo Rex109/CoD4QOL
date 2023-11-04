@@ -161,6 +161,14 @@ __declspec(naked) void game::hookedR_DrawXModelRigidModelSurf_End()
 	}
 }
 
+unsigned int game::hookedCG_StartAmbient(int a1)
+{
+	if (!commands::qol_ambient->current.enabled)
+		return 0;
+
+	return game::pCG_StartAmbient(a1);
+}
+
 int	game::Cmd_Argc()
 {
 	return game::cmd_args->argc[game::cmd_args->nesting];

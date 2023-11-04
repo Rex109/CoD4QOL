@@ -59,6 +59,10 @@ void hooks::InitializeHooks()
 	game::pR_DrawXModelRigidModelSurf_End = (game::R_DrawXModelRigidModelSurf_End)(0x6569BD);
 	hooks::install(&(PVOID&)game::pR_DrawXModelRigidModelSurf_End, (PBYTE)game::hookedR_DrawXModelRigidModelSurf_End);
 
+	//CG_StartAmbient
+	game::pCG_StartAmbient = (game::CG_StartAmbient)(0x43F200);
+	hooks::install(&(PVOID&)game::pCG_StartAmbient, (PBYTE)game::hookedCG_StartAmbient);
+
 	std::cout << "Hooks installed!" << std::endl;
 }
 

@@ -23,6 +23,7 @@ namespace commands
 	inline game::dvar_s* qol_show_loading;
 	inline game::dvar_s* qol_mirrorgun;
 	inline game::dvar_s* qol_disable_steam_auth;
+	inline game::dvar_s* qol_ambient;
 
 	void InitializeCommands();
 
