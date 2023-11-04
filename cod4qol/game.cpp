@@ -163,6 +163,8 @@ __declspec(naked) void game::hookedR_DrawXModelRigidModelSurf_End()
 
 unsigned int game::hookedCG_StartAmbient(int a1)
 {
+	std::cout << "Received CG_StartAmbient(); data" << std::endl;
+
 	if (!commands::qol_ambient->current.enabled)
 		return 0;
 
