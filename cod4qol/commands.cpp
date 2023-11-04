@@ -55,7 +55,7 @@ void commands::InitializeCommands()
 
     qol_mirrorgun = game::Dvar_RegisterBool("qol_mirrorgun", 0, game::dvar_flags::saved, "Flip the gun on the left side of the screen.");
 
-    qol_disable_steam_auth = game::Dvar_RegisterBool("qol_disable_steam_auth", 0, game::dvar_flags::saved, "Disables the authentication with steam if it is running on the computer.");
+    qol_disable_steam_auth = game::Dvar_RegisterBool("qol_disable_steam_auth", 0, game::dvar_flags::saved, "Disable the authentication with steam if it is running on the computer.");
 
     std::cout << "Commands initialized!" << std::endl;
 }
