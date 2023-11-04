@@ -8,6 +8,9 @@ void hooks::InitializeHooks()
 	//Removing cod4x safechecks
 	hooks::write_addr((game::cod4x_entry + 0x43580), "\xC3", 1);
 
+	//Fast startup
+	hooks::write_addr((game::cod4x_entry + 0x3AA7C), "\xC3", 1);
+
 	//Console name
 	game::pCon_LinePrefix = (game::Con_LinePrefix)(0x460613);
 	hooks::install(&(PVOID&)game::pCon_LinePrefix, (PBYTE)game::hookedCon_LinePrefix);
