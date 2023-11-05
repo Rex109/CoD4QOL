@@ -15,6 +15,7 @@ A Call of Duty 4 X plugin that adds new settings, unlocks essential dvars and ad
 - Using native menus, no flying imgui windows
 - Easy to install
 - Works on any server regardless of the mod
+- Speeds up the game's boot time
 
 ### Complete patches list
 - Adds "vm_anim" command
@@ -36,9 +37,13 @@ A Call of Duty 4 X plugin that adds new settings, unlocks essential dvars and ad
 - Adds "Privacy options" menu:
   - Screenshot protection selector
   - Block vstr switch
+  - Disable steam auth
 - Adds "CoD4QOL settings" menu:
+  - Check for updates on startup
   - Show external console
   - Display loading info
+  - Play ambient music
+  - Raw input
 
 ## Download and installation 
 To download the pre-compiled binaries you can grab the latest version in the [Releases Page](https://github.com/Rex109/Cod4QOL/releases)
