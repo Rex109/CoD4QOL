@@ -6,7 +6,7 @@ void commands::InitializeCommands()
 {
     std::cout << "Initializing commands..." << std::endl;
 
-	game::Cmd_AddCommand("loadzone", LoadZone);
+    game::Cmd_AddCommand("loadzone", LoadZone);
     game::Cmd_AddCommand("readprotectedconfig", ReadProtectedConfig);
     game::Cmd_AddCommand("writeprotectedconfig", WriteProtectedConfig);
     game::Cmd_AddCommand("toggleconsoleupdate", ToggleConsoleUpdate);
