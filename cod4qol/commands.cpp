@@ -40,6 +40,12 @@ void commands::InitializeCommands()
     cg_gun_z = game::Find("cg_gun_z");
     cg_gun_z->flags = game::none;
 
+    cg_draw2d = game::Find("cg_draw2d");
+    cg_draw2d->flags = game::none;
+
+    cg_drawgun = game::Find("cg_drawgun");
+    cg_drawgun->flags = game::none;
+
     sv_running = game::Find("sv_running");
 
     qol_check_updates = game::Dvar_RegisterBool("qol_check_updates", 1, game::dvar_flags::saved, "Enable cod4qol to check for updates at every startup.");

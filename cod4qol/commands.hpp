@@ -15,6 +15,8 @@ namespace commands
 	inline game::dvar_s* cg_gun_x;
 	inline game::dvar_s* cg_gun_y;
 	inline game::dvar_s* cg_gun_z;
+	inline game::dvar_s* cg_draw2d;
+	inline game::dvar_s* cg_drawgun;
 	
 	inline game::dvar_s* qol_check_updates;
 	inline game::dvar_s* qol_getss;
