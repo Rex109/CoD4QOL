@@ -20,7 +20,7 @@ BOOL APIENTRY DllMain( HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpRese
                 freopen_s(&_con, "CONOUT$", "w", stdout);
             #endif
 
-            //THIS IS FUCKING NECESSARY! It prevents the library from getting unloaded by cod4
+            //THIS IS NECESSARY! It prevents the library from getting unloaded by cod4
             CHAR FileName[MAX_PATH];
             GetModuleFileName(hModule, FileName, MAX_PATH);
             GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_PIN, strrchr(FileName, '\\') + 0x1, &dummy);
