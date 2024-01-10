@@ -6,6 +6,7 @@ menufile,ui/quit.menu
 
 menufile,ui_mp/leftside_options_mod.inc
 menufile,ui_mp/main.menu
+menufile,ui_mp/mods.menu
 menufile,ui_mp/options.menu
 menufile,ui_mp/options_multi.menu
 menufile,ui_mp/options_voice.menu

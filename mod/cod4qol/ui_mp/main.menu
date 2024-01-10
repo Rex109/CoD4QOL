@@ -132,7 +132,7 @@
 		
 		CHOICE_SEPARATOR_VIS( CHOICE_SEP_3, when( !localvarBool( ui_hideBack ) ) )
 		
-		CHOICE_BUTTON_VIS( 9, "@MENU_MODS", close self; open mods_menu;, when( !localvarBool( ui_hideBack ) ) )
+		CHOICE_BUTTON_VIS( 9, "Mods and demos", close self; open mods_menu;, when( !localvarBool( ui_hideBack ) ) )
 		CHOICE_BUTTON_VIS( 10, "@MENU_SINGLE_PLAYER", open single_popmenu;, when( !localvarBool( ui_hideBack ) ) )
 		CHOICE_BUTTON_VIS( 11, "@MENU_QUIT", open quit_popmenu;, when( !localvarBool( ui_hideBack ) ) )
 

@@ -512,6 +512,7 @@ namespace game
 	dvar_s* Find(const char*);
 	cmd_function_s* Cmd_AddCommand(const char* cmdname, void(__cdecl* function)());
 	void Cbuf_AddText(const char* text, int localClientNum);
+	const char* String_Alloc(const char* string);
 
 	typedef void(*Cmd_ExecuteSingleCommand_t)(int controller, int a2, const char* cmd);
 		extern Cmd_ExecuteSingleCommand_t Cmd_ExecuteSingleCommand;
@@ -543,4 +544,11 @@ namespace game
 	inline game::Dvar_RegisterBool_t Dvar_RegisterBool = Dvar_RegisterBool_t(cod4x_entry + 0x2D8F2);
 	inline game::Dvar_RegisterEnum_t Dvar_RegisterEnum = Dvar_RegisterEnum_t(cod4x_entry + 0x2DCAF);
 
+	inline game::dvar_s* fs_game = game::Find("fs_game");
+	inline game::dvar_s* fs_homepath = game::Find("fs_homepath");
+
+	inline int* modCount = reinterpret_cast<int*>(0xCAF7554);
+	inline int* modIndex = reinterpret_cast<int*>(0xCAF7558);
+	inline const char** modName = reinterpret_cast<const char**>(0xCAF7354);
+	inline const char** modDesc = reinterpret_cast<const char**>(0xCAF7358);
 }

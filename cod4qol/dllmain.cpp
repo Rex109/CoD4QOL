@@ -44,7 +44,7 @@ void Initialize()
 
     if (!game::cod4x_entry)
     {
-        MessageBox(NULL, "CoD4X version mismatch, CoD4QOL unloaded.\nYou need to have CoD4X version 21.1 installed.", "CoD4QOL", MB_ICONERROR);
+        MessageBox(NULL, "CoD4X version mismatch, CoD4QOL unloaded.\nYou need to have CoD4X version " COD4QOL_SUPPORTEDVERSIONS " installed.", "CoD4QOL", MB_ICONERROR);
         return;
     }
 

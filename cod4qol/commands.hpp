@@ -38,4 +38,6 @@ namespace commands
 	void SetGun(game::GfxViewParms* view_parms);
 	void ToggleLoadingInfoUpdate();
 	void ToggleSteamAuthUpdate();
+	void LoadDemos();
+	void PlaySelectedDemo();
 }

@@ -3,8 +3,6 @@
 #include "hooks.hpp"
 #include "updater.hpp"
 
-game::dvar_s* fs_game = game::Find("fs_game");
-
 __declspec(naked) const char* game::hookedCon_LinePrefix()
 {
 	const static uint32_t retn_addr = 0x460618;
@@ -215,5 +213,16 @@ void game::Cbuf_AddText(const char* text, int localClientNum)
 		mov esi, 0x4F8D90;
 		call esi;
 		add esp, 0x8;
+	}
+}
+
+__declspec(naked) const char* game::String_Alloc(const char* string)
+{
+	const static uint32_t retn_addr = 0x558E40;
+
+	__asm
+	{
+		mov eax, [esp + 4];
+		jmp retn_addr;
 	}
 }

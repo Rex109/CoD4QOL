@@ -1,6 +1,7 @@
 #include "commands.hpp"
 #include "updater.hpp"
 #include "hooks.hpp"
+#include <filesystem>
 
 void commands::InitializeCommands()
 {
@@ -13,6 +14,9 @@ void commands::InitializeCommands()
     game::Cmd_AddCommand("toggleloadinginfoupdate", ToggleLoadingInfoUpdate);
     game::Cmd_AddCommand("togglesteamauthupdate", ToggleSteamAuthUpdate);
     game::Cmd_AddCommand("vm_anim", VmAnim);
+
+    game::Cmd_AddCommand("loaddemos", LoadDemos);
+    game::Cmd_AddCommand("playselecteddemo", PlaySelectedDemo);
 
     game::Cmd_AddCommand("updatecod4qol", updater::Update);
 
@@ -151,6 +155,8 @@ void commands::WriteProtectedConfig()
     protectedconf << "set" << " cg_gun_y \"" << cg_gun_y->current.value << "\"" << std::endl;
     protectedconf << "set" << " cg_gun_z \"" << cg_gun_z->current.value << "\"" << std::endl;
 
+    std::cout << game::String_Alloc("Pingu") << std::endl;
+
     protectedconf.close();
 }
 
@@ -193,4 +199,38 @@ void commands::ToggleSteamAuthUpdate()
         hooks::write_addr(game::cod4x_entry + 0x1A70A, "\x0F\x85\xDB\x00\x00\x00", 6);
         hooks::write_addr(game::cod4x_entry + 0x1A717, "\x0F\x85\xCE\x00\x00\x00", 6);
     }
+}
+
+void commands::LoadDemos()
+{
+    std::string relative_dir = game::fs_homepath->current.string;
+    relative_dir.append("\\");
+    relative_dir.append(!strcmp(game::fs_game->current.string, "") ? "main" : game::fs_game->current.string);
+    relative_dir.append("\\demos");
+
+    *game::modCount = 0;
+    *game::modIndex = 0;
+
+    for (const auto& entry : std::filesystem::directory_iterator(relative_dir))
+    {
+        if (entry.path().extension() != ".dm_1")
+			continue;
+
+        const char* string = game::String_Alloc(entry.path().stem().string().c_str());
+
+        game::modName[2 * (*game::modCount)] = string;
+        game::modDesc[2 * (*game::modCount)] = string;
+
+        (*game::modCount)++;
+    }
+}
+
+void commands::PlaySelectedDemo()
+{
+    if(*game::modCount < 1)
+        return;
+
+    std::string cmd = "demo " + std::string(game::modName[2 * (*game::modIndex)]);
+
+    game::Cbuf_AddText(cmd.c_str(), 0);
 }
