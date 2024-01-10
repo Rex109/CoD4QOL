@@ -60,7 +60,7 @@
 		#include "ui_mp/navcontrols.inc"
 
 		CHOICE_MENU_TITLE_VIS2( "@MENU_MODS", localVarInt ( ui_qol ) == 0 )
-        CHOICE_MENU_TITLE_VIS2( "Demos", localVarInt ( ui_qol ) == 1 )
+        CHOICE_MENU_TITLE_VIS2( "Demo", localVarInt ( ui_qol ) == 1 )
 
 		itemDef 
 		{
