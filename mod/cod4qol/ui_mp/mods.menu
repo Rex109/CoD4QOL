@@ -44,8 +44,6 @@
 		onOpen
 		{
 			setLocalVarBool ui_hideBack 1;
-            setLocalVarInt ui_qol 0;
-			uiScript loadMods;
 		}
 		onClose
 		{
@@ -60,7 +58,7 @@
 		#include "ui_mp/navcontrols.inc"
 
 		CHOICE_MENU_TITLE_VIS2( "@MENU_MODS", localVarInt ( ui_qol ) == 0 )
-        CHOICE_MENU_TITLE_VIS2( "Demo", localVarInt ( ui_qol ) == 1 )
+        CHOICE_MENU_TITLE_VIS2( "Demos", localVarInt ( ui_qol ) == 1 )
 
 		itemDef 
 		{
@@ -116,8 +114,5 @@
         CHOICE_BUTTON_VIS( 1, "Play", exec "playselecteddemo";, when( localVarInt ( ui_qol ) == 1 ); )
 		CHOICE_BUTTON_VIS( 2, "Delete", ;, when( localVarInt ( ui_qol ) == 1 ); )
         CHOICE_BUTTON_VIS( 3, "Rename", ;, when( localVarInt ( ui_qol ) == 1 ); )
-
-        CHOICE_BUTTON_VIS( 4, "Switch to demos", setLocalVarInt ui_qol 1; exec "loaddemos";, when( localVarInt ( ui_qol ) == 0 ); )
-        CHOICE_BUTTON_VIS( 4, "Switch to mods", setLocalVarInt ui_qol 0; uiScript loadMods;, when( localVarInt ( ui_qol ) == 1 ); )
 	}
 }

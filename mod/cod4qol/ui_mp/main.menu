@@ -2,12 +2,12 @@
 #include "ui_mp/common_macro.inc"
 
 #define CHOICE_X_START			0
-#define CHOICE_Y_START			120
+#define CHOICE_Y_START			98
 
 #define CHOICE_GROUP			"main"
 #define CHOICE_SEP_1			3
 #define CHOICE_SEP_2			6
-#define CHOICE_SEP_3			9
+#define CHOICE_SEP_3			10
 
 #define STYLE_PC	1
 #include "ui_mp/menustyle.inc"
@@ -107,7 +107,7 @@
 				open pc_cac_popup;
 				
 		#define CLEARUIHINT	exec "set ui_hint_text @MP_NULL"
-				
+		
 		CHOICE_BUTTON_VIS( 1, "@MENU_AUTO_UPDATE", open auconfirm;, when( dvarbool( cl_updateAvailable ) && !localvarBool( ui_hideBack ) ) )
 		//CHOICE_BUTTON_VIS( 2, "@MENU_JOIN_GAME", open join_game_popup;, when( !localvarBool( ui_hideBack ) ) )
 		CHOICE_BUTTON_VIS( 2, "@MENU_JOIN_GAME", open pc_join_unranked;, when( !localvarBool( ui_hideBack ) ) )
@@ -129,12 +129,13 @@
 		
 		CHOICE_BUTTON_VIS( 7, "@MENU_CONTROLS", open main_controls;, when( !localvarBool( ui_hideBack ) ) )
 		CHOICE_BUTTON_VIS( 8, "@MENU_OPTIONS", open main_options;, when( !localvarBool( ui_hideBack ) ) )
-		
-		CHOICE_SEPARATOR_VIS( CHOICE_SEP_3, when( !localvarBool( ui_hideBack ) ) )
-		
-		CHOICE_BUTTON_VIS( 9, "Mods and demos", close self; open mods_menu;, when( !localvarBool( ui_hideBack ) ) )
-		CHOICE_BUTTON_VIS( 10, "@MENU_SINGLE_PLAYER", open single_popmenu;, when( !localvarBool( ui_hideBack ) ) )
-		CHOICE_BUTTON_VIS( 11, "@MENU_QUIT", open quit_popmenu;, when( !localvarBool( ui_hideBack ) ) )
+		CHOICE_BUTTON_VIS( 9, "@MENU_MODS", setLocalVarInt ui_qol 0; uiScript loadMods; close self; open mods_menu;, when( !localvarBool( ui_hideBack ) ) )
+
+        CHOICE_SEPARATOR_VIS( CHOICE_SEP_3, when( !localvarBool( ui_hideBack ) ) )
+
+        CHOICE_BUTTON_VIS( 10, "Demos", setLocalVarInt ui_qol 1; exec "loaddemos"; close self; open mods_menu;, when( !localvarBool( ui_hideBack ) ) )
+		CHOICE_BUTTON_VIS( 11, "@MENU_SINGLE_PLAYER", open single_popmenu;, when( !localvarBool( ui_hideBack ) ) )
+		CHOICE_BUTTON_VIS( 12, "@MENU_QUIT", open quit_popmenu;, when( !localvarBool( ui_hideBack ) ) )
 
 		CHOICE_FOOTNOTE_VIS( "@MENU_GAME_EXPERIENCE_MAY_CHANGE", 40, 420, when( !localvarBool( ui_hideBack ) ) )
 		
