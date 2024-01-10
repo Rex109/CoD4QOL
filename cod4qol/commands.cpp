@@ -69,6 +69,8 @@ void commands::InitializeCommands()
 
     qol_ambient = game::Dvar_RegisterBool("qol_ambient", 1, game::dvar_flags::saved, "Enable ambient sound/music cues.");
 
+    qol_stockmenu = game::Dvar_RegisterBool("qol_stockmenu", 0, game::dvar_flags::saved, "Load the stock menu even with a mod loaded.");
+
     std::cout << "Commands initialized!" << std::endl;
 }
 

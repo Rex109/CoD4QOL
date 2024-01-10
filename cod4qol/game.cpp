@@ -20,7 +20,7 @@ void game::hookedDB_LoadXZoneFromGfxConfig()
 
 	game::Sys_CreateConsole(0x0);
 
-	if (!strcmp(fs_game->current.string, ""))
+	if (!strcmp(fs_game->current.string, "") || commands::qol_stockmenu->current.enabled)
 		game::Cbuf_AddText("loadzone qol\n", 0);
 
 	commands::InitializeCommands();
@@ -47,7 +47,7 @@ void game::hookedCom_LoadUiFastFile()
 {
 	std::cout << "Calling Com_LoadUiFastFile();" << std::endl;
 
-	if (!strcmp(fs_game->current.string, ""))
+	if (!strcmp(fs_game->current.string, "") || commands::qol_stockmenu->current.enabled)
 		game::Cbuf_AddText("loadzone qol\n", 0);
 		
 	return game::pCom_LoadUiFastFile();
