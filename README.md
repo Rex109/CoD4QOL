@@ -16,12 +16,13 @@ A Call of Duty 4 X plugin that adds new settings, unlocks essential dvars and ad
 - Easy to install
 - Works on any server regardless of the mod
 - Speeds up the game's boot time
+- Adds an in-game demo browser/manager
 
 ### Complete patches list
 - Adds "vm_anim" command
 - Adds "LoadZone" command
 - Adds "ReadProtectedConfig"/"WriteProtectedConfig" commands
-- Unlocks cg_fovscale, r_fullbright, r_zfar, r_filmusetweaks, developer_script and cg_gun_*
+- Unlocks cg_fovscale, r_fullbright, r_zfar, r_filmusetweaks, developer_script, cg_gun_*, cg_draw2d, cg_drawgun
 - Adds "Additional graphics" menu:
   - Fov slider
   - Fovscale slider
@@ -30,7 +31,7 @@ A Call of Duty 4 X plugin that adds new settings, unlocks essential dvars and ad
   - Maxfps selector
   - Drawfps selector
   - Draw distance selector
-  - Lod scale skinned/rigid selector
+  - Lod scale skinned
   - Film use tweaks toggle
   - Gun X, Y, Z sliders
   - Gun handedness switch
@@ -44,6 +45,7 @@ A Call of Duty 4 X plugin that adds new settings, unlocks essential dvars and ad
   - Display loading info
   - Play ambient music
   - Raw input
+  - Always load stock menu
 
 ## Download and installation 
 To download the pre-compiled binaries you can grab the latest version in the [Releases Page](https://github.com/Rex109/Cod4QOL/releases)
