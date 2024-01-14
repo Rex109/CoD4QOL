@@ -94,7 +94,7 @@
 		CHOICE_BUTTON_VIS( 3, "@MENU_YES", exec "deleteselecteddemo"; exec "loaddemos"; close self;, when(dvarInt("qol_dialog") == 2))
 		CHOICE_BUTTON_VIS( 4, "@MENU_NO", close self;, when(dvarInt("qol_dialog") == 2))
 
-        CHOICE_POPMENU_TITLE_VIS_EXTR( "Type in the new name:", when(dvarInt("qol_dialog") == 3), 0.32)
+        CHOICE_POPMENU_TITLE_VIS_EXTR( "Type the new name:", when(dvarInt("qol_dialog") == 3), 0.32)
 		itemDef
         {
 			name			renameEntry
