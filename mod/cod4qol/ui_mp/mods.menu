@@ -104,15 +104,15 @@
 			bordercolor			1 1 1 0.15
 			outlinecolor 		BUTTON_BG_COLOR
 			visible 			when( localVarInt ( ui_qol ) == 1 );
-			action				{ show accept; }
+			action				{ }
 			doubleClick			{ play "mouse_click"; exec "playselecteddemo"; }
 		}
 
 		CHOICE_BUTTON_VIS( 1, "@MENU_LAUNCH", uiScript RunMod;, when( localVarInt ( ui_qol ) == 0 ); )
 		CHOICE_BUTTON_VIS( 2, "@MENU_LAUNCH_WITHOUT_MODS", uiScript ClearMods;, when( dvarString( fs_game ) != "" && localVarInt ( ui_qol ) == 0 ); )
 
-        CHOICE_BUTTON_VIS( 1, "Play", exec "playselecteddemo";, when( localVarInt ( ui_qol ) == 1 ); )
-		CHOICE_BUTTON_VIS( 2, "Delete", ;, when( localVarInt ( ui_qol ) == 1 ); )
-        CHOICE_BUTTON_VIS( 3, "Rename", ;, when( localVarInt ( ui_qol ) == 1 ); )
+        CHOICE_BUTTON_VIS( 1, "Play", exec "playselecteddemo";, when( localVarInt ( ui_qol ) == 1 && dvarbool( qol_show_demos_buttons ) ); )
+		CHOICE_BUTTON_VIS( 2, "Delete", setdvar qol_dialog 2; open quit_popmenu;, when( localVarInt ( ui_qol ) == 1 && dvarbool( qol_show_demos_buttons )); )
+        CHOICE_BUTTON_VIS( 3, "Rename", setdvar qol_dialog 3; exec "getdemoname"; open quit_popmenu;, when( localVarInt ( ui_qol ) == 1 && dvarbool( qol_show_demos_buttons )); )
 	}
 }

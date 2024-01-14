@@ -42,7 +42,7 @@ bool updater::CheckForUpdates()
     download_url = parsed["assets"][0]["browser_download_url"];
 
     std::cout << "A new version of " << COD4QOL_NAME << " is available: " << parsed["tag_name"] << std::endl;
-    game::Cmd_ExecuteSingleCommand(0, 0, "set qol_update_available 1\n");
+    game::Cmd_ExecuteSingleCommand(0, 0, "set qol_dialog 1\n");
     return true;
 }
 

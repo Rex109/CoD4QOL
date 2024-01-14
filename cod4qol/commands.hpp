@@ -17,6 +17,8 @@ namespace commands
 	inline game::dvar_s* cg_gun_z;
 	inline game::dvar_s* cg_draw2d;
 	inline game::dvar_s* cg_drawgun;
+
+	inline game::dvar_s* qol_rename_text;
 	
 	inline game::dvar_s* qol_check_updates;
 	inline game::dvar_s* qol_getss;
@@ -39,6 +41,14 @@ namespace commands
 	void SetGun(game::GfxViewParms* view_parms);
 	void ToggleLoadingInfoUpdate();
 	void ToggleSteamAuthUpdate();
+
 	void LoadDemos();
 	void PlaySelectedDemo();
+	void DeleteSelectedDemo();
+	void RenameSelectedDemo();
+	void GetDemoName();
+	
 }
+
+std::string getDemosFolder();
+bool isValidDestinationPath(const std::filesystem::path& destination);

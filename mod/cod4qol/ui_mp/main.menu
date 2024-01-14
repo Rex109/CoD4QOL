@@ -34,7 +34,7 @@
 			uiScript addPlayerProfiles;
 			uiScript openMenuOnDvar com_playerProfile "" player_profile;
 			uiScript openMenuOnDvarNot ui_playerProfileCount 1 player_profile;
-            uiScript openMenuOnDvar qol_update_available 1 quit_popmenu; 
+            uiScript openMenuOnDvar qol_dialog 1 quit_popmenu; 
 			uiScript stopRefresh;
 			setdvar ui_showEndOfGame "0";
 		}
