@@ -237,7 +237,7 @@ void commands::PlaySelectedDemo()
     if(*game::modCount < 1)
         return;
 
-    std::string cmd = "demo " + std::string(game::modName[2 * (*game::modIndex)]);
+    std::string cmd = "demo \"" + std::string(game::modName[2 * (*game::modIndex)]) + "\"";
 
     game::Cbuf_AddText(cmd.c_str(), 0);
 }
