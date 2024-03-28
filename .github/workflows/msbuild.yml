@@ -43,8 +43,11 @@ jobs:
   upload_mod:
     runs-on: windows-latest
     steps:
+      - uses: actions/checkout@v4
+      
       - name: Rename mod 
         run: mv D:\a\CoD4QOL\CoD4QOL\mod\cod4qol\mod.ff D:\a\CoD4QOL\CoD4QOL\mod\cod4qol\qol.ff
+        
       - name: Upload mod
         uses: actions/upload-artifact@v4
         with:
