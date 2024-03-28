@@ -1,8 +1,6 @@
 #include "ui/menudef.h"
 #include "ui_mp/common_macro.inc"
 #define OPTIONS_STYLE			1
-//#define 	CHOICE_SEP_1			24
-//#define 	CHOICE_SEP_2			27
 #include "ui_mp/menustyle.inc"
 #include "ui/choices_setup_common.menu"
 
@@ -87,45 +85,24 @@ itemDef { \
 		CHOICE_DVARFLOATLIST_VIS( 23, "@MENU_SOUND_EQ", ui_snd_enableEq, { "@MENU_OFF" 0 "@MENU_ON" 1 }, setLocalVarBool ui_showApply 1, when( ( !dvarint( sv_running ) || dvarInt( ui_allow_graphic_change ) ) && dvarInt( arcademode ) == 0 && localVarInt ( ui_qol ) == 0); )
 		CHOICE_DVARFLOATLIST_VIS( 24, "@MENU_SOUND_QUALITY", ui_snd_khz, { "@MENU_11KHZ" 11 "@MENU_22KHZ" 22 "@MENU_44KHZ" 44 }, setLocalVarBool ui_showApply 1, when( ( !dvarint( sv_running ) || dvarInt( ui_allow_graphic_change ) ) && dvarInt( arcademode ) == 0  && localVarInt ( ui_qol ) == 0); )
 		CHOICE_DVARSTRINGLIST_VIS( 25, "@MENU_SPEAKER_CONFIG", ui_outputConfig, { "@MENU_WINDOWS_DEFAULT"; "Windows default"; "@MENU_MONO"; "Mono"; "@MENU_STEREO"; "Stereo"; "@MENU_FOUR_SPEAKERS"; "4 speakers"; "@MENU_FIVE_ONE_SPEAKERS"; "5.1 speakers"; }, setLocalVarBool ui_showApply 1, when( ( !dvarint( sv_running ) || dvarInt( ui_allow_graphic_change ) ) && dvarInt( arcademode ) == 0 && localVarInt ( ui_qol ) == 0); )
-
-        //Additional graphics
-        
-        CHOICE_SECTION_TITLE_VIS( 21, "Additional graphics...", when( localVarInt ( ui_qol ) == 1 ))
-
-		CHOICE_DVARSLIDER_VIS_EXTR( 22, "Fov", cg_fov, 80, 65, 90, ;, ;, when( localVarInt ( ui_qol ) == 1 );)
-        CHOICE_DVARSLIDER_VIS_EXTR( 23, "Fovscale", cg_fovscale, 1, 0.2, 2, setLocalVarBool ui_showApply 1, ;, when( localVarInt ( ui_qol ) == 1 );)
-        //CHOICE_SEPARATOR_VIS( CHOICE_SEP_1, when( localVarInt ( ui_qol ) == 1 ); )
-        CHOICE_DVARFLOATLIST_VIS( 24, "Fullbright", r_fullbright, { "@MENU_ON" 1 "@MENU_OFF" 0 }, setLocalVarBool ui_showApply 1, when( localVarInt ( ui_qol ) == 1 );)
-        CHOICE_DVARFLOATLIST_VIS( 25, "Fullscreen", r_fullscreen, { "@MENU_ON" 1 "@MENU_OFF" 0 }, exec "vid_restart";, when( localVarInt ( ui_qol ) == 1 );)
-        CHOICE_DVARFLOATLIST_VIS( 26, "Max fps", com_maxfps, { "@MPUI_RULES_UNLIMITED" 0 "30" 30 "60" 60 "125" 125 "142" 142 "250" 250 "333" 333 "500" 500 }, ;, when( localVarInt ( ui_qol ) == 1 );)
-        CHOICE_DVARSTRINGLIST_VIS( 27, "Draw fps", cg_drawfps, { "@MENU_OFF"; "Off"; "Simple"; "Simple"; "SimpleRanges"; "SimpleRanges"; "Verbose"; "Verbose" }, ;, when( localVarInt ( ui_qol ) == 1 );)
-        //CHOICE_SEPARATOR_VIS( CHOICE_SEP_2, when( localVarInt ( ui_qol ) == 1 ); )
-        CHOICE_DVARFLOATLIST_VIS( 28, "Draw distance", r_zfar, { "@MPUI_RULES_UNLIMITED" 0 "@MENU_NORMAL" 3000 "@MENU_LOW" 2000 "Extra low" 1000 "Ultra low" 500 "^1Unnecessary low" 1 }, setLocalVarBool ui_showApply 1, when( localVarInt ( ui_qol ) == 1 );)
-        //CHOICE_DVARFLOATLIST_VIS( 29, "Lod scale rigid", r_lodScaleRigid, { "@MENU_NORMAL" 1 "@MENU_LOW" 2 "Extra low" 3 "Ultra low" 4 }, ;, when( localVarInt ( ui_qol ) == 1 );)
-        CHOICE_DVARFLOATLIST_VIS( 29, "Lod scale skinned", r_lodScaleSkinned, { "@MENU_NORMAL" 1 "@MENU_LOW" 2 "Extra low" 3 "Ultra low" 4 }, ;, when( localVarInt ( ui_qol ) == 1 );)
-        CHOICE_DVARFLOATLIST_VIS( 30, "Film use tweaks", r_filmusetweaks, { "@MENU_ON" 1 "@MENU_OFF" 0 }, setLocalVarBool ui_showApply 1, when( localVarInt ( ui_qol ) == 1 );)
-        CHOICE_DVARSLIDER_VIS_EXTR( 31, "Gun X Position", cg_gun_x, 0, -100, 100, setLocalVarBool ui_showApply 1, ;, when( localVarInt ( ui_qol ) == 1 );)
-        CHOICE_DVARSLIDER_VIS_EXTR( 32, "Gun Y Position", cg_gun_y, 0, -100, 100, setLocalVarBool ui_showApply 1, ;, when( localVarInt ( ui_qol ) == 1 );)
-        CHOICE_DVARSLIDER_VIS_EXTR( 33, "Gun Z Position", cg_gun_z, 0, -100, 100, setLocalVarBool ui_showApply 1, ;, when( localVarInt ( ui_qol ) == 1 );)
-        CHOICE_DVARFLOATLIST_VIS( 34, "Gun handedness", qol_mirrorgun, { "Left" 1 "Right" 0 }, ;, when( localVarInt ( ui_qol ) == 1 );)
         
         //Privacy settings
         
-        CHOICE_SECTION_TITLE_VIS( 21, "Privacy settings...", when( localVarInt ( ui_qol ) == 2 );)
-        CHOICE_DVARSTRINGLIST_VIS( 22, "Screenshot protection", qol_getss, { "@MENU_OFF"; "Off"; "Notify"; "Notify"; "Notify + Block"; "Notify + Block" }, ;, when( localVarInt ( ui_qol ) == 2 );)
-        CHOICE_DVARFLOATLIST_VIS( 23, "Block vstr", qol_vstr_block, { "@MENU_OFF" 0 "@MENU_ON" 1 }, ;, when( localVarInt ( ui_qol ) == 2 );)
-        CHOICE_DVARFLOATLIST_VIS( 24, "Disable steam auth", qol_disable_steam_auth, { "@MENU_OFF" 0 "@MENU_ON" 1 }, exec "togglesteamauthupdate"; execondvarintvalue qol_disable_steam_auth 0 "set ui_qol_restart 1";, when( localVarInt ( ui_qol ) == 2 );)
-        PREPROC_TEXT_DRAW_ALIGNED_EXTR( CHOICE_ORIGIN( 26 ) 300 80 CHOICE_HORIZONTAL_ALIGN CHOICE_VERTICAL_ALIGN, 0 0, text "^3You may need to restart your game", TEXTSIZE_SMALL, 0, 0, ITEM_ALIGN_CENTER, CHOICE_TEXTCOLOR autowrapped, when( localVarInt ( ui_qol ) == 2 && dvarInt ( ui_qol_restart ) == 1 );)
+        CHOICE_SECTION_TITLE_VIS( 21, "Privacy settings...", when( localVarInt ( ui_qol ) == 1 );)
+        CHOICE_DVARSTRINGLIST_VIS( 22, "Screenshot protection", qol_getss, { "@MENU_OFF"; "Off"; "Notify"; "Notify"; "Notify + Block"; "Notify + Block" }, ;, when( localVarInt ( ui_qol ) == 1 );)
+        CHOICE_DVARFLOATLIST_VIS( 23, "Block vstr", qol_vstr_block, { "@MENU_OFF" 0 "@MENU_ON" 1 }, ;, when( localVarInt ( ui_qol ) == 1 );)
+        CHOICE_DVARFLOATLIST_VIS( 24, "Disable steam auth", qol_disable_steam_auth, { "@MENU_OFF" 0 "@MENU_ON" 1 }, exec "togglesteamauthupdate"; execondvarintvalue qol_disable_steam_auth 0 "set ui_qol_restart 1";, when( localVarInt ( ui_qol ) == 1 );)
+        PREPROC_TEXT_DRAW_ALIGNED_EXTR( CHOICE_ORIGIN( 26 ) 300 80 CHOICE_HORIZONTAL_ALIGN CHOICE_VERTICAL_ALIGN, 0 0, text "^3You may need to restart your game", TEXTSIZE_SMALL, 0, 0, ITEM_ALIGN_CENTER, CHOICE_TEXTCOLOR autowrapped, when( localVarInt ( ui_qol ) == 1 && dvarInt ( ui_qol_restart ) == 1 );)
 
         //CoD4QOL settings
         
-        CHOICE_SECTION_TITLE_VIS( 21, "CoD4QOL settings...", when( localVarInt ( ui_qol ) == 3 );)
-        CHOICE_DVARFLOATLIST_VIS( 22, "Check for updates on startup", qol_check_updates, { "@MENU_OFF" 0 "@MENU_ON" 1 }, ;, when( localVarInt ( ui_qol ) == 3 );)
-        CHOICE_DVARFLOATLIST_VIS( 23, "Show external console", qol_show_console, { "@MENU_OFF" 0 "@MENU_ON" 1 }, exec "toggleconsoleupdate";, when( localVarInt ( ui_qol ) == 3 );)
-        CHOICE_DVARFLOATLIST_VIS( 24, "Display loading info", qol_show_loading, { "@MENU_OFF" 0 "@MENU_ON" 1 }, exec "toggleloadinginfoupdate";, when( localVarInt ( ui_qol ) == 3 );)
-        CHOICE_DVARFLOATLIST_VIS( 25, "Play ambient music", qol_ambient, { "@MENU_OFF" 0 "@MENU_ON" 1 }, ;, when( localVarInt ( ui_qol ) == 3 );)
-        CHOICE_DVARFLOATLIST_VIS( 26, "Raw input", raw_input, { "@MENU_OFF" 0 "@MENU_ON" 1 }, ;, when( localVarInt ( ui_qol ) == 3 );)
-        CHOICE_DVARFLOATLIST_VIS( 27, "Always load stock menu", qol_stockmenu, { "@MENU_OFF" 0 "@MENU_ON" 1 }, ;, when( localVarInt ( ui_qol ) == 3 );)
+        CHOICE_SECTION_TITLE_VIS( 21, "CoD4QOL settings...", when( localVarInt ( ui_qol ) == 2 );)
+        CHOICE_DVARFLOATLIST_VIS( 22, "Check for updates on startup", qol_check_updates, { "@MENU_OFF" 0 "@MENU_ON" 1 }, ;, when( localVarInt ( ui_qol ) == 2 );)
+        CHOICE_DVARFLOATLIST_VIS( 23, "Show external console", qol_show_console, { "@MENU_OFF" 0 "@MENU_ON" 1 }, exec "toggleconsoleupdate";, when( localVarInt ( ui_qol ) == 2 );)
+        CHOICE_DVARFLOATLIST_VIS( 24, "Display loading info", qol_show_loading, { "@MENU_OFF" 0 "@MENU_ON" 1 }, exec "toggleloadinginfoupdate";, when( localVarInt ( ui_qol ) == 2 );)
+        CHOICE_DVARFLOATLIST_VIS( 25, "Play ambient music", qol_ambient, { "@MENU_OFF" 0 "@MENU_ON" 1 }, ;, when( localVarInt ( ui_qol ) == 2 );)
+        CHOICE_DVARFLOATLIST_VIS( 26, "Raw input", raw_input, { "@MENU_OFF" 0 "@MENU_ON" 1 }, ;, when( localVarInt ( ui_qol ) == 2 );)
+        CHOICE_DVARFLOATLIST_VIS( 27, "Always load stock menu", qol_stockmenu, { "@MENU_OFF" 0 "@MENU_ON" 1 }, ;, when( localVarInt ( ui_qol ) == 2 );)
 
 		itemDef 
 		{

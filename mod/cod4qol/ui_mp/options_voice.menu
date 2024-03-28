@@ -1,8 +1,42 @@
 #include "ui/menudef.h"
 #include "ui_mp/common_macro.inc"
 #define OPTIONS_STYLE			1
+#define CHOICE_SEP_1 24
+#define CHOICE_SEP_2 30
 #include "ui_mp/menustyle.inc"
 #include "ui/choices_setup_common.menu"
+
+#define CHOICE_DVARSLIDER_VIS_EXTR( itemIndex, textArg, dvarArg, defaultArg, minArg, maxArg, actionArg, extraArg, visArg ) \
+		CHOICE_BUTTON_BG( itemIndex, visArg ) \
+		CHOICE_HIGHLIGHT( itemIndex, visArg ) \
+		CHOICE_CAPTION_VIS( itemIndex, textArg, visArg ) \
+		itemDef \
+		{ \
+			type			ITEM_TYPE_SLIDER \
+			dvarfloat		dvarArg defaultArg minArg maxArg \
+			rect			CHOICE_ORIGIN( itemIndex ) (CHOICE_SIZE_X+120) CHOICE_SIZE_Y CHOICE_HORIZONTAL_ALIGN CHOICE_VERTICAL_ALIGN \
+			textalign		ITEM_ALIGN_MIDDLE_LEFT \
+			textalignx		(CHOICE_SIZE_X+20) /*(-(CHOICE_TEXT_OFFSET_X))*/ \
+			textscale		CHOICE_TEXTSIZE \
+			textstyle		ITEM_TEXTSTYLE_SHADOWED \
+			style			WINDOW_STYLE_FILLED \
+			forecolor		CHOICE_TEXTCOLOR \
+			visible			visArg \
+			extraArg \
+			CHOICE_SCRIPTS_ACTION( itemIndex, actionArg ) \
+		}
+
+#define PREPROC_TEXT_DRAW_ALIGNED_VIS( prect, porigin, ptext, psize, palignx, paligny, palign, pcolor, visArg ) \
+itemDef { \
+	rect			prect \
+	origin 			porigin \
+	textalignx		palignx textaligny paligny \
+	textstyle		ITEM_TEXTSTYLE_SHADOWED \
+	textalign		palign \
+	textscale		psize \
+	forecolor		pcolor \
+	ptext \
+	visible			visArg decoration autowrapped }
 
 {
 	menuDef
@@ -27,12 +61,12 @@
 
 		#include "ui_mp/leftside_options_mod.inc"
 		
-		CHOICE_SECTION_TITLE( 21, "@MENU_VOICECHAT" )
+		CHOICE_SECTION_TITLE_VIS( 21, "@MENU_VOICECHAT", when( localVarInt ( ui_qol ) == 0 ); )
 	
-		CHOICE_DVARFLOATLIST( 22, "@MENU_VOICE_CHAT_ENABLE", cl_voice, { "@MENU_ON" 1 "@MENU_OFF" 0 }, ; )
-		CHOICE_DVARSLIDER( 23, "@MENU_VOICECHAT_RECORD_LEVEL", winvoice_mic_reclevel, 65535, 0, 65535, ; )
+		CHOICE_DVARFLOATLIST_VIS( 22, "@MENU_VOICE_CHAT_ENABLE", cl_voice, { "@MENU_ON" 1 "@MENU_OFF" 0 }, ;, when( localVarInt ( ui_qol ) == 0 ); )
+		CHOICE_DVARSLIDER_VIS_EXTR( 23, "@MENU_VOICECHAT_RECORD_LEVEL", winvoice_mic_reclevel, 65535, 0, 65535, ;, ;, when( localVarInt ( ui_qol ) == 0 ); )
 		
-		PREPROC_TEXT_DRAW_ALIGNED( CHOICE_ORIGIN( 25 ) CHOICE_SIZE_X 20 CHOICE_HORIZONTAL_ALIGN CHOICE_VERTICAL_ALIGN, -10 22, text "@MENU_VOICECHAT_LEVEL_INDICATOR", CHOICE_TEXTSIZE, 0, 0, ITEM_ALIGN_RIGHT, CHOICE_TEXTCOLOR )
+		PREPROC_TEXT_DRAW_ALIGNED_VIS( CHOICE_ORIGIN( 25 ) CHOICE_SIZE_X 20 CHOICE_HORIZONTAL_ALIGN CHOICE_VERTICAL_ALIGN, -10 22, text "@MENU_VOICECHAT_LEVEL_INDICATOR", CHOICE_TEXTSIZE, 0, 0, ITEM_ALIGN_RIGHT, CHOICE_TEXTCOLOR, when( localVarInt ( ui_qol ) == 0 ); )
 
 		itemDef
 		{
@@ -41,9 +75,30 @@
 			rect		CHOICE_ORIGIN( 25 ) 100 10 CHOICE_HORIZONTAL_ALIGN CHOICE_VERTICAL_ALIGN
 			origin 		520 8
 			style		WINDOW_STYLE_EMPTY
-			visible		1
+			visible		when( localVarInt ( ui_qol ) == 0 );
 			decoration
 		}
+
+        //Additional graphics
+
+        CHOICE_SECTION_TITLE_VIS( 21, "Additional graphics...", when( localVarInt ( ui_qol ) == 1 ))
+
+		CHOICE_DVARSLIDER_VIS_EXTR( 22, "Fov", cg_fov, 80, 65, 90, ;, ;, when( localVarInt ( ui_qol ) == 1 );)
+        CHOICE_DVARSLIDER_VIS_EXTR( 23, "Fovscale", cg_fovscale, 1, 0.2, 2, setLocalVarBool ui_showApply 1, ;, when( localVarInt ( ui_qol ) == 1 );)
+        CHOICE_SEPARATOR_VIS( CHOICE_SEP_1, when( localVarInt ( ui_qol ) == 1 ); )
+        CHOICE_DVARFLOATLIST_VIS( 24, "Fullbright", r_fullbright, { "@MENU_ON" 1 "@MENU_OFF" 0 }, setLocalVarBool ui_showApply 1, when( localVarInt ( ui_qol ) == 1 );)
+        CHOICE_DVARFLOATLIST_VIS( 25, "Fullscreen", r_fullscreen, { "@MENU_ON" 1 "@MENU_OFF" 0 }, exec "vid_restart";, when( localVarInt ( ui_qol ) == 1 );)
+        CHOICE_DVARFLOATLIST_VIS( 26, "Max fps", com_maxfps, { "@MPUI_RULES_UNLIMITED" 0 "30" 30 "60" 60 "125" 125 "142" 142 "250" 250 "333" 333 "500" 500 }, ;, when( localVarInt ( ui_qol ) == 1 );)
+        CHOICE_DVARSTRINGLIST_VIS( 27, "Draw fps", cg_drawfps, { "@MENU_OFF"; "Off"; "Simple"; "Simple"; "SimpleRanges"; "SimpleRanges"; "Verbose"; "Verbose" }, ;, when( localVarInt ( ui_qol ) == 1 );)
+        CHOICE_DVARFLOATLIST_VIS( 28, "Draw distance", r_zfar, { "@MPUI_RULES_UNLIMITED" 0 "@MENU_NORMAL" 3000 "@MENU_LOW" 2000 "Extra low" 1000 "Ultra low" 500 "^1Unnecessary low" 1 }, setLocalVarBool ui_showApply 1, when( localVarInt ( ui_qol ) == 1 );)
+        CHOICE_DVARFLOATLIST_VIS( 29, "Lod scale skinned", r_lodScaleSkinned, { "@MENU_NORMAL" 1 "@MENU_LOW" 2 "Extra low" 3 "Ultra low" 4 }, ;, when( localVarInt ( ui_qol ) == 1 );)
+        CHOICE_SEPARATOR_VIS( CHOICE_SEP_2, when( localVarInt ( ui_qol ) == 1 ); )
+        CHOICE_DVARFLOATLIST_VIS( 30, "Film use tweaks", r_filmusetweaks, { "@MENU_ON" 1 "@MENU_OFF" 0 }, setLocalVarBool ui_showApply 1, when( localVarInt ( ui_qol ) == 1 );)
+        CHOICE_DVARSLIDER_VIS_EXTR( 31, "Gun X Position", cg_gun_x, 0, -100, 100, setLocalVarBool ui_showApply 1, ;, when( localVarInt ( ui_qol ) == 1 );)
+        CHOICE_DVARSLIDER_VIS_EXTR( 32, "Gun Y Position", cg_gun_y, 0, -100, 100, setLocalVarBool ui_showApply 1, ;, when( localVarInt ( ui_qol ) == 1 );)
+        CHOICE_DVARSLIDER_VIS_EXTR( 33, "Gun Z Position", cg_gun_z, 0, -100, 100, setLocalVarBool ui_showApply 1, ;, when( localVarInt ( ui_qol ) == 1 );)
+        CHOICE_BUTTON_VIS( 34, "Restore Gun Position", exec "set cg_gun_x 0; set cg_gun_y 0; set cg_gun_z 0", when( localVarInt ( ui_qol ) == 1 ) )
+        CHOICE_DVARFLOATLIST_VIS( 35, "Gun handedness", qol_mirrorgun, { "Left" 1 "Right" 0 }, ;, when( localVarInt ( ui_qol ) == 1 );)
 
 		//CHOICE_BACK( "@MENU_BACK", close self )
 	}
