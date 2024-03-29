@@ -44,7 +44,7 @@ jobs:
     - name: Upload binaries
       uses: actions/upload-artifact@v4
       with:
-          name: ${{matrix.configuration}} bineries
+          name: ${{matrix.configuration}} binaries
           path: |
             D:\a\CoD4QOL\CoD4QOL\miles\
             D:\a\CoD4QOL\CoD4QOL\cod4qol.asi
