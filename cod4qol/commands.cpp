@@ -162,8 +162,6 @@ void commands::WriteProtectedConfig()
     protectedconf << "set" << " cg_gun_y \"" << cg_gun_y->current.value << "\"" << std::endl;
     protectedconf << "set" << " cg_gun_z \"" << cg_gun_z->current.value << "\"" << std::endl;
 
-    std::cout << game::String_Alloc("Pingu") << std::endl;
-
     protectedconf.close();
 }
 
