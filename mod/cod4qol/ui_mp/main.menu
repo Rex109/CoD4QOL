@@ -14,6 +14,35 @@
 #include "ui/choices_setup_common.menu"
 #include "ui_mp/stats_info.inc"
 
+#define PREPROC_TEXT_DRAW_ALIGNED_EXTR( prect, porigin, ptext, psize, palignx, paligny, palign, pcolor ) \
+itemDef { \
+	rect			prect \
+	origin 			porigin \
+	textalignx		palignx textaligny paligny \
+	textstyle		ITEM_TEXTSTYLE_SHADOWED \
+	textalign		palign \
+	textscale		psize \
+	forecolor		pcolor \
+	exp				text( ptext ); \
+	visible			1 decoration }
+
+#define PREPROC_SHADER_DRAW_ALIGNED_EXTR( prect, porigin, pshader, pcolor, pborder, pbordersize, pbordercolor, actionArg ) \
+itemDef { \
+	style			WINDOW_STYLE_SHADER \
+	rect			prect \
+	origin 			porigin \
+	forecolor		pcolor \
+	exp				material( pshader ); \
+	border			pborder \
+	bordersize		pbordersize \
+	bordercolor		pbordercolor \
+	visible			1 \
+    type            1 \
+    mouseEnter { play "mouse_over"; setcolor forecolor 1 1 1 1 } \
+    mouseExit { setcolor forecolor pcolor } \
+    action {  play "mouse_click"; actionArg; } \
+}
+
 {
 	assetGlobalDef
 	{
@@ -107,6 +136,12 @@
 				open pc_cac_popup;
 				
 		#define CLEARUIHINT	exec "set ui_hint_text @MP_NULL"
+
+        PREPROC_TEXT_DRAW_ALIGNED_EXTR( 0 0 0 0 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_TOP, 0 0, "CoD4QOL v." + dvarString( qol_version ), TEXTSIZE_SMALL, -5, 20, ITEM_ALIGN_RIGHT, 0.69 0.69 0.69 0.2)
+        PREPROC_SHADER_DRAW_ALIGNED_EXTR( 0 0 20 20 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_TOP, -25 20, "discord_icon", 1 1 1 0.5, 0, 0, 0 0 0 0, exec "openlink 0" )
+        PREPROC_SHADER_DRAW_ALIGNED_EXTR( -25 0 20 20 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_TOP, -25 20, "$default", 1 1 1 0.5, 0, 0, 0 0 0 0, exec "openlink 0" )
+        PREPROC_SHADER_DRAW_ALIGNED_EXTR( -50 0 20 20 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_TOP, -25 20, "$default", 1 1 1 0.5, 0, 0, 0 0 0 0, exec "openlink 0" )
+        PREPROC_SHADER_DRAW_ALIGNED_EXTR( -80 25 100 20 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_TOP, -25 20, "$default", 1 1 1 0.5, 0, 0, 0 0 0 0, exec "openlink 0" )
 		
 		CHOICE_BUTTON_VIS( 1, "@MENU_AUTO_UPDATE", open auconfirm;, when( dvarbool( cl_updateAvailable ) && !localvarBool( ui_hideBack ) ) )
 		//CHOICE_BUTTON_VIS( 2, "@MENU_JOIN_GAME", open join_game_popup;, when( !localvarBool( ui_hideBack ) ) )

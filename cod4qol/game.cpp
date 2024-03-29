@@ -14,6 +14,19 @@ __declspec(naked) const char* game::hookedCon_LinePrefix()
 	}
 }
 
+void game::LoadModFiles()
+{
+	std::string relative_dir = game::fs_homepath->current.string;
+	relative_dir.append("\\main\\xcommon_cod4qol.iwd");
+
+	if (!strcmp(fs_game->current.string, "") || commands::qol_stockmenu->current.enabled)
+	{
+		FS_AddSingleIwdFileForGameDirectory(relative_dir.c_str(), "xcommon_cod4qol.iwd", "main");
+
+		game::Cbuf_AddText("loadzone qol\n", 0);
+	}
+}
+
 void game::hookedDB_LoadXZoneFromGfxConfig()
 {
 	std::cout << "Calling DB_LoadXZoneFromGfxConfig();" << std::endl;
@@ -21,7 +34,7 @@ void game::hookedDB_LoadXZoneFromGfxConfig()
 	game::Sys_CreateConsole(0x0);
 
 	if (!strcmp(fs_game->current.string, "") || commands::qol_stockmenu->current.enabled)
-		game::Cbuf_AddText("loadzone qol\n", 0);
+		LoadModFiles();
 
 	commands::InitializeCommands();
 
@@ -48,7 +61,7 @@ void game::hookedCom_LoadUiFastFile()
 	std::cout << "Calling Com_LoadUiFastFile();" << std::endl;
 
 	if (!strcmp(fs_game->current.string, "") || commands::qol_stockmenu->current.enabled)
-		game::Cbuf_AddText("loadzone qol\n", 0);
+		LoadModFiles();
 		
 	return game::pCom_LoadUiFastFile();
 }
