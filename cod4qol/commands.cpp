@@ -224,7 +224,7 @@ void commands::OpenLink()
     {
         case 0:
             link = "https://discord.com/invite/QDYk75vBBk";
-			break;
+            break;
         case 1:
             link = "https://www.youtube.com/@_rex109_";
             break;
