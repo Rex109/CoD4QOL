@@ -92,7 +92,7 @@ itemDef { \
         CHOICE_DVARSTRINGLIST_VIS( 22, "Screenshot protection", qol_getss, { "@MENU_OFF"; "Off"; "Notify"; "Notify"; "Notify + Block"; "Notify + Block" }, ;, when( localVarInt ( ui_qol ) == 1 );)
         CHOICE_DVARFLOATLIST_VIS( 23, "Block vstr", qol_vstr_block, { "@MENU_OFF" 0 "@MENU_ON" 1 }, ;, when( localVarInt ( ui_qol ) == 1 );)
         CHOICE_DVARFLOATLIST_VIS( 24, "Disable steam auth", qol_disable_steam_auth, { "@MENU_OFF" 0 "@MENU_ON" 1 }, exec "togglesteamauthupdate"; execondvarintvalue qol_disable_steam_auth 0 "set ui_qol_restart 1";, when( localVarInt ( ui_qol ) == 1 );)
-        PREPROC_TEXT_DRAW_ALIGNED_EXTR( CHOICE_ORIGIN( 26 ) 300 80 CHOICE_HORIZONTAL_ALIGN CHOICE_VERTICAL_ALIGN, 0 0, text "^3You may need to restart your game", TEXTSIZE_SMALL, 0, 0, ITEM_ALIGN_CENTER, CHOICE_TEXTCOLOR autowrapped, when( localVarInt ( ui_qol ) == 1 && dvarInt ( ui_qol_restart ) == 1 );)
+        PREPROC_TEXT_DRAW_ALIGNED_EXTR( CHOICE_ORIGIN( 26 ) 300 80 CHOICE_HORIZONTAL_ALIGN CHOICE_VERTICAL_ALIGN, 0 0, text "^3Game restart is required", TEXTSIZE_SMALL, 0, 0, ITEM_ALIGN_CENTER, CHOICE_TEXTCOLOR autowrapped, when( localVarInt ( ui_qol ) == 1 && dvarInt ( ui_qol_restart ) == 1 );)
 
         //CoD4QOL settings
         
