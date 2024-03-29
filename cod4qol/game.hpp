@@ -532,6 +532,9 @@ namespace game
 	typedef game::dvar_s*(*Cvar_RegisterEnum_t)(const char* name, const char** strings, int integer, game::dvar_flags flags, const char* description);
 		extern Cvar_RegisterEnum_t Cvar_RegisterEnum;
 
+	typedef game::dvar_s*(*Cvar_RegisterString_t)(const char* name, const char* string, game::dvar_flags flags, const char* description);
+		extern Cvar_RegisterString_t Cvar_RegisterString;
+
 	inline void* Cmd_AddCommand_fnc = (void*)(cod4x_entry + 0x2116C);
 	inline game::CmdArgs* cmd_args = reinterpret_cast<game::CmdArgs*>(0x1410B40);
 	inline game::gclient_s* g_clients = reinterpret_cast<game::gclient_s*>(0x13255A8);
@@ -543,6 +546,7 @@ namespace game
 
 	inline game::Cvar_RegisterBool_t Cvar_RegisterBool = Cvar_RegisterBool_t(cod4x_entry + 0x2D8F2);
 	inline game::Cvar_RegisterEnum_t Cvar_RegisterEnum = Cvar_RegisterEnum_t(cod4x_entry + 0x2DCAF);
+	inline game::Cvar_RegisterString_t Cvar_RegisterString = Cvar_RegisterString_t(cod4x_entry + 0x2D87D);
 
 	inline game::dvar_s* fs_game = game::Find("fs_game");
 	inline game::dvar_s* fs_homepath = game::Find("fs_homepath");

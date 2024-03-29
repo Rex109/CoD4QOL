@@ -25,6 +25,8 @@ void commands::InitializeCommands()
 
     game::Cmd_AddCommand("updatecod4qol", updater::Update);
 
+    qol_version = game::Cvar_RegisterString("qol_version", COD4QOL_VERSION, game::dvar_flags::read_only, "CoD4QOL version.");
+
     cg_fovscale = game::Find("cg_fovscale");
     cg_fovscale->flags = game::none;
 
