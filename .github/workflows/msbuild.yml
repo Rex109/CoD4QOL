@@ -38,8 +38,8 @@ jobs:
     - name: Rename FastFile 
       run: |
         mkdir D:\a\CoD4QOL\CoD4QOL\miles
-        mv D:\a\CoD4QOL\CoD4QOL\mod\cod4qol\mod.ff D:\a\CoD4QOL\CoD4QOL\miles\qol.ff
-        mv D:\a\CoD4QOL\CoD4QOL\${{matrix.configuration}}\cod4qol.asi D:\a\CoD4QOL\CoD4QOL\cod4qol.asi
+        mv D:\a\CoD4QOL\CoD4QOL\mod\cod4qol\mod.ff D:\a\CoD4QOL\CoD4QOL\qol.ff
+        mv D:\a\CoD4QOL\CoD4QOL\${{matrix.configuration}}\cod4qol.asi D:\a\CoD4QOL\CoD4QOL\miles\cod4qol.asi
       
     - name: Upload binaries
       uses: actions/upload-artifact@v4
@@ -47,4 +47,4 @@ jobs:
           name: ${{matrix.configuration}} binaries
           path: |
             D:\a\CoD4QOL\CoD4QOL\miles\
-            D:\a\CoD4QOL\CoD4QOL\cod4qol.asi
+            D:\a\CoD4QOL\CoD4QOL\qol.ff
