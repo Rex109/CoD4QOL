@@ -255,17 +255,20 @@ void commands::LoadDemos()
     *game::modCount = 0;
     *game::modIndex = 0;
 
-    for (const auto& entry : std::filesystem::directory_iterator(relative_dir))
+    if (std::filesystem::exists(relative_dir))
     {
-        if (entry.path().extension() != ".dm_1")
-			continue;
+        for (const auto& entry : std::filesystem::directory_iterator(relative_dir))
+        {
+            if (entry.path().extension() != ".dm_1")
+                continue;
 
-        const char* string = game::String_Alloc(entry.path().stem().string().c_str());
+            const char* string = game::String_Alloc(entry.path().stem().string().c_str());
 
-        game::modName[2 * (*game::modCount)] = string;
-        game::modDesc[2 * (*game::modCount)] = string;
+            game::modName[2 * (*game::modCount)] = string;
+            game::modDesc[2 * (*game::modCount)] = string;
 
-        (*game::modCount)++;
+            (*game::modCount)++;
+        }
     }
 
     if((*game::modCount) < 1)
