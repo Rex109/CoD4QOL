@@ -8,6 +8,7 @@ void commands::InitializeCommands()
     std::cout << "Initializing commands..." << std::endl;
 
     game::Cmd_AddCommand("loadzone", LoadZone);
+    game::Cmd_AddCommand("loadiwd", LoadIWD);
     game::Cmd_AddCommand("vm_anim", VmAnim);
     game::Cmd_AddCommand("readprotectedconfig", ReadProtectedConfig);
     game::Cmd_AddCommand("writeprotectedconfig", WriteProtectedConfig);
@@ -101,6 +102,23 @@ void commands::LoadZone()
     info[1].freeFlags = 0x0;
 
     game::DB_LoadXAssets(info, 2, 1);
+}
+
+void commands::LoadIWD()
+{
+    if (game::Cmd_Argc() < 2)
+    {
+        game::Com_PrintMessage(0, "Usage: loadiwd <iwdName>\n", 0);
+        return;
+    }
+
+    std::string iwdName = game::Cmd_Argv(1);
+
+    std::string relative_dir = game::fs_homepath->current.string;
+    relative_dir.append("\\main\\");
+    relative_dir.append(iwdName);
+
+    game::FS_AddSingleIwdFileForGameDirectory(relative_dir.c_str(), iwdName.c_str(), "main");
 }
 
 void commands::VmAnim()

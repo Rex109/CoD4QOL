@@ -18,13 +18,9 @@ void game::LoadModFiles()
 {
 	std::string relative_dir = game::fs_homepath->current.string;
 	relative_dir.append("\\main\\xcommon_cod4qol.iwd");
+	FS_AddSingleIwdFileForGameDirectory(relative_dir.c_str(), "xcommon_cod4qol.iwd", "main");
 
-	if (!strcmp(fs_game->current.string, "") || commands::qol_stockmenu->current.enabled)
-	{
-		FS_AddSingleIwdFileForGameDirectory(relative_dir.c_str(), "xcommon_cod4qol.iwd", "main");
-
-		game::Cbuf_AddText("loadzone qol\n", 0);
-	}
+	game::Cbuf_AddText("loadzone qol\n", 0);
 }
 
 void game::hookedDB_LoadXZoneFromGfxConfig()
