@@ -245,7 +245,7 @@ void commands::BackupCFG()
 {
     if (game::Cmd_Argc() < 2)
     {
-        game::Com_PrintMessage(0, "Usage: openlink <option>\n", 0);
+        game::Com_PrintMessage(0, "Usage: backupcfg <option>\n", 0);
         return;
     }
 }
