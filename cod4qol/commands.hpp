@@ -50,7 +50,6 @@ namespace commands
 	void DeleteSelectedDemo();
 	void RenameSelectedDemo();
 	void GetDemoName();
-	
 }
 
 std::string getDemosFolder();

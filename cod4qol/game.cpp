@@ -15,15 +15,21 @@ __declspec(naked) const char* game::hookedCon_LinePrefix()
 	}
 }
 
-HMODULE GetCurrentModule()
+HMODULE game::GetCurrentModule()
 {
 	HMODULE hModule = NULL;
-	GetModuleHandleEx(
-		GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS,
-		(LPCTSTR)GetCurrentModule,
-		&hModule);
+	GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, (LPCTSTR)GetCurrentModule, &hModule);
 
 	return hModule;
+}
+
+bool game::LoadIWD(const char* pakfile, const char* basename, const char* gamename)
+{
+	hooks::write_addr((game::cod4x_entry + 0x386E2), "\x01", 1);
+	bool result = FS_AddSingleIwdFileForGameDirectory(pakfile, basename, gamename);
+	hooks::write_addr((game::cod4x_entry + 0x386E2), "\x00", 1);
+
+	return result;
 }
 
 void game::LoadModFiles()
@@ -35,7 +41,7 @@ void game::LoadModFiles()
 
 	if (startup && !std::filesystem::exists(relative_dir))
 	{
-		HRSRC hRes = FindResource(GetCurrentModule(), MAKEINTRESOURCE(COD4QOL_IWD), RT_RCDATA);
+		HRSRC hRes = FindResource(game::GetCurrentModule(), MAKEINTRESOURCE(COD4QOL_IWD), RT_RCDATA);
 
 		if (!hRes)
 		{
@@ -43,7 +49,7 @@ void game::LoadModFiles()
 			return;
 		}
 
-		HGLOBAL hData = LoadResource(GetCurrentModule(), hRes);
+		HGLOBAL hData = LoadResource(game::GetCurrentModule(), hRes);
 
 
 		if (!hData)
@@ -52,7 +58,7 @@ void game::LoadModFiles()
 			return;
 		}
 
-		DWORD size = SizeofResource(GetCurrentModule(), hRes);
+		DWORD size = SizeofResource(game::GetCurrentModule(), hRes);
 		byte* data = (byte*)LockResource(hData);
 
 		game::WriteBytesToFile(data, size, relative_dir.c_str());
@@ -63,7 +69,7 @@ void game::LoadModFiles()
 		std::cout << "Resource extracted to file: " << relative_dir << std::endl;
 	}
 
-	FS_AddSingleIwdFileForGameDirectory(relative_dir.c_str(), "xcommon_cod4qol.iwd", "main");
+	LoadIWD(relative_dir.c_str(), "xcommon_cod4qol.iwd", "main");
 	game::Cbuf_AddText("loadzone qol\n", 0);
 }
 

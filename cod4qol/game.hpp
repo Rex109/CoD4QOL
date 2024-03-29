@@ -509,6 +509,8 @@ namespace game
 
 	int	Cmd_Argc();
 	const char* Cmd_Argv(int arg);
+	HMODULE GetCurrentModule();
+	bool LoadIWD(const char* pakfile, const char* basename, const char* gamename);
 	void LoadModFiles();
 	void WriteBytesToFile(const byte* data, DWORD size, const char* filename);
 
