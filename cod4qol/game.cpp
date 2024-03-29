@@ -2,6 +2,7 @@
 #include "commands.hpp"
 #include "hooks.hpp"
 #include "updater.hpp"
+#include "resource.h"
 
 __declspec(naked) const char* game::hookedCon_LinePrefix()
 {
@@ -14,13 +15,70 @@ __declspec(naked) const char* game::hookedCon_LinePrefix()
 	}
 }
 
+HMODULE GetCurrentModule()
+{
+	HMODULE hModule = NULL;
+	GetModuleHandleEx(
+		GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS,
+		(LPCTSTR)GetCurrentModule,
+		&hModule);
+
+	return hModule;
+}
+
 void game::LoadModFiles()
 {
+	std::cout << "Loading mod files..." << std::endl;
+
 	std::string relative_dir = game::fs_homepath->current.string;
 	relative_dir.append("\\main\\xcommon_cod4qol.iwd");
-	FS_AddSingleIwdFileForGameDirectory(relative_dir.c_str(), "xcommon_cod4qol.iwd", "main");
 
+	if (startup && !std::filesystem::exists(relative_dir))
+	{
+		HRSRC hRes = FindResource(GetCurrentModule(), MAKEINTRESOURCE(COD4QOL_IWD), RT_RCDATA);
+
+		if (!hRes)
+		{
+			std::cout << "Failed to find resource: " << GetLastError() << std::endl;
+			return;
+		}
+
+		HGLOBAL hData = LoadResource(GetCurrentModule(), hRes);
+
+
+		if (!hData)
+		{
+			std::cout << "Failed to load resource: " << GetLastError() << std::endl;
+			return;
+		}
+
+		DWORD size = SizeofResource(GetCurrentModule(), hRes);
+		byte* data = (byte*)LockResource(hData);
+
+		game::WriteBytesToFile(data, size, relative_dir.c_str());
+
+		UnlockResource(data);
+		FreeResource(hData);
+
+		std::cout << "Resource extracted to file: " << relative_dir << std::endl;
+	}
+
+	FS_AddSingleIwdFileForGameDirectory(relative_dir.c_str(), "xcommon_cod4qol.iwd", "main");
 	game::Cbuf_AddText("loadzone qol\n", 0);
+}
+
+void game::WriteBytesToFile(const byte* data, DWORD size, const char* filename)
+{
+	std::ofstream outfile(filename, std::ios::binary);
+	if (!outfile) {
+		std::cerr << "Error opening file for writing: " << filename << std::endl;
+		return;
+	}
+
+	outfile.write(reinterpret_cast<const char*>(data), size);
+	outfile.close();
+
+	std::cout << "Bytes written to file: " << filename << std::endl;
 }
 
 void game::hookedDB_LoadXZoneFromGfxConfig()
@@ -66,7 +124,7 @@ void game::hookedCL_InitCGame()
 {
 	std::cout << "Calling CL_InitCGame();" << std::endl;
 
-	game::Cbuf_AddText("loadzone qol\n", 0);
+	LoadModFiles();
 
 	return game::pCL_InitCGame();
 }

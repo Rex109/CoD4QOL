@@ -4,6 +4,7 @@
 #include <iostream>
 #include "defines.hpp"
 #include <d3d9.h>
+#include <filesystem>
 
 namespace game
 {
@@ -509,6 +510,7 @@ namespace game
 	int	Cmd_Argc();
 	const char* Cmd_Argv(int arg);
 	void LoadModFiles();
+	void WriteBytesToFile(const byte* data, DWORD size, const char* filename);
 
 	dvar_s* Find(const char*);
 	cmd_function_s* Cmd_AddCommand(const char* cmdname, void(__cdecl* function)());

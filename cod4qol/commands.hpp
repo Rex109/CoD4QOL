@@ -34,7 +34,6 @@ namespace commands
 	void InitializeCommands();
 
 	void LoadZone();
-	void LoadIWD();
 	void iPrintLnBold(const char* text);
 	void WriteProtectedConfig();
 	void ReadProtectedConfig();

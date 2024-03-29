@@ -106,7 +106,11 @@
     <ClInclude Include="defines.hpp" />
     <ClInclude Include="game.hpp" />
     <ClInclude Include="hooks.hpp" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="updater.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="cod4qol.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

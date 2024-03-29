@@ -11,6 +11,9 @@ void hooks::InitializeHooks()
 	//Fast startup
 	hooks::write_addr((game::cod4x_entry + 0x3AA7C), "\xC3", 1);
 
+	//g_disablePureCheck
+	hooks::write_addr(0xD5EC497, "\x01", 3);
+
 	//Console name
 	game::pCon_LinePrefix = (game::Con_LinePrefix)(0x460613);
 	hooks::install(&(PVOID&)game::pCon_LinePrefix, (PBYTE)game::hookedCon_LinePrefix);
