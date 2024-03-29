@@ -1,7 +1,7 @@
 #pragma once
 
 #define COD4QOL_NAME "CoD4QOL"
-#define COD4QOL_BASE_VERSION "1.4.0"
+#define COD4QOL_BASE_VERSION "1.5.0"
 #ifndef _DEBUG
 #define COD4QOL_VERSION COD4QOL_BASE_VERSION
 #else

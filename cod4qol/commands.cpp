@@ -8,12 +8,14 @@ void commands::InitializeCommands()
     std::cout << "Initializing commands..." << std::endl;
 
     game::Cmd_AddCommand("loadzone", LoadZone);
+    game::Cmd_AddCommand("vm_anim", VmAnim);
     game::Cmd_AddCommand("readprotectedconfig", ReadProtectedConfig);
     game::Cmd_AddCommand("writeprotectedconfig", WriteProtectedConfig);
     game::Cmd_AddCommand("toggleconsoleupdate", ToggleConsoleUpdate);
     game::Cmd_AddCommand("toggleloadinginfoupdate", ToggleLoadingInfoUpdate);
     game::Cmd_AddCommand("togglesteamauthupdate", ToggleSteamAuthUpdate);
-    game::Cmd_AddCommand("vm_anim", VmAnim);
+    game::Cmd_AddCommand("openlink", OpenLink);
+    game::Cmd_AddCommand("backupcfg", BackupCFG);
 
     game::Cmd_AddCommand("loaddemos", LoadDemos);
     game::Cmd_AddCommand("playselecteddemo", PlaySelectedDemo);
@@ -203,6 +205,48 @@ void commands::ToggleSteamAuthUpdate()
     {
         hooks::write_addr(game::cod4x_entry + 0x1A70A, "\x0F\x85\xDB\x00\x00\x00", 6);
         hooks::write_addr(game::cod4x_entry + 0x1A717, "\x0F\x85\xCE\x00\x00\x00", 6);
+    }
+}
+
+
+void commands::OpenLink()
+{
+    if (game::Cmd_Argc() < 2)
+    {
+        game::Com_PrintMessage(0, "Usage: openlink <linkid>\n", 0);
+        return;
+    }
+
+    int linkId = std::atoi(game::Cmd_Argv(1));
+    std::string link;
+
+    switch (linkId)
+    {
+        case 0:
+            link = "https://discord.com/invite/QDYk75vBBk";
+			break;
+        case 1:
+			link = "https://www.youtube.com/@_rex109_";
+            break;
+        case 2:
+            link = "https://github.com/Rex109";
+            break;
+        case 3:
+            link = "https://ko-fi.com/rex109";
+            break;
+        default:
+            return;
+    }
+
+    ShellExecute(0, 0, link.c_str(), 0, 0, SW_SHOW);
+}
+
+void commands::BackupCFG()
+{
+    if (game::Cmd_Argc() < 2)
+    {
+        game::Com_PrintMessage(0, "Usage: openlink <option>\n", 0);
+        return;
     }
 }
 
