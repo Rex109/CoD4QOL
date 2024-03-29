@@ -526,11 +526,11 @@ namespace game
 	typedef void(*Sys_CreateConsole_t)(int);
 		extern Sys_CreateConsole_t Sys_CreateConsole;
 
-	typedef game::dvar_s*(*Dvar_RegisterBool_t)(const char* name, int boolean, game::dvar_flags flags, const char* description);
-		extern Dvar_RegisterBool_t Dvar_RegisterBool;
+	typedef game::dvar_s*(*Cvar_RegisterBool_t)(const char* name, int boolean, game::dvar_flags flags, const char* description);
+		extern Cvar_RegisterBool_t Cvar_RegisterBool;
 
-	typedef game::dvar_s*(*Dvar_RegisterEnum_t)(const char* name, const char** strings, int integer, game::dvar_flags flags, const char* description);
-		extern Dvar_RegisterEnum_t Dvar_RegisterEnum;
+	typedef game::dvar_s*(*Cvar_RegisterEnum_t)(const char* name, const char** strings, int integer, game::dvar_flags flags, const char* description);
+		extern Cvar_RegisterEnum_t Cvar_RegisterEnum;
 
 	inline void* Cmd_AddCommand_fnc = (void*)(cod4x_entry + 0x2116C);
 	inline game::CmdArgs* cmd_args = reinterpret_cast<game::CmdArgs*>(0x1410B40);
@@ -541,8 +541,8 @@ namespace game
 	inline game::DB_LoadXAssets_t DB_LoadXAssets = DB_LoadXAssets_t(0x48A2B0);
 	inline game::Sys_CreateConsole_t Sys_CreateConsole = Sys_CreateConsole_t(cod4x_entry + 0x7F503);
 
-	inline game::Dvar_RegisterBool_t Dvar_RegisterBool = Dvar_RegisterBool_t(cod4x_entry + 0x2D8F2);
-	inline game::Dvar_RegisterEnum_t Dvar_RegisterEnum = Dvar_RegisterEnum_t(cod4x_entry + 0x2DCAF);
+	inline game::Cvar_RegisterBool_t Cvar_RegisterBool = Cvar_RegisterBool_t(cod4x_entry + 0x2D8F2);
+	inline game::Cvar_RegisterEnum_t Cvar_RegisterEnum = Cvar_RegisterEnum_t(cod4x_entry + 0x2DCAF);
 
 	inline game::dvar_s* fs_game = game::Find("fs_game");
 	inline game::dvar_s* fs_homepath = game::Find("fs_homepath");
