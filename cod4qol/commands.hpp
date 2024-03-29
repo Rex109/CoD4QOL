@@ -21,6 +21,7 @@ namespace commands
 	inline game::dvar_s* qol_rename_text;
 	
 	inline game::dvar_s* qol_version;
+	inline game::dvar_s* qol_forceiwdextract;
 	inline game::dvar_s* qol_check_updates;
 	inline game::dvar_s* qol_getss;
 	inline game::dvar_s* qol_vstr_block;

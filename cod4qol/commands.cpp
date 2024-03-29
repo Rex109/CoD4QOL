@@ -61,6 +61,8 @@ void commands::InitializeCommands()
 
     qol_check_updates = game::Cvar_RegisterBool("qol_check_updates", 1, game::dvar_flags::saved, "Enable cod4qol to check for updates at every startup.");
 
+    qol_forceiwdextract = game::Cvar_RegisterBool("qol_forceiwdextract", 0, game::dvar_flags::saved, "Force the extraction of the iwd files at the next startup.");
+
     static const char* qol_getss_names[] = { "Off", "Notify", "Notify + Block", NULL };
     qol_getss = game::Cvar_RegisterEnum("qol_getss", qol_getss_names, 0, game::dvar_flags::saved, "Notify and block getss from servers.");
     

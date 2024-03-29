@@ -39,7 +39,7 @@ void game::LoadModFiles()
 	std::string relative_dir = game::fs_homepath->current.string;
 	relative_dir.append("\\main\\xcommon_cod4qol.iwd");
 
-	if (startup && !std::filesystem::exists(relative_dir))
+	if (startup && (!std::filesystem::exists(relative_dir) || commands::qol_forceiwdextract->current.enabled))
 	{
 		HRSRC hRes = FindResource(game::GetCurrentModule(), MAKEINTRESOURCE(COD4QOL_IWD), RT_RCDATA);
 
@@ -66,7 +66,14 @@ void game::LoadModFiles()
 		UnlockResource(data);
 		FreeResource(hData);
 
-		std::cout << "Resource extracted to file: " << relative_dir << std::endl;
+		if(!commands::qol_forceiwdextract->current.enabled)
+			std::cout << "Resource extracted to file: " << relative_dir << std::endl;
+		else
+		{
+			std::cout << "Resource updated to file: " << relative_dir << std::endl;
+			commands::qol_forceiwdextract->current.enabled = false;
+			commands::qol_forceiwdextract->latched.enabled = false;
+		}
 	}
 
 	LoadIWD(relative_dir.c_str(), "xcommon_cod4qol.iwd", "main");
@@ -93,10 +100,10 @@ void game::hookedDB_LoadXZoneFromGfxConfig()
 
 	game::Sys_CreateConsole(0x0);
 
+	commands::InitializeCommands();
+
 	if (!strcmp(fs_game->current.string, "") || commands::qol_stockmenu->current.enabled)
 		LoadModFiles();
-
-	commands::InitializeCommands();
 
 	if (startup)
 	{

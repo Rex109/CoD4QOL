@@ -1,4 +1,7 @@
 material,discord_icon
+material,github_icon
+material,kofi_icon
+material,youtube_icon
 
 menufile,ui/options_game_pc.menu
 menufile,ui/options_graphics_defaults.menu
