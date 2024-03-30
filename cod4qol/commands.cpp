@@ -15,7 +15,6 @@ void commands::InitializeCommands()
     game::Cmd_AddCommand("toggleloadinginfoupdate", ToggleLoadingInfoUpdate);
     game::Cmd_AddCommand("togglesteamauthupdate", ToggleSteamAuthUpdate);
     game::Cmd_AddCommand("openlink", OpenLink);
-    game::Cmd_AddCommand("backupcfg", BackupCFG);
 
     game::Cmd_AddCommand("loaddemos", LoadDemos);
     game::Cmd_AddCommand("playselecteddemo", PlaySelectedDemo);
@@ -242,15 +241,6 @@ void commands::OpenLink()
     }
 
     ShellExecute(0, 0, link.c_str(), 0, 0, SW_SHOW);
-}
-
-void commands::BackupCFG()
-{
-    if (game::Cmd_Argc() < 2)
-    {
-        game::Com_PrintMessage(0, "Usage: backupcfg <option>\n", 0);
-        return;
-    }
 }
 
 void commands::LoadDemos()

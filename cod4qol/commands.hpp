@@ -45,7 +45,6 @@ namespace commands
 	void ToggleLoadingInfoUpdate();
 	void ToggleSteamAuthUpdate();
 	void OpenLink();
-	void BackupCFG();
 
 	void LoadDemos();
 	void PlaySelectedDemo();
