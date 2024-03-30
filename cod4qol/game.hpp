@@ -510,7 +510,7 @@ namespace game
 	int	Cmd_Argc();
 	const char* Cmd_Argv(int arg);
 	HMODULE GetCurrentModule();
-	bool LoadIWD(const char* pakfile, const char* basename, const char* gamename);
+	bool LoadLocalizedIWD(const char* pakfile, const char* basename, const char* gamename);
 	void LoadModFiles();
 	void WriteBytesToFile(const byte* data, DWORD size, const char* filename);
 
@@ -560,6 +560,7 @@ namespace game
 
 	inline game::dvar_s* fs_game = game::Find("fs_game");
 	inline game::dvar_s* fs_homepath = game::Find("fs_homepath");
+	inline game::dvar_s* sv_pure = game::Find("sv_pure");
 
 	inline int* modCount = reinterpret_cast<int*>(0xCAF7554);
 	inline int* modIndex = reinterpret_cast<int*>(0xCAF7558);

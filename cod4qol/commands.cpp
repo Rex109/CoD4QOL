@@ -8,6 +8,7 @@ void commands::InitializeCommands()
     std::cout << "Initializing commands..." << std::endl;
 
     game::Cmd_AddCommand("loadzone", LoadZone);
+    game::Cmd_AddCommand("loadiwd", LoadIWD);
     game::Cmd_AddCommand("vm_anim", VmAnim);
     game::Cmd_AddCommand("readprotectedconfig", ReadProtectedConfig);
     game::Cmd_AddCommand("writeprotectedconfig", WriteProtectedConfig);
@@ -15,6 +16,8 @@ void commands::InitializeCommands()
     game::Cmd_AddCommand("toggleloadinginfoupdate", ToggleLoadingInfoUpdate);
     game::Cmd_AddCommand("togglesteamauthupdate", ToggleSteamAuthUpdate);
     game::Cmd_AddCommand("openlink", OpenLink);
+
+    //REFLECTION 0D0701E0+E4
 
     game::Cmd_AddCommand("loaddemos", LoadDemos);
     game::Cmd_AddCommand("playselecteddemo", PlaySelectedDemo);
@@ -103,6 +106,29 @@ void commands::LoadZone()
     info[1].freeFlags = 0x0;
 
     game::DB_LoadXAssets(info, 2, 1);
+}
+
+void commands::LoadIWD()
+{
+    if (!sv_running->current.enabled)
+    {
+        game::Com_PrintMessage(0, "You must be playing on a local server to use loadiwd\n", 0);
+        return;
+    }
+
+    if (game::Cmd_Argc() < 2)
+    {
+        game::Com_PrintMessage(0, "Usage: loadiwd <iwdName>\n", 0);
+        return;
+    }
+
+    std::string iwd_name = game::Cmd_Argv(1);
+
+    std::string relative_dir = game::fs_homepath->current.string;
+    relative_dir.append("\\main\\");
+    relative_dir.append(iwd_name);
+
+    game::FS_AddSingleIwdFileForGameDirectory(relative_dir.c_str(), iwd_name.c_str(), "main");;
 }
 
 void commands::VmAnim()

@@ -23,7 +23,7 @@ HMODULE game::GetCurrentModule()
 	return hModule;
 }
 
-bool game::LoadIWD(const char* pakfile, const char* basename, const char* gamename)
+bool game::LoadLocalizedIWD(const char* pakfile, const char* basename, const char* gamename)
 {
 	hooks::write_addr((game::cod4x_entry + 0x386E2), "\x01", 1);
 	bool result = FS_AddSingleIwdFileForGameDirectory(pakfile, basename, gamename);
@@ -76,7 +76,7 @@ void game::LoadModFiles()
 		}
 	}
 
-	LoadIWD(relative_dir.c_str(), "xcommon_cod4qol.iwd", "main");
+	LoadLocalizedIWD(relative_dir.c_str(), "xcommon_cod4qol.iwd", "main");
 	game::Cbuf_AddText("loadzone qol\n", 0);
 }
 
