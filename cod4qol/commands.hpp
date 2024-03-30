@@ -5,8 +5,6 @@
 
 namespace commands
 {
-	inline game::dvar_s* sv_running;
-
 	inline game::dvar_s* cg_fovscale;
 	inline game::dvar_s* r_fullbright;
 	inline game::dvar_s* r_zfar;

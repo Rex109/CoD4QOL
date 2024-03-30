@@ -560,7 +560,7 @@ namespace game
 
 	inline game::dvar_s* fs_game = game::Find("fs_game");
 	inline game::dvar_s* fs_homepath = game::Find("fs_homepath");
-	inline game::dvar_s* sv_pure = game::Find("sv_pure");
+	inline game::dvar_s* sv_cheats = game::Find("sv_cheats");
 
 	inline int* modCount = reinterpret_cast<int*>(0xCAF7554);
 	inline int* modIndex = reinterpret_cast<int*>(0xCAF7558);

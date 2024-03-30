@@ -60,8 +60,6 @@ void commands::InitializeCommands()
     cg_drawgun = game::Find("cg_drawgun");
     cg_drawgun->flags = game::none;
 
-    sv_running = game::Find("sv_running");
-
     qol_check_updates = game::Cvar_RegisterBool("qol_check_updates", 1, game::dvar_flags::saved, "Enable cod4qol to check for updates at every startup.");
 
     qol_forceiwdextract = game::Cvar_RegisterBool("qol_forceiwdextract", 0, game::dvar_flags::saved, "Force the extraction of the iwd files at the next startup.");
@@ -110,9 +108,9 @@ void commands::LoadZone()
 
 void commands::LoadIWD()
 {
-    if (!sv_running->current.enabled)
+    if (!game::sv_cheats->current.enabled)
     {
-        game::Com_PrintMessage(0, "You must be playing on a local server to use loadiwd\n", 0);
+        game::Com_PrintMessage(0, "You must be playing with cheats enabled to use loadiwd\n", 0);
         return;
     }
 
@@ -133,7 +131,7 @@ void commands::LoadIWD()
 
 void commands::VmAnim()
 {
-    if (!sv_running->current.enabled)
+    if (!game::sv_cheats->current.enabled)
     {
         game::Com_PrintMessage(0, "You must be playing on a local server to use vm_anim\n", 0);
         return;
