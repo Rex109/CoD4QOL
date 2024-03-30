@@ -21,6 +21,7 @@ A Call of Duty 4 X plugin that adds new settings, unlocks essential dvars and ad
 ### Complete patches list
 - Adds "vm_anim" command
 - Adds "LoadZone" command
+- - Adds "LoadIWD" command
 - Adds "ReadProtectedConfig"/"WriteProtectedConfig" commands
 - Unlocks cg_fovscale, r_fullbright, r_zfar, r_filmusetweaks, developer_script, cg_gun_*, cg_draw2d, cg_drawgun
 - Adds "Additional graphics" menu:
