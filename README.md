@@ -46,6 +46,7 @@ A Call of Duty 4 X plugin that adds new settings, unlocks essential dvars and ad
   - Play ambient music
   - Raw input
   - Always load stock menu
+  - Display main menu branding
 
 ## Download and installation 
 To download the pre-compiled binaries you can grab the latest version in the [Releases Page](https://github.com/Rex109/Cod4QOL/releases)
