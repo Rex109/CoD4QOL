@@ -17,8 +17,6 @@ void commands::InitializeCommands()
     game::Cmd_AddCommand("togglesteamauthupdate", ToggleSteamAuthUpdate);
     game::Cmd_AddCommand("openlink", OpenLink);
 
-    //REFLECTION 0D0701E0+E4
-
     game::Cmd_AddCommand("loaddemos", LoadDemos);
     game::Cmd_AddCommand("playselecteddemo", PlaySelectedDemo);
     game::Cmd_AddCommand("getdemoname", GetDemoName);
