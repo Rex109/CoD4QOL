@@ -57,9 +57,6 @@ void updater::Update()
     if(download_url.empty())
         return;
 
-    commands::qol_forceiwdextract->current.enabled = true;
-    commands::qol_forceiwdextract->latched.enabled = true;
-
     std::filesystem::create_directory("download");
 
     curl_global_init(CURL_GLOBAL_ALL);
