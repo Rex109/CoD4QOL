@@ -137,11 +137,11 @@ itemDef { \
 				
 		#define CLEARUIHINT	exec "set ui_hint_text @MP_NULL"
 
-        PREPROC_TEXT_DRAW_ALIGNED_EXTR( 0 0 0 0 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_TOP, 0 0, "CoD4QOL " + dvarString( qol_version ), TEXTSIZE_SMALL, -5, 20, ITEM_ALIGN_RIGHT, 0.69 0.69 0.69 0.4, when( !localvarBool( ui_hideBack ) ))
-        PREPROC_SHADER_DRAW_ALIGNED_EXTR( 0 17 15 15 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_TOP, -20 20, "discord_icon", 1 1 1 0.2, 0, 0, 0 0 0 0, exec "openlink 0", when( !localvarBool( ui_hideBack ) ) )
-        PREPROC_SHADER_DRAW_ALIGNED_EXTR( -20 17 15 15 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_TOP, -20 20, "youtube_icon", 1 1 1 0.2, 0, 0, 0 0 0 0, exec "openlink 1", when( !localvarBool( ui_hideBack ) ) )
-        PREPROC_SHADER_DRAW_ALIGNED_EXTR( -40 17 15 15 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_TOP, -20 20, "github_icon", 1 1 1 0.2, 0, 0, 0 0 0 0, exec "openlink 2", when( !localvarBool( ui_hideBack ) ) )
-        PREPROC_SHADER_DRAW_ALIGNED_EXTR( -81 0 96 15 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_TOP, -20 20, "kofi_icon", 1 1 1 0.2, 0, 0, 0 0 0 0, exec "openlink 3", when( !localvarBool( ui_hideBack ) ) )
+        PREPROC_TEXT_DRAW_ALIGNED_EXTR( 0 0 0 0 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_TOP, 0 0, "CoD4QOL " + dvarString( qol_version ), TEXTSIZE_SMALL, -5, 20, ITEM_ALIGN_RIGHT, 0.69 0.69 0.69 0.4, when( !localvarBool( ui_hideBack ) && dvarbool( qol_show_mainmenuinfo ) ))
+        PREPROC_SHADER_DRAW_ALIGNED_EXTR( 0 17 15 15 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_TOP, -20 20, "discord_icon", 1 1 1 0.2, 0, 0, 0 0 0 0, exec "openlink 0", when( !localvarBool( ui_hideBack ) && dvarbool( qol_show_mainmenuinfo ) ) )
+        PREPROC_SHADER_DRAW_ALIGNED_EXTR( -20 17 15 15 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_TOP, -20 20, "youtube_icon", 1 1 1 0.2, 0, 0, 0 0 0 0, exec "openlink 1", when( !localvarBool( ui_hideBack ) && dvarbool( qol_show_mainmenuinfo ) ) )
+        PREPROC_SHADER_DRAW_ALIGNED_EXTR( -40 17 15 15 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_TOP, -20 20, "github_icon", 1 1 1 0.2, 0, 0, 0 0 0 0, exec "openlink 2", when( !localvarBool( ui_hideBack ) && dvarbool( qol_show_mainmenuinfo ) ) )
+        PREPROC_SHADER_DRAW_ALIGNED_EXTR( -81 0 96 15 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_TOP, -20 20, "kofi_icon", 1 1 1 0.2, 0, 0, 0 0 0 0, exec "openlink 3", when( !localvarBool( ui_hideBack ) && dvarbool( qol_show_mainmenuinfo ) ) )
 		
 		CHOICE_BUTTON_VIS( 1, "@MENU_AUTO_UPDATE", open auconfirm;, when( dvarbool( cl_updateAvailable ) && !localvarBool( ui_hideBack ) ) )
 		//CHOICE_BUTTON_VIS( 2, "@MENU_JOIN_GAME", open join_game_popup;, when( !localvarBool( ui_hideBack ) ) )
