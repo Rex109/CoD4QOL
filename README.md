@@ -66,6 +66,31 @@ The final folder structure should look like this:
 |          └── 📜 qol.ff
 └── ...
 ```
+## Uninstall
+To uninstall CoD4QOL completely remove the following files from your game directory:
+- miles/cod4qol.asi
+- zone/\<your game language\>/qol.ff
+- main/xcommon_cod4qol.iwd
+- main/protected.cfg
+
+The folder structure looks like this:
+```
+.
+├── ...
+├── 📁 Call of Duty 4
+│   ├── 📁 main
+|   |  ├── 📜 protected.cfg ❌
+|   |  └── 📜 xcommon_cod4qol.iwd ❌
+│   ├── 📁 miles
+|   |  └── 📜 cod4qol.asi ❌
+│   └── 📁 zone
+|      └── 📁 <your game language>
+|          └── 📜 qol.ff ❌
+└── ...
+```
+
+Part of the user settings are stored inside config_mp.cfg, if you wish to delete them remove every line that starts with "qol_"
+
 ## Limitations
 - Does not work in single player
 - Does not work with cod4 stock 1.7
