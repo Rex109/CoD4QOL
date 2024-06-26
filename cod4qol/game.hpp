@@ -477,11 +477,6 @@ namespace game
 
 	int hookedScreenshotRequest(int a1, int a2);
 
-	typedef void(*Text_PaintCenter)();
-	inline Text_PaintCenter pText_PaintCenter;
-
-	void hookedText_PaintCenter();
-
 	typedef void(*R_SetViewParmsForScene)();
 	inline R_SetViewParmsForScene pR_SetViewParmsForScene;
 

@@ -65,6 +65,12 @@ void updater::Update()
     FILE* fp;
     fopen_s(&fp, COD4QOL_FILE_NAME, "wb");
 
+    if (!fp)
+    {
+		std::cout << "Failed to open file for writing" << std::endl;
+		return;
+	}
+
     curl_easy_setopt(curl, CURLOPT_URL, download_url.c_str());
     curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, updater::FileCallback);
