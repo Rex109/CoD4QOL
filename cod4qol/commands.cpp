@@ -335,8 +335,7 @@ void commands::RenameSelectedDemo()
     if (!isValidDestinationName(new_name))
         return;
 
-    std::string new_path = relative_dir.substr(0, relative_dir.find_last_of("\\/")) + "\\" + std::string(qol_rename_text->current.string) + ".dm_1";
-
+    std::string new_path = relative_dir.substr(0, relative_dir.find_last_of("\\/")) + "\\" + new_name + ".dm_1";
     std::filesystem::rename(relative_dir, new_path);
 }
 
