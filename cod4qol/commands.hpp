@@ -53,4 +53,4 @@ namespace commands
 }
 
 std::string getDemosFolder();
-bool isValidDestinationPath(const std::filesystem::path& destination);
+bool isValidDestinationName(const std::string destination);

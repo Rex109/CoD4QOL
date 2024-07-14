@@ -330,12 +330,14 @@ void commands::RenameSelectedDemo()
     std::string relative_dir = getDemosFolder();
     relative_dir.append("\\" + std::string(game::modName[2 * (*game::modIndex)]) + ".dm_1");
 
-    std::string new_name = relative_dir.substr(0, relative_dir.find_last_of("\\/")) + "\\" + std::string(qol_rename_text->current.string) + ".dm_1";
+    std::string new_name = qol_rename_text->current.string;
 
-    if (!isValidDestinationPath(new_name))
+    if (!isValidDestinationName(new_name))
         return;
 
-    std::filesystem::rename(relative_dir, new_name);
+    std::string new_path = relative_dir.substr(0, relative_dir.find_last_of("\\/")) + "\\" + std::string(qol_rename_text->current.string) + ".dm_1";
+
+    std::filesystem::rename(relative_dir, new_path);
 }
 
 void commands::GetDemoName()
@@ -359,11 +361,11 @@ std::string getDemosFolder()
     return relative_dir;
 }
 
-bool isValidDestinationPath(const std::filesystem::path& destination)
+bool isValidDestinationName(const std::string destination)
 {
     const std::string disallowedChars = "<>:\"/\\|?*";
 
-    for (char c : destination.filename().string())
+    for (char c : destination)
         if (disallowedChars.find(c) != std::string::npos)
         {
             std::cout << "Invalid character '" << c << "' in the destination path." << std::endl;
