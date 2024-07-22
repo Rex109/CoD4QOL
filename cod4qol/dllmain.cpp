@@ -42,9 +42,9 @@ void Initialize()
     if (!iw3mp)
         return;
 
-    if (!game::cod4x_entry)
+    if (!game::cod4x_entry || strcmp(reinterpret_cast<const char*>(game::cod4x_entry + 0x22551A), "CoD4 MP 21.2") != 0)
     {
-        MessageBox(NULL, "CoD4X version mismatch, CoD4QOL unloaded.\nYou need to have CoD4X version " COD4QOL_SUPPORTEDVERSIONS " installed.", "CoD4QOL", MB_ICONERROR);
+        MessageBox(NULL, "CoD4X version mismatch, CoD4QOL has been unloaded.\nYou need to have CoD4X version " COD4QOL_SUPPORTEDVERSIONS " installed.\n\nYou may need to update your game or manually download a newer version of CoD4QOL, otherwise you will have to wait for a new version of CoD4QOL and manually update it later." , "CoD4QOL", MB_ICONWARNING);
         return;
     }
 

@@ -25,9 +25,9 @@ HMODULE game::GetCurrentModule()
 
 bool game::LoadLocalizedIWD(const char* pakfile, const char* basename, const char* gamename)
 {
-	hooks::write_addr((game::cod4x_entry + 0x386E2), "\x01", 1);
+	hooks::write_addr(game::cod4x_entry + 0x2E366, "\x01", 1);
 	bool result = FS_AddSingleIwdFileForGameDirectory(pakfile, basename, gamename);
-	hooks::write_addr((game::cod4x_entry + 0x386E2), "\x00", 1);
+	hooks::write_addr(game::cod4x_entry + 0x2E366, "\x00", 1);
 
 	return result;
 }
@@ -175,9 +175,9 @@ int game::hookedScreenshotRequest(int a1, int a2)
 		commands::iPrintLnBold("[^3CoD4QOL^7]: ^1You are currently being screenshotted");
 
 	if (commands::qol_getss->current.integer == 2)
-		hooks::write_addr(game::cod4x_entry + 0xEA62B, "\xEB", 1);
+		hooks::write_addr(game::cod4x_entry + 0xB21FB, "\xEB", 1);
 	else
-		hooks::write_addr(game::cod4x_entry + 0xEA62B, "\x74", 1);
+		hooks::write_addr(game::cod4x_entry + 0xB21FB, "\x74", 1);
 
 	return pScreenshotRequest(a1, a2);
 }

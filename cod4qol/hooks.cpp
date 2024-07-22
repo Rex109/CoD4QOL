@@ -1,22 +1,27 @@
 #include "hooks.hpp"
 #include "game.hpp"
+#include <psapi.h>
+#include <cassert>
 
 void hooks::InitializeHooks()
 {
 	std::cout << "Initializing hooks..." << std::endl;
 
 	//Removing cod4x safechecks
-	hooks::write_addr((game::cod4x_entry + 0x43580), "\xC3", 1);
+	//(game::cod4x_entry + 0x43580)
+	hooks::write_addr((game::cod4x_entry + 0x82E40), "\xC3", 1);
 
 	//Fast startup
-	hooks::write_addr((game::cod4x_entry + 0x3AA7C), "\xC3", 1);
+	//(game::cod4x_entry + 0x3AA7C)
+	hooks::write_addr((game::cod4x_entry + 0x30F00), "\xC3", 1);
 
 	//Console name
 	game::pCon_LinePrefix = (game::Con_LinePrefix)(0x460613);
 	hooks::install(&(PVOID&)game::pCon_LinePrefix, (PBYTE)game::hookedCon_LinePrefix);
 
 	//Game start
-	game::pDB_LoadXZoneFromGfxConfig = (game::DB_LoadXZoneFromGfxConfig)(game::cod4x_entry + 0x8327E);
+	//(game::cod4x_entry + 0x8327E)
+	game::pDB_LoadXZoneFromGfxConfig = (game::DB_LoadXZoneFromGfxConfig)(game::cod4x_entry + 0x3C180);
 	hooks::install(&(PVOID&)game::pDB_LoadXZoneFromGfxConfig, (PBYTE)game::hookedDB_LoadXZoneFromGfxConfig);
 
 	//Return to main menu
@@ -32,7 +37,8 @@ void hooks::InitializeHooks()
 	hooks::install(&(PVOID&)game::pCL_RegisterDvars, (PBYTE)game::hookedCL_RegisterDvars);
 
 	//Respawn
-	game::pCG_Respawn = (game::CG_Respawn)(game::cod4x_entry + 0x3B45);
+	//(game::cod4x_entry + 0x3B45)
+	game::pCG_Respawn = (game::CG_Respawn)(game::cod4x_entry + 0x3DF00);
 	hooks::install(&(PVOID&)game::pCG_Respawn, (PBYTE)game::hookedCG_Respawn);
 
 	//VSTR
@@ -40,7 +46,8 @@ void hooks::InitializeHooks()
 	hooks::install(&(PVOID&)game::pCmd_Vstr_f, (PBYTE)game::hookedCmd_Vstr_f);
 
 	//ScreenshotRequest
-	game::pScreenshotRequest = (game::ScreenshotRequest)(game::cod4x_entry + 0xEA610);
+	//(game::cod4x_entry + 0xEA610)
+	game::pScreenshotRequest = (game::ScreenshotRequest)(game::cod4x_entry + 0xB21E0);
 	hooks::install(&(PVOID&)game::pScreenshotRequest, (PBYTE)game::hookedScreenshotRequest);
 
 	//R_SetViewParmsForScene

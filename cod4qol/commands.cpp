@@ -220,15 +220,18 @@ void commands::ToggleLoadingInfoUpdate()
 
 void commands::ToggleSteamAuthUpdate()
 {
+    //game::cod4x_entry + 0x1A70A
+    //game::cod4x_entry + 0x1A717
+
     if (commands::qol_disable_steam_auth->current.enabled)
     {
-        hooks::write_addr(game::cod4x_entry + 0x1A70A, "\x90\x90\x90\x90\x90\x90", 6);
-        hooks::write_addr(game::cod4x_entry + 0x1A717, "\x90\x90\x90\x90\x90\x90", 6);
+        hooks::write_addr(game::cod4x_entry + 0x10982, "\x90\x90", 2);
+        hooks::write_addr(game::cod4x_entry + 0x1098B, "\x90\x90\x90\x90\x90\x90", 6);
     }
     else
     {
-        hooks::write_addr(game::cod4x_entry + 0x1A70A, "\x0F\x85\xDB\x00\x00\x00", 6);
-        hooks::write_addr(game::cod4x_entry + 0x1A717, "\x0F\x85\xCE\x00\x00\x00", 6);
+        hooks::write_addr(game::cod4x_entry + 0x10982, "\x75\x0D", 2);
+        hooks::write_addr(game::cod4x_entry + 0x1098B, "\x0F\x84\xBF\x01\x00\x00", 6);
     }
 }
 

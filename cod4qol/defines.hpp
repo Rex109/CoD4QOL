@@ -12,4 +12,4 @@
 #define COD4QOL_GITHUB_URL "https://api.github.com/repos/Rex109/CoD4QOL/releases/latest"
 #define COD4QOL_FILE_NAME "download/cod4qol.zip"
 
-#define COD4QOL_SUPPORTEDVERSIONS "21.1"
+#define COD4QOL_SUPPORTEDVERSIONS "21.2"
