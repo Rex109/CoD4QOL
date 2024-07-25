@@ -94,6 +94,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\include\crc32\crc32.cpp" />
     <ClCompile Include="..\include\zip\zip.c" />
     <ClCompile Include="commands.cpp" />
     <ClCompile Include="dllmain.cpp" />

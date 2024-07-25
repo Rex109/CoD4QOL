@@ -2,6 +2,10 @@
 #include <cstdio>
 #include "hooks.hpp"
 #include "game.hpp"
+#include "crc32/crc32.h"
+#include <fstream> 
+#include "updater.hpp"
+
 
 void Initialize();
 
@@ -35,6 +39,41 @@ BOOL APIENTRY DllMain( HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpRese
     return TRUE;
 }
 
+bool CheckCoD4XVersion()
+{
+    if (!game::cod4x_entry)
+        return false;
+
+    char buffer[MAX_PATH];
+    GetModuleFileNameA(reinterpret_cast<HMODULE>(game::cod4x_entry), buffer, MAX_PATH);
+
+    std::ifstream file(buffer, std::ios::binary);
+    if (!file.is_open())
+        return false;
+
+    file.seekg(0, std::ios::end);
+    size_t size = file.tellg();
+    file.seekg(0, std::ios::beg);
+
+    char* data = new char[size];
+    file.read(data, size);
+    file.close();
+
+    CRC32 crc32;
+    std::string hash = crc32(data, size);
+    delete[] data;
+
+    for (std::string supported_hash : supported_cod4x_crc32)
+    {
+        std::cout << "Comparing CRC32: " << hash << " with " << supported_hash << std::endl;
+
+        if (hash == supported_hash)
+			return true;
+    }
+
+    return false;
+}
+
 void Initialize()
 {
     const HMODULE iw3mp = GetModuleHandleA("iw3mp.exe");
@@ -42,11 +81,12 @@ void Initialize()
     if (!iw3mp)
         return;
 
-    if (!game::cod4x_entry || strcmp(reinterpret_cast<const char*>(game::cod4x_entry + 0x22551A), "CoD4 MP 21.2") != 0)
+    if (!CheckCoD4XVersion())
     {
         MessageBox(NULL, "CoD4X version mismatch, CoD4QOL has been unloaded.\nYou need to have CoD4X version " COD4QOL_SUPPORTEDVERSIONS " installed.\n\nYou may need to update your game or manually download a newer version of CoD4QOL, otherwise you will have to wait for a new version of CoD4QOL and manually update it later." , "CoD4QOL", MB_ICONWARNING);
         return;
     }
 
+    updater::CheckForUpdates();
     hooks::InitializeHooks();
 }

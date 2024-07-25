@@ -431,7 +431,7 @@ namespace game
 
 	inline bool startup = true;
 
-	const static DWORD cod4x_entry = (DWORD)GetModuleHandleA("cod4x_021.dll");
+	const static DWORD cod4x_entry = (DWORD)GetModuleHandleA(COD4QOL_COD4X_MODULE);
 	const static HWND* hwnd = reinterpret_cast<HWND*>(game::cod4x_entry + 0x443BA00);
 	const static char* prefix = COD4QOL_CONSOLE_PREFIX;
 	const static char* localization = *reinterpret_cast<const char**>(0xCC147D4);

@@ -33,6 +33,9 @@
     <ClCompile Include="..\include\zip\zip.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\include\crc32\crc32.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game.hpp">
