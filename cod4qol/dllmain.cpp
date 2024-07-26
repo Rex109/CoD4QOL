@@ -6,9 +6,10 @@
 #include <fstream> 
 #include "updater.hpp"
 #include <thread>
-
+#include "offsets.hpp"
 
 void Initialize();
+bool CheckCoD4XVersion();
 
 HMODULE dummy;
 
@@ -38,6 +39,24 @@ BOOL APIENTRY DllMain( HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpRese
             break;
     }
     return TRUE;
+}
+
+void Initialize()
+{
+    const HMODULE iw3mp = GetModuleHandleA("iw3mp.exe");
+
+    if (!iw3mp)
+        return;
+
+    if (!CheckCoD4XVersion())
+    {
+        MessageBox(NULL, "CoD4X version mismatch, CoD4QOL has been unloaded.\nSupported CoD4X versions are: " COD4QOL_SUPPORTEDVERSIONS ".\n\nYou may need to update your game or manually download a newer version of CoD4QOL, otherwise you will have to wait for a new version of CoD4QOL and manually update it later." , "CoD4QOL", MB_ICONWARNING);
+        return;
+    }
+
+    offsets::InitOffsets();
+    game::SetCoD4xFunctionOffsets();
+    hooks::InitializeHooks();
 }
 
 bool CheckCoD4XVersion()
@@ -71,26 +90,11 @@ bool CheckCoD4XVersion()
         if (hash == supported_hash)
         {
             std::cout << "Passed CRC32 check!" << std::endl;
+            offsets::SetCRC32(supported_hash);
             return true;
         }
     }
 
     std::cout << "Failed CRC32 check!" << std::endl;
     return false;
-}
-
-void Initialize()
-{
-    const HMODULE iw3mp = GetModuleHandleA("iw3mp.exe");
-
-    if (!iw3mp)
-        return;
-
-    if (!CheckCoD4XVersion())
-    {
-        MessageBox(NULL, "CoD4X version mismatch, CoD4QOL has been unloaded.\nSupported CoD4X versions are: " COD4QOL_SUPPORTEDVERSIONS ".\n\nYou may need to update your game or manually download a newer version of CoD4QOL, otherwise you will have to wait for a new version of CoD4QOL and manually update it later." , "CoD4QOL", MB_ICONWARNING);
-        return;
-    }
-
-    hooks::InitializeHooks();
 }

@@ -100,6 +100,7 @@
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="hooks.cpp" />
+    <ClCompile Include="offsets.cpp" />
     <ClCompile Include="updater.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -107,6 +108,7 @@
     <ClInclude Include="defines.hpp" />
     <ClInclude Include="game.hpp" />
     <ClInclude Include="hooks.hpp" />
+    <ClInclude Include="offsets.hpp" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="updater.hpp" />
   </ItemGroup>

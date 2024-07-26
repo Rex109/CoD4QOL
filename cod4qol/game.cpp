@@ -3,6 +3,7 @@
 #include "hooks.hpp"
 #include "updater.hpp"
 #include "resource.h"
+#include "offsets.hpp"
 
 __declspec(naked) const char* game::hookedCon_LinePrefix()
 {
@@ -25,9 +26,11 @@ HMODULE game::GetCurrentModule()
 
 bool game::LoadLocalizedIWD(const char* pakfile, const char* basename, const char* gamename)
 {
-	hooks::write_addr(game::cod4x_entry + 0x2E366, "\x01", 1);
+	static const DWORD iwd_cheat_flag = offsets::GetOffset("iwd_cheat_flag");
+
+	hooks::write_addr(iwd_cheat_flag, "\x01", 1);
 	bool result = FS_AddSingleIwdFileForGameDirectory(pakfile, basename, gamename);
-	hooks::write_addr(game::cod4x_entry + 0x2E366, "\x00", 1);
+	hooks::write_addr(iwd_cheat_flag, "\x00", 1);
 
 	return result;
 }
@@ -169,15 +172,17 @@ void game::hookedCmd_Vstr_f()
 
 int game::hookedScreenshotRequest(int a1, int a2)
 {
+	static const DWORD ss_switch = offsets::GetOffset("ss_switch");
+
 	std::cout << "Received screenshot request" << std::endl;
 
 	if (commands::qol_getss->current.integer != 0)
 		commands::iPrintLnBold("[^3CoD4QOL^7]: ^1You are currently being screenshotted");
 
 	if (commands::qol_getss->current.integer == 2)
-		hooks::write_addr(game::cod4x_entry + 0xB21FB, "\xEB", 1);
+		hooks::write_addr(ss_switch, "\xEB", 1);
 	else
-		hooks::write_addr(game::cod4x_entry + 0xB21FB, "\x74", 1);
+		hooks::write_addr(ss_switch, "\x74", 1);
 
 	return pScreenshotRequest(a1, a2);
 }
@@ -305,4 +310,14 @@ __declspec(naked) const char* game::String_Alloc(const char* string)
 		mov eax, [esp + 4];
 		jmp retn_addr;
 	}
+}
+
+void game::SetCoD4xFunctionOffsets()
+{
+	Cmd_AddCommand_fnc = (void*)(offsets::GetOffset("Cmd_AddCommand_fnc"));
+	Sys_CreateConsole = Sys_CreateConsole_t(offsets::GetOffset("Sys_CreateConsole"));
+	Cvar_RegisterBool = Cvar_RegisterBool_t(offsets::GetOffset("Cvar_RegisterBool"));
+	Cvar_RegisterEnum = Cvar_RegisterEnum_t(offsets::GetOffset("Cvar_RegisterEnum"));
+	Cvar_RegisterString = Cvar_RegisterString_t(offsets::GetOffset("Cvar_RegisterString"));
+	FS_AddSingleIwdFileForGameDirectory = FS_AddSingleIwdFileForGameDirectory_t(offsets::GetOffset("FS_AddSingleIwdFileForGameDirectory"));
 }

@@ -6,6 +6,7 @@
 #include <d3d9.h>
 #include <filesystem>
 #include "hooks.hpp"
+#include "offsets.hpp"
 
 namespace game
 {
@@ -432,13 +433,12 @@ namespace game
 	inline bool startup = true;
 
 	const static DWORD cod4x_entry = (DWORD)GetModuleHandleA(COD4QOL_COD4X_MODULE);
-	const static HWND* hwnd = reinterpret_cast<HWND*>(game::cod4x_entry + 0x443BA00);
 	const static char* prefix = COD4QOL_CONSOLE_PREFIX;
 	const static char* localization = *reinterpret_cast<const char**>(0xCC147D4);
 
 	static IDirect3DDevice9** dx9_device_ptr = reinterpret_cast<IDirect3DDevice9**>(0xCC9A408);
 
-	typedef const char*(*Con_LinePrefix)();
+	typedef const char* (*Con_LinePrefix)();
 	inline Con_LinePrefix pCon_LinePrefix;
 
 	const char* hookedCon_LinePrefix();
@@ -482,7 +482,7 @@ namespace game
 	inline R_SetViewParmsForScene pR_SetViewParmsForScene;
 
 	void hookedR_SetViewParmsForScene();
-	
+
 	typedef void(*R_DrawXmodelSkinnedCached)(int a1, int a2, int a3);
 	inline R_DrawXmodelSkinnedCached pR_DrawXmodelSkinnedCached;
 
@@ -514,45 +514,48 @@ namespace game
 	cmd_function_s* Cmd_AddCommand(const char* cmdname, void(__cdecl* function)());
 	void Cbuf_AddText(const char* text, int localClientNum);
 	const char* String_Alloc(const char* string);
+	void SetCoD4xFunctionOffsets();
 
 	typedef void(*Cmd_ExecuteSingleCommand_t)(int controller, int a2, const char* cmd);
-		extern Cmd_ExecuteSingleCommand_t Cmd_ExecuteSingleCommand;
+	extern Cmd_ExecuteSingleCommand_t Cmd_ExecuteSingleCommand;
 
 	typedef void(*Com_PrintMessage_t)(int, const char*, char);
-		extern Com_PrintMessage_t Com_PrintMessage;
+	extern Com_PrintMessage_t Com_PrintMessage;
 
 	typedef void(*DB_LoadXAssets_t)(XZoneInfo* zoneInfo, unsigned int zone_count, int sync);
-		extern DB_LoadXAssets_t DB_LoadXAssets;
+	extern DB_LoadXAssets_t DB_LoadXAssets;
 
 	typedef void(*Sys_CreateConsole_t)(int);
-		extern Sys_CreateConsole_t Sys_CreateConsole;
+	extern Sys_CreateConsole_t Sys_CreateConsole;
 
-	typedef game::dvar_s*(*Cvar_RegisterBool_t)(const char* name, int boolean, game::dvar_flags flags, const char* description);
-		extern Cvar_RegisterBool_t Cvar_RegisterBool;
+	typedef game::dvar_s* (*Cvar_RegisterBool_t)(const char* name, int boolean, game::dvar_flags flags, const char* description);
+	extern Cvar_RegisterBool_t Cvar_RegisterBool;
 
-	typedef game::dvar_s*(*Cvar_RegisterEnum_t)(const char* name, const char** strings, int integer, game::dvar_flags flags, const char* description);
-		extern Cvar_RegisterEnum_t Cvar_RegisterEnum;
+	typedef game::dvar_s* (*Cvar_RegisterEnum_t)(const char* name, const char** strings, int integer, game::dvar_flags flags, const char* description);
+	extern Cvar_RegisterEnum_t Cvar_RegisterEnum;
 
-	typedef game::dvar_s*(*Cvar_RegisterString_t)(const char* name, const char* string, game::dvar_flags flags, const char* description);
-		extern Cvar_RegisterString_t Cvar_RegisterString;
+	typedef game::dvar_s* (*Cvar_RegisterString_t)(const char* name, const char* string, game::dvar_flags flags, const char* description);
+	extern Cvar_RegisterString_t Cvar_RegisterString;
 
 	typedef bool(*FS_AddSingleIwdFileForGameDirectory_t)(const char* pakfile, const char* basename, const char* gamename);
-		extern FS_AddSingleIwdFileForGameDirectory_t FS_AddSingleIwdFileForGameDirectory;
+	extern FS_AddSingleIwdFileForGameDirectory_t FS_AddSingleIwdFileForGameDirectory;
 
-	inline void* Cmd_AddCommand_fnc = (void*)(cod4x_entry + 0x639B0); //cod4x_entry + 0x2116C
+	inline void* Cmd_AddCommand_fnc;
 	inline game::CmdArgs* cmd_args = reinterpret_cast<game::CmdArgs*>(0x1410B40);
 	inline game::gclient_s* g_clients = reinterpret_cast<game::gclient_s*>(0x13255A8);
 
-	inline game::Cmd_ExecuteSingleCommand_t Cmd_ExecuteSingleCommand = Cmd_ExecuteSingleCommand_t(0x4F9AB0);
+	inline game::Cmd_ExecuteSingleCommand_t Cmd_ExecuteSingleCommand;
 	inline game::Com_PrintMessage_t Com_PrintMessage = game::Com_PrintMessage_t(0x4FCA50);
 	inline game::DB_LoadXAssets_t DB_LoadXAssets = DB_LoadXAssets_t(0x48A2B0);
-	inline game::Sys_CreateConsole_t Sys_CreateConsole = Sys_CreateConsole_t(cod4x_entry + 0x7F160); //cod4x_entry + 0x7F503
+	inline game::Sys_CreateConsole_t Sys_CreateConsole;
 
-	inline game::Cvar_RegisterBool_t Cvar_RegisterBool = Cvar_RegisterBool_t(cod4x_entry + 0x60BE0); //cod4x_entry + 0x2D8F2
-	inline game::Cvar_RegisterEnum_t Cvar_RegisterEnum = Cvar_RegisterEnum_t(cod4x_entry + 0x60640); //cod4x_entry + 0x2DCAF
-	inline game::Cvar_RegisterString_t Cvar_RegisterString = Cvar_RegisterString_t(cod4x_entry + 0x60960); //cod4x_entry + 0x2D87D
+	inline game::Cvar_RegisterBool_t Cvar_RegisterBool;
+	inline game::Cvar_RegisterEnum_t Cvar_RegisterEnum;
+	inline game::Cvar_RegisterString_t Cvar_RegisterString;
 
-	inline game::FS_AddSingleIwdFileForGameDirectory_t FS_AddSingleIwdFileForGameDirectory = FS_AddSingleIwdFileForGameDirectory_t(cod4x_entry + 0x2E310); //cod4x_entry + 0x3867C
+	inline game::FS_AddSingleIwdFileForGameDirectory_t FS_AddSingleIwdFileForGameDirectory;
+
+	inline game::dvar_s* com_introplayed;
 
 	inline game::dvar_s* fs_game = game::Find("fs_game");
 	inline game::dvar_s* fs_homepath = game::Find("fs_homepath");

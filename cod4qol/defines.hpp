@@ -17,4 +17,8 @@
 #define COD4QOL_SUPPORTEDVERSIONS "21.1, 21.2"
 
 #define COD4QOL_COD4X_MODULE "cod4x_021.dll"
-inline std::vector<std::string> supported_cod4x_crc32 = { "5b855796" };
+
+#define COD4QOL_COD4X_CRC32_212 "5b855796"
+#define COD4QOL_COD4X_CRC32_211 "b1822ed5"
+
+inline const std::vector<std::string> supported_cod4x_crc32 = { COD4QOL_COD4X_CRC32_212, COD4QOL_COD4X_CRC32_211 };

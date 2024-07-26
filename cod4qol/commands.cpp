@@ -193,7 +193,9 @@ void commands::WriteProtectedConfig()
 
 void commands::ToggleConsoleUpdate()
 {
-    ShowWindow(*game::hwnd, qol_show_console->current.enabled ? SW_SHOWNOACTIVATE : SW_HIDE);
+    const static HWND* hwnd = reinterpret_cast<HWND*>(offsets::GetOffset("hwnd"));
+
+    ShowWindow(*hwnd, qol_show_console->current.enabled ? SW_SHOWNOACTIVATE : SW_HIDE);
 }
 
 void commands::SetGun(game::GfxViewParms* view_parms)
