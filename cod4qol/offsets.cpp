@@ -37,8 +37,8 @@ void offsets::InitOffsets()
 	//Strings
 	AddData("steam_auth_a", { {COD4QOL_COD4X_CRC32_212, {"\x90\x90", 2}}, {COD4QOL_COD4X_CRC32_211, {"\x90\x90\x90\x90\x90\x90", 6}} });
 	AddData("steam_auth_b", { {COD4QOL_COD4X_CRC32_212, {"\xE9\xC0\x01\x00\x00\x90", 6}}, {COD4QOL_COD4X_CRC32_211, {"\x90\x90\x90\x90\x90\x90", 6}} });
-	AddData("steam_auth_a_disabled", { {COD4QOL_COD4X_CRC32_212, {"\x75\x0D", 2}}, {COD4QOL_COD4X_CRC32_211, {"\x0F\x85\xDB\x00\x00\x00", 6}} });
-	AddData("steam_auth_b_disabled", { {COD4QOL_COD4X_CRC32_212, {"\x0F\x84\xBF\x01\x00\x00", 6}}, {COD4QOL_COD4X_CRC32_211, {"\x0F\x85\xCE\x00\x00\x00", 6}} });
+	AddData("steam_auth_a_original", { {COD4QOL_COD4X_CRC32_212, {"\x75\x0D", 2}}, {COD4QOL_COD4X_CRC32_211, {"\x0F\x85\xDB\x00\x00\x00", 6}} });
+	AddData("steam_auth_b_original", { {COD4QOL_COD4X_CRC32_212, {"\x0F\x84\xBF\x01\x00\x00", 6}}, {COD4QOL_COD4X_CRC32_211, {"\x0F\x85\xCE\x00\x00\x00", 6}} });
 }
 
 void offsets::AddOffset(std::string id, offsets::offset_set offset)

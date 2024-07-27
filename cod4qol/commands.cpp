@@ -228,8 +228,8 @@ void commands::ToggleSteamAuthUpdate()
     static const offsets::data_t steam_auth_a_bytes = offsets::GetData("steam_auth_a");
     static const offsets::data_t steam_auth_b_bytes = offsets::GetData("steam_auth_b");
 
-    static const offsets::data_t steam_auth_a_bytes_disabled = offsets::GetData("steam_auth_a_disabled");
-    static const offsets::data_t steam_auth_b_bytes_disabled = offsets::GetData("steam_auth_b_disabled");
+    static const offsets::data_t steam_auth_a_bytes_original = offsets::GetData("steam_auth_a_original");
+    static const offsets::data_t steam_auth_b_bytes_original = offsets::GetData("steam_auth_b_original");
 
 
     if (commands::qol_disable_steam_auth->current.enabled)
@@ -239,8 +239,8 @@ void commands::ToggleSteamAuthUpdate()
     }
     else
     {
-        hooks::write_addr(steam_auth_a, steam_auth_a_bytes_disabled.data.c_str(), steam_auth_a_bytes_disabled.size);
-        hooks::write_addr(steam_auth_b, steam_auth_b_bytes_disabled.data.c_str(), steam_auth_b_bytes_disabled.size);
+        hooks::write_addr(steam_auth_a, steam_auth_a_bytes_original.data.c_str(), steam_auth_a_bytes_original.size);
+        hooks::write_addr(steam_auth_b, steam_auth_b_bytes_original.data.c_str(), steam_auth_b_bytes_original.size);
     }
 }
 
