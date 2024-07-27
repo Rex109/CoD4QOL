@@ -222,21 +222,26 @@ void commands::ToggleLoadingInfoUpdate()
 
 void commands::ToggleSteamAuthUpdate()
 {
-    //game::cod4x_entry + 0x1A70A
-    //game::cod4x_entry + 0x1A717
+    static const DWORD steam_auth_a = offsets::GetOffset("steam_auth_a");
+    static const DWORD steam_auth_b = offsets::GetOffset("steam_auth_b");
 
-    /*
+    static const offsets::data_t steam_auth_a_bytes = offsets::GetData("steam_auth_a");
+    static const offsets::data_t steam_auth_b_bytes = offsets::GetData("steam_auth_b");
+
+    static const offsets::data_t steam_auth_a_bytes_disabled = offsets::GetData("steam_auth_a_disabled");
+    static const offsets::data_t steam_auth_b_bytes_disabled = offsets::GetData("steam_auth_b_disabled");
+
+
     if (commands::qol_disable_steam_auth->current.enabled)
     {
-        hooks::write_addr(game::cod4x_entry + 0x10982, "\x90\x90", 2);
-        hooks::write_addr(game::cod4x_entry + 0x1098B, "\x90\x90\x90\x90\x90\x90", 6);
+        hooks::write_addr(steam_auth_a, steam_auth_a_bytes.data.c_str(), steam_auth_a_bytes.size);
+        hooks::write_addr(steam_auth_b, steam_auth_b_bytes.data.c_str(), steam_auth_b_bytes.size);
     }
     else
     {
-        hooks::write_addr(game::cod4x_entry + 0x10982, "\x75\x0D", 2);
-        hooks::write_addr(game::cod4x_entry + 0x1098B, "\x0F\x84\xBF\x01\x00\x00", 6);
+        hooks::write_addr(steam_auth_a, steam_auth_a_bytes_disabled.data.c_str(), steam_auth_a_bytes_disabled.size);
+        hooks::write_addr(steam_auth_b, steam_auth_b_bytes_disabled.data.c_str(), steam_auth_b_bytes_disabled.size);
     }
-    */
 }
 
 

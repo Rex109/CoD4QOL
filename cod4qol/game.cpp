@@ -26,11 +26,11 @@ HMODULE game::GetCurrentModule()
 
 bool game::LoadLocalizedIWD(const char* pakfile, const char* basename, const char* gamename)
 {
-	static const DWORD iwd_cheat_flag = offsets::GetOffset("iwd_cheat_flag");
+	static const DWORD iwd_flag = offsets::GetOffset("iwd_flag");
 
-	hooks::write_addr(iwd_cheat_flag, "\x01", 1);
+	hooks::write_addr(iwd_flag, "\x01", 1);
 	bool result = FS_AddSingleIwdFileForGameDirectory(pakfile, basename, gamename);
-	hooks::write_addr(iwd_cheat_flag, "\x00", 1);
+	hooks::write_addr(iwd_flag, "\x00", 1);
 
 	return result;
 }
