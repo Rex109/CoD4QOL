@@ -544,7 +544,7 @@ namespace game
 	inline game::CmdArgs* cmd_args = reinterpret_cast<game::CmdArgs*>(0x1410B40);
 	inline game::gclient_s* g_clients = reinterpret_cast<game::gclient_s*>(0x13255A8);
 
-	inline game::Cmd_ExecuteSingleCommand_t Cmd_ExecuteSingleCommand;
+	inline game::Cmd_ExecuteSingleCommand_t Cmd_ExecuteSingleCommand = Cmd_ExecuteSingleCommand_t(0x4F9AB0);
 	inline game::Com_PrintMessage_t Com_PrintMessage = game::Com_PrintMessage_t(0x4FCA50);
 	inline game::DB_LoadXAssets_t DB_LoadXAssets = DB_LoadXAssets_t(0x48A2B0);
 	inline game::Sys_CreateConsole_t Sys_CreateConsole;
