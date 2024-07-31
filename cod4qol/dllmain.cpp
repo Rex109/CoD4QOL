@@ -50,7 +50,7 @@ void Initialize()
 
     if (!CheckCoD4XVersion())
     {
-        MessageBox(NULL, "CoD4X version mismatch, CoD4QOL has been unloaded.\nSupported CoD4X versions are: " COD4QOL_SUPPORTEDVERSIONS ".\n\nYou may need to update your game or manually download a newer version of CoD4QOL, otherwise you will have to wait for a new version of CoD4QOL and manually update it later." , "CoD4QOL", MB_ICONWARNING);
+        MessageBox(NULL, "CoD4X version mismatch, CoD4QOL has been unloaded.\nSupported CoD4X versions are: " COD4QOL_SUPPORTEDVERSIONS ".\n\nYou may need to update your game or manually download a newer version of CoD4QOL, otherwise you will have to wait for a new version of CoD4QOL and manually update it later.\n\nBe sure to always update CoD4QOL first before updating CoD4X!" , "CoD4QOL", MB_ICONWARNING);
         return;
     }
 
