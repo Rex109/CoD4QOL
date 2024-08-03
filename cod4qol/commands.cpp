@@ -15,6 +15,7 @@ void commands::InitializeCommands()
     game::Cmd_AddCommand("toggleconsoleupdate", ToggleConsoleUpdate);
     game::Cmd_AddCommand("toggleloadinginfoupdate", ToggleLoadingInfoUpdate);
     game::Cmd_AddCommand("togglesteamauthupdate", ToggleSteamAuthUpdate);
+    game::Cmd_AddCommand("toggleenablebhopupdate", ToggleEnableBhopUpdate);
     game::Cmd_AddCommand("openlink", OpenLink);
 
     game::Cmd_AddCommand("loaddemos", LoadDemos);
@@ -78,6 +79,8 @@ void commands::InitializeCommands()
     qol_ambient = game::Cvar_RegisterBool("qol_ambient", 1, game::dvar_flags::saved, "Enable ambient sound/music cues.");
 
     qol_stockmenu = game::Cvar_RegisterBool("qol_stockmenu", 0, game::dvar_flags::saved, "Load the stock menu even with a mod loaded.");
+
+    qol_enablebhop = game::Cvar_RegisterBool("qol_enablebhop", 0, game::dvar_flags::saved, "Enable auto bunny hopping.");
 
     std::cout << "Commands initialized!" << std::endl;
 }
@@ -244,6 +247,13 @@ void commands::ToggleSteamAuthUpdate()
     }
 }
 
+void commands::ToggleEnableBhopUpdate()
+{
+    if (commands::qol_enablebhop->current.enabled)
+		hooks::write_addr(0x407DE3, "\xEB", 1);
+    else
+        hooks::write_addr(0x407DE3, "\x74", 1);
+}
 
 void commands::OpenLink()
 {

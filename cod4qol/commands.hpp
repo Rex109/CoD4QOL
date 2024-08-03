@@ -29,6 +29,7 @@ namespace commands
 	inline game::dvar_s* qol_disable_steam_auth;
 	inline game::dvar_s* qol_ambient;
 	inline game::dvar_s* qol_stockmenu;
+	inline game::dvar_s* qol_enablebhop;
 	inline game::dvar_s* qol_show_mainmenuinfo;
 
 	void InitializeCommands();
@@ -43,6 +44,7 @@ namespace commands
 	void SetGun(game::GfxViewParms* view_parms);
 	void ToggleLoadingInfoUpdate();
 	void ToggleSteamAuthUpdate();
+	void ToggleEnableBhopUpdate();
 	void OpenLink();
 
 	void LoadDemos();
