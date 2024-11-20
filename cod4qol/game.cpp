@@ -114,7 +114,7 @@ void game::cleanUpReflections()
 
 		std::cout << hash << std::endl;
 
-		if (hash == "e06ccbba" || hash == "444c60df")
+		if (hash == "e06ccbba" || hash == "444c60df" || hash == "c1eacd74" || hash == "48ed9648")
 		{
 			rgp->world->reflectionProbes[i].reflectionImage->texture.cubemap = nullptr;
 			removed++;
