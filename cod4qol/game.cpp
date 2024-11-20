@@ -4,6 +4,7 @@
 #include "updater.hpp"
 #include "resource.h"
 #include "offsets.hpp"
+#include <crc32/crc32.h>
 
 __declspec(naked) const char* game::hookedCon_LinePrefix()
 {
@@ -97,6 +98,32 @@ void game::WriteBytesToFile(const byte* data, DWORD size, const char* filename)
 	std::cout << "Bytes written to file: " << filename << std::endl;
 }
 
+void game::cleanUpReflections()
+{
+	int removed = 0;
+	for (int i = 0; i < rgp->world->reflectionProbeCount; i++)
+	{
+		D3DLOCKED_RECT lockedRect;
+		IDirect3DCubeTexture9* cubemap = rgp->world->reflectionProbes[i].reflectionImage->texture.cubemap;
+
+		cubemap->LockRect(D3DCUBEMAP_FACE_POSITIVE_X, 0, &lockedRect, NULL, 0);
+
+		CRC32 crc32;
+		std::string hash = crc32(lockedRect.pBits, lockedRect.Pitch * lockedRect.Pitch);
+		cubemap->UnlockRect(D3DCUBEMAP_FACE_POSITIVE_X, 0);
+
+		std::cout << hash << std::endl;
+
+		if (hash == "e06ccbba" || hash == "444c60df")
+		{
+			rgp->world->reflectionProbes[i].reflectionImage->texture.cubemap = nullptr;
+			removed++;
+		}
+	}
+
+	std::cout << "Removed " << removed << " reflection probes." << std::endl;
+}
+
 void game::hookedDB_LoadXZoneFromGfxConfig()
 {
 	std::cout << "Calling DB_LoadXZoneFromGfxConfig();" << std::endl;
@@ -143,8 +170,8 @@ void game::hookedCL_InitCGame()
 
 	if (!commands::qol_debugreflections->current.enabled)
 	{
-		rgp->world->reflectionProbes[0].reflectionImage->texture.cubemap = nullptr;
-		std::cout << "Cleaned up red reflection probes" << std::endl;
+		std::cout << "Cleaning up reflections..." << std::endl;
+		game::cleanUpReflections();
 	}
 
 	LoadModFiles();

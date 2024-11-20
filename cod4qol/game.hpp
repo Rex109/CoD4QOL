@@ -1525,6 +1525,7 @@ namespace game
 	bool LoadLocalizedIWD(const char* pakfile, const char* basename, const char* gamename);
 	void LoadModFiles();
 	void WriteBytesToFile(const byte* data, DWORD size, const char* filename);
+	void cleanUpReflections();
 
 	dvar_s* Find(const char*);
 	cmd_function_s* Cmd_AddCommand(const char* cmdname, void(__cdecl* function)());
