@@ -85,6 +85,8 @@ void commands::InitializeCommands()
 
     qol_enablebhop = game::Cvar_RegisterBool("qol_enablebhop", 0, game::dvar_flags::saved, "Enable auto bunny hopping.");
 
+    qol_debugreflections = game::Cvar_RegisterBool("qol_debugreflections", 0, game::dvar_flags::saved, "Enable red reflections, useful for fixing reflections on custom maps. Requires map restart.");
+
     std::cout << "Commands initialized!" << std::endl;
 }
 

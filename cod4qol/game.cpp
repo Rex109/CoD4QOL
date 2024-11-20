@@ -141,8 +141,11 @@ void game::hookedCL_InitCGame()
 {
 	std::cout << "Calling CL_InitCGame();" << std::endl;
 
-	rgp->world->reflectionProbes[0].reflectionImage->texture.cubemap = nullptr;
-	std::cout << "Cleaned up red reflection probes" << std::endl;
+	if (!commands::qol_debugreflections->current.enabled)
+	{
+		rgp->world->reflectionProbes[0].reflectionImage->texture.cubemap = nullptr;
+		std::cout << "Cleaned up red reflection probes" << std::endl;
+	}
 
 	LoadModFiles();
 
