@@ -288,6 +288,51 @@ unsigned int game::hookedCG_StartAmbient(int a1)
 	return game::pCG_StartAmbient(a1);
 }
 
+void QuatMul(float q1[4], const float q2[4])
+{
+	float A, B, C, D, E, F, G, H;
+
+	A = (q1[0] + q1[1]) * (q2[0] + q2[1]);
+	B = (q1[3] - q1[2]) * (q2[2] - q2[3]);
+	C = (q1[0] - q1[1]) * (q2[2] + q2[3]);
+	D = (q1[2] + q1[3]) * (q2[0] - q2[1]);
+	E = (q1[1] + q1[3]) * (q2[1] + q2[2]);
+	F = (q1[1] - q1[3]) * (q2[1] - q2[2]);
+	G = (q1[0] + q1[2]) * (q2[0] - q2[3]);
+	H = (q1[0] - q1[2]) * (q2[0] + q2[3]);
+
+	q1[0] = B + (H - E - F + G) * 0.5;
+	q1[1] = A - (E + F + G + H) * 0.5;
+	q1[2] = C + (E - F + G - H) * 0.5;
+	q1[3] = D + (E - F - G + H) * 0.5;
+}
+
+void SpecularTranslation(game::DObjAnimMat* obj)
+{
+	//float q2[4] = { -1.41421356236f, 0.0f, 0.0f, 1.0f };
+
+	//QuatMul(obj->quat, q2);
+
+	obj->transWeight *= -1.0f;
+}
+
+__declspec(naked) void game::hookedCG_DObjGetLocalBoneMatrix()
+{
+	__asm
+	{
+		pushad;
+		
+		push eax;
+
+		call SpecularTranslation;
+
+		add esp, 4;
+
+		popad;
+		jmp game::pCG_DObjGetLocalBoneMatrix;
+	}
+}
+
 int	game::Cmd_Argc()
 {
 	return game::cmd_args->argc[game::cmd_args->nesting];

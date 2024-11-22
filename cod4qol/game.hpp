@@ -1519,6 +1519,11 @@ namespace game
 
 	unsigned int hookedCG_StartAmbient(int a1);
 
+	typedef void(*CG_DObjGetLocalBoneMatrix)();
+	inline CG_DObjGetLocalBoneMatrix pCG_DObjGetLocalBoneMatrix;
+
+	void hookedCG_DObjGetLocalBoneMatrix();
+
 	int	Cmd_Argc();
 	const char* Cmd_Argv(int arg);
 	HMODULE GetCurrentModule();
