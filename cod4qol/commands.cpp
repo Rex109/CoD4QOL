@@ -59,9 +59,6 @@ void commands::InitializeCommands()
     cg_drawgun = game::Find("cg_drawgun");
     cg_drawgun->flags = game::none;
 
-    cg_chatheight = game::Find("cg_chatheight");
-    cg_chatheight->domain.integer.max = 32;
-
     qol_check_updates = game::Cvar_RegisterBool("qol_check_updates", 1, game::dvar_flags::saved, "Enable cod4qol to check for updates at every startup.");
 
     qol_forceiwdextract = game::Cvar_RegisterBool("qol_forceiwdextract", 0, game::dvar_flags::saved, "Force the extraction of the iwd files at the next startup.");
