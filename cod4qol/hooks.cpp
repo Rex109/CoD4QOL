@@ -66,10 +66,6 @@ void hooks::InitializeHooks()
 	game::pCG_StartAmbient = (game::CG_StartAmbient)(0x43F200);
 	hooks::install(&(PVOID&)game::pCG_StartAmbient, (PBYTE)game::hookedCG_StartAmbient);
 
-	//CG_DObjGetLocalBoneMatrix
-	game::pCG_DObjGetLocalBoneMatrix = (game::CG_DObjGetLocalBoneMatrix)(0x433F35);
-	hooks::install(&(PVOID&)game::pCG_DObjGetLocalBoneMatrix, (PBYTE)game::hookedCG_DObjGetLocalBoneMatrix);
-
 	std::cout << "Hooks installed!" << std::endl;
 }
 
