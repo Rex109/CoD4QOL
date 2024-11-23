@@ -112,8 +112,6 @@ void game::cleanUpReflections()
 		std::string hash = crc32(lockedRect.pBits, lockedRect.Pitch * lockedRect.Pitch);
 		cubemap->UnlockRect(D3DCUBEMAP_FACE_POSITIVE_X, 0);
 
-		std::cout << hash << std::endl;
-
 		if (hash == "e06ccbba" || hash == "444c60df" || hash == "c1eacd74" || hash == "48ed9648")
 		{
 			rgp->world->reflectionProbes[i].reflectionImage->texture.cubemap = nullptr;
@@ -286,6 +284,30 @@ unsigned int game::hookedCG_StartAmbient(int a1)
 		return 0;
 
 	return game::pCG_StartAmbient(a1);
+}
+
+__declspec(naked) void game::hookedCL_CmdButtons()
+{
+	static bool jump_pressed = false;
+	const static uint32_t retn_addr = 0x4639CF;
+	__asm pushad;
+
+	if (!jump_pressed || !commands::qol_enableautobhop->current.enabled)
+	{
+		jump_pressed = true;
+		__asm
+		{
+			popad;
+			jmp game::pCL_CmdButtons;
+		}
+	}
+
+	jump_pressed = false;
+	__asm
+	{
+		popad;
+		jmp retn_addr;
+	}
 }
 
 int	game::Cmd_Argc()

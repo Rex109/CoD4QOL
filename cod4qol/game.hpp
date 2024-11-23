@@ -1519,6 +1519,11 @@ namespace game
 
 	unsigned int hookedCG_StartAmbient(int a1);
 
+	typedef void(*CL_CmdButtons)();
+	inline CL_CmdButtons pCL_CmdButtons;
+
+	void hookedCL_CmdButtons();
+
 	int	Cmd_Argc();
 	const char* Cmd_Argv(int arg);
 	HMODULE GetCurrentModule();

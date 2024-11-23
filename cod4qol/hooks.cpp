@@ -66,6 +66,10 @@ void hooks::InitializeHooks()
 	game::pCG_StartAmbient = (game::CG_StartAmbient)(0x43F200);
 	hooks::install(&(PVOID&)game::pCG_StartAmbient, (PBYTE)game::hookedCG_StartAmbient);
 
+	//CL_CmdButtons
+	game::pCL_CmdButtons = (game::CL_CmdButtons)(0x4639C8);
+	hooks::install(&(PVOID&)game::pCL_CmdButtons, (PBYTE)game::hookedCL_CmdButtons);
+
 	std::cout << "Hooks installed!" << std::endl;
 }
 

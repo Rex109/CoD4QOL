@@ -15,7 +15,6 @@ void commands::InitializeCommands()
     game::Cmd_AddCommand("toggleconsoleupdate", ToggleConsoleUpdate);
     game::Cmd_AddCommand("toggleloadinginfoupdate", ToggleLoadingInfoUpdate);
     game::Cmd_AddCommand("togglesteamauthupdate", ToggleSteamAuthUpdate);
-    game::Cmd_AddCommand("toggleenablebhopupdate", ToggleEnableBhopUpdate);
     game::Cmd_AddCommand("openlink", OpenLink);
 
     game::Cmd_AddCommand("loaddemos", LoadDemos);
@@ -80,7 +79,7 @@ void commands::InitializeCommands()
 
     qol_stockmenu = game::Cvar_RegisterBool("qol_stockmenu", 0, game::dvar_flags::saved, "Load the stock menu even with a mod loaded.");
 
-    qol_enablebhop = game::Cvar_RegisterBool("qol_enablebhop", 0, game::dvar_flags::saved, "Enable auto bunny hopping.");
+    qol_enableautobhop = game::Cvar_RegisterBool("qol_enableautobhop", 0, game::dvar_flags::saved, "Enable auto bunny hopping.");
 
     qol_debugreflections = game::Cvar_RegisterBool("qol_debugreflections", 0, game::dvar_flags::saved, "Enable red reflections, useful for fixing reflections on custom maps. Requires map restart.");
 
@@ -247,14 +246,6 @@ void commands::ToggleSteamAuthUpdate()
         hooks::write_addr(steam_auth_a, steam_auth_a_bytes_original.data.c_str(), steam_auth_a_bytes_original.size);
         hooks::write_addr(steam_auth_b, steam_auth_b_bytes_original.data.c_str(), steam_auth_b_bytes_original.size);
     }
-}
-
-void commands::ToggleEnableBhopUpdate()
-{
-    if (commands::qol_enablebhop->current.enabled)
-		hooks::write_addr(0x407DE3, "\xEB", 1);
-    else
-        hooks::write_addr(0x407DE3, "\x74", 1);
 }
 
 void commands::OpenLink()
