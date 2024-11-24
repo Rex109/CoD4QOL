@@ -146,7 +146,6 @@ void game::hookedDB_LoadXZoneFromGfxConfig()
 	game::Cbuf_AddText("toggleconsoleupdate\n", 0);
 	game::Cbuf_AddText("toggleloadinginfoupdate\n", 0);
 	game::Cbuf_AddText("togglesteamauthupdate\n", 0);
-	game::Cbuf_AddText("toggleenablebhopupdate\n", 0);
 	game::Cbuf_AddText("readprotectedconfig\n", 0);
 	
 	return game::pDB_LoadXZoneFromGfxConfig();
