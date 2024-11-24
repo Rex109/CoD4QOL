@@ -25,9 +25,6 @@ void commands::InitializeCommands()
 
     game::Cmd_AddCommand("updatecod4qol", updater::Update);
 
-    qol_version = game::Cvar_RegisterString("qol_version", COD4QOL_VERSION, game::dvar_flags::read_only, "CoD4QOL version.");
-    qol_show_mainmenuinfo = game::Cvar_RegisterBool("qol_show_mainmenuinfo", 1, game::dvar_flags::saved, "Show the CoD4QOL version and social media links in the main menu.");
-
     cg_fovscale = game::Find("cg_fovscale");
     cg_fovscale->flags = game::none;
 
@@ -57,6 +54,10 @@ void commands::InitializeCommands()
 
     cg_drawgun = game::Find("cg_drawgun");
     cg_drawgun->flags = game::none;
+
+    qol_version = game::Cvar_RegisterString("qol_version", COD4QOL_VERSION, game::dvar_flags::read_only, "CoD4QOL version.");
+
+    qol_show_mainmenuinfo = game::Cvar_RegisterBool("qol_show_mainmenuinfo", 1, game::dvar_flags::saved, "Show the CoD4QOL version and social media links in the main menu.");
 
     qol_check_updates = game::Cvar_RegisterBool("qol_check_updates", 1, game::dvar_flags::saved, "Enable cod4qol to check for updates at every startup.");
 

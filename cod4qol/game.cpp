@@ -27,11 +27,20 @@ HMODULE game::GetCurrentModule()
 
 bool game::LoadLocalizedIWD(const char* pakfile, const char* basename, const char* gamename)
 {
-	static const DWORD iwd_flag = offsets::GetOffset("iwd_flag");
+	
+	static int* iwd_flag_localized = reinterpret_cast<int*>(offsets::GetOffset("iwd_flag_localized"));
+	static int* iwd_flag_lang = reinterpret_cast<int*>(offsets::GetOffset("iwd_flag_lang"));
+	static dvar_s* loc_language = game::Find("loc_language");
 
-	hooks::write_addr(iwd_flag, "\x01", 1);
+	static DWORD oldProtect;
+	static bool iwd_flag_localized_protect = VirtualProtect(iwd_flag_localized, sizeof(int*), PAGE_EXECUTE_READWRITE, &oldProtect);
+	static bool iwd_flag_lang_protect = VirtualProtect(iwd_flag_lang, sizeof(int*), PAGE_EXECUTE_READWRITE, &oldProtect);
+
+	*iwd_flag_localized = 1;
+	*iwd_flag_lang = loc_language->current.integer;
 	bool result = FS_AddSingleIwdFileForGameDirectory(pakfile, basename, gamename);
-	hooks::write_addr(iwd_flag, "\x00", 1);
+	*iwd_flag_localized = 0;
+	*iwd_flag_lang = 0;
 
 	return result;
 }
