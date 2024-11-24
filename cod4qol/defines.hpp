@@ -1,13 +1,15 @@
 #pragma once
+#include "CommitInfo.hpp"
+
 #include <string>
 #include <vector>
 
 #define COD4QOL_NAME "CoD4QOL"
 #define COD4QOL_BASE_VERSION "1.7.0"
 #ifndef _DEBUG
-#define COD4QOL_VERSION COD4QOL_BASE_VERSION
+#define COD4QOL_VERSION COD4QOL_BASE_VERSION " (" GIT_COMMIT_HASH ")"
 #else
-#define COD4QOL_VERSION COD4QOL_BASE_VERSION "-DEBUG"
+#define COD4QOL_VERSION COD4QOL_BASE_VERSION "-DEBUG" " (" GIT_COMMIT_HASH ")"
 #endif
 #define COD4QOL_CONSOLE_PREFIX COD4QOL_NAME " " COD4QOL_VERSION ">"
 

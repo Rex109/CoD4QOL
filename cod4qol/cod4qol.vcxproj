@@ -47,11 +47,13 @@
     <TargetExt>.asi</TargetExt>
     <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(SolutionDir)lib</LibraryPath>
     <TargetName>cod4qol</TargetName>
+    <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <TargetExt>.asi</TargetExt>
     <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(SolutionDir)lib</LibraryPath>
     <TargetName>cod4qol</TargetName>
+    <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -70,6 +72,14 @@
       <EnableUAC>false</EnableUAC>
       <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);libcurl_a.lib;Ws2_32.lib;Crypt32.lib;Wldap32.lib;Normaliz.lib</AdditionalDependencies>
     </Link>
+    <PreBuildEvent>
+      <Command>for /f "tokens=*" %%i in ('git describe --dirty --always') do (
+    echo #define GIT_COMMIT_HASH "%%i" &gt; $(ProjectDir)CommitInfo.hpp
+)</Command>
+    </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>echo #define GIT_COMMIT_HASH "" &gt; $(ProjectDir)CommitInfo.hpp</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -92,6 +102,14 @@
       <EnableUAC>false</EnableUAC>
       <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);libcurl_a.lib;Ws2_32.lib;Crypt32.lib;Wldap32.lib;Normaliz.lib</AdditionalDependencies>
     </Link>
+    <PreBuildEvent>
+      <Command>for /f "tokens=*" %%i in ('git describe --dirty --always') do (
+    echo #define GIT_COMMIT_HASH "%%i" &gt; $(ProjectDir)CommitInfo.hpp
+)</Command>
+    </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>echo #define GIT_COMMIT_HASH "" &gt; $(ProjectDir)CommitInfo.hpp</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\include\crc32\crc32.cpp" />
@@ -105,6 +123,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="commands.hpp" />
+    <ClInclude Include="CommitInfo.hpp" />
     <ClInclude Include="defines.hpp" />
     <ClInclude Include="game.hpp" />
     <ClInclude Include="hooks.hpp" />
