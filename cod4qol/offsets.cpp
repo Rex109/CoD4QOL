@@ -22,7 +22,7 @@ void offsets::InitOffsets()
 	//General
 	AddOffset("hwnd", { {COD4QOL_COD4X_CRC32_212, (game::cod4x_entry + 0x443BA00)}, {COD4QOL_COD4X_CRC32_211, (game::cod4x_entry + 0x43FE9A0)} });
 	AddOffset("iwd_flag_localized", { {COD4QOL_COD4X_CRC32_212, (game::cod4x_entry + 0x2E366)}, {COD4QOL_COD4X_CRC32_211, (game::cod4x_entry + 0x386E2)} });
-	AddOffset("iwd_flag_lang", { {COD4QOL_COD4X_CRC32_212, (game::cod4x_entry + 0x2E366)}, {COD4QOL_COD4X_CRC32_211, (game::cod4x_entry + 0x386EC)} });
+	AddOffset("iwd_flag_lang", { {COD4QOL_COD4X_CRC32_212, (game::cod4x_entry + 0x2E36D)}, {COD4QOL_COD4X_CRC32_211, (game::cod4x_entry + 0x386EC)} });
 	AddOffset("ss_switch", { {COD4QOL_COD4X_CRC32_212, (game::cod4x_entry + 0xB21FB)}, {COD4QOL_COD4X_CRC32_211, (game::cod4x_entry + 0xEA62B)} });
 	AddOffset("steam_auth_a", { {COD4QOL_COD4X_CRC32_212, (game::cod4x_entry + 0x10982)}, {COD4QOL_COD4X_CRC32_211, (game::cod4x_entry + 0x1A70A)} });
 	AddOffset("steam_auth_b", { {COD4QOL_COD4X_CRC32_212, (game::cod4x_entry + 0x1098B)}, {COD4QOL_COD4X_CRC32_211, (game::cod4x_entry + 0x1A717)} });
