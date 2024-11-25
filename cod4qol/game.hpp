@@ -1524,6 +1524,11 @@ namespace game
 
 	void hookedCL_CmdButtons();
 
+	typedef void(*CL_Disconnect)(int localClientNum);
+	inline CL_Disconnect pCL_Disconnect;
+
+	void hookedCL_Disconnect(int localClientNum);
+
 	int	Cmd_Argc();
 	const char* Cmd_Argv(int arg);
 	HMODULE GetCurrentModule();

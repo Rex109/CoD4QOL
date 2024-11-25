@@ -6,6 +6,8 @@
 #include "offsets.hpp"
 #include <crc32/crc32.h>
 
+std::vector<std::pair<int, IDirect3DCubeTexture9*>> oldReflectionProbes;
+
 __declspec(naked) const char* game::hookedCon_LinePrefix()
 {
 	const static uint32_t retn_addr = 0x460618;
@@ -123,6 +125,8 @@ void game::cleanUpReflections()
 
 		if (hash == "e06ccbba" || hash == "444c60df" || hash == "c1eacd74" || hash == "48ed9648")
 		{
+			std::cout << rgp->world->reflectionProbes[i].reflectionImage->texture.cubemap << std::endl;
+			oldReflectionProbes.push_back(std::make_pair(i, cubemap));
 			rgp->world->reflectionProbes[i].reflectionImage->texture.cubemap = nullptr;
 			removed++;
 		}
@@ -316,6 +320,21 @@ __declspec(naked) void game::hookedCL_CmdButtons()
 		popad;
 		jmp retn_addr;
 	}
+}
+
+void game::hookedCL_Disconnect(int localClientNum)
+{
+	if(oldReflectionProbes.empty())
+		return game::pCL_Disconnect(localClientNum);
+
+	std::cout << "Restoring old reflection probes..." << std::endl;
+
+	for (auto& probe : oldReflectionProbes)
+		rgp->world->reflectionProbes[probe.first].reflectionImage->texture.cubemap = probe.second;
+
+	oldReflectionProbes.clear();
+
+	return game::pCL_Disconnect(localClientNum);
 }
 
 int	game::Cmd_Argc()

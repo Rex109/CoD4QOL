@@ -70,6 +70,10 @@ void hooks::InitializeHooks()
 	game::pCL_CmdButtons = (game::CL_CmdButtons)(0x4639C8);
 	hooks::install(&(PVOID&)game::pCL_CmdButtons, (PBYTE)game::hookedCL_CmdButtons);
 
+	//CL_Disconnect
+	game::pCL_Disconnect = (game::CL_Disconnect)(0x4696B0);
+	hooks::install(&(PVOID&)game::pCL_Disconnect, (PBYTE)game::hookedCL_Disconnect);
+
 	std::cout << "Hooks installed!" << std::endl;
 }
 
