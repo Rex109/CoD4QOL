@@ -337,6 +337,42 @@ void game::hookedCL_Disconnect(int localClientNum)
 	return game::pCL_Disconnect(localClientNum);
 }
 
+void applyFsr1(int a1)
+{
+	float renderscale = commands::qol_renderscale->current.value;
+	if (commands::qol_renderscale->current.value != 1.0)
+	{
+		const auto postfx_cas = game::Material_RegisterHandle("postfx_fsr1", 3);
+		game::RB_DrawFullScreenColoredQuad(postfx_cas, 0.0f, 0.0f, renderscale, renderscale, -1);
+	}
+}
+
+__declspec(naked) void game::hookedRB_DrawDebugPostEffects()
+{
+	const static uint32_t retn_addr = 0x64AD75;
+
+	__asm
+	{
+		pushad;
+		push	esi;
+		call	applyFsr1;
+		add		esp, 4;
+		popad;
+
+		jmp		retn_addr;
+	}
+}
+
+char game::hookedR_GenerateSortedDrawSurfs(GfxSceneParms* sceneParms, int a2, int a3)
+{
+	float renderscale = commands::qol_renderscale->current.value;
+
+	sceneParms->sceneViewport.width *= renderscale;
+	sceneParms->sceneViewport.height *= renderscale;
+
+	return game::pR_GenerateSortedDrawSurfs(sceneParms, a2, a3);
+}
+
 int	game::Cmd_Argc()
 {
 	return game::cmd_args->argc[game::cmd_args->nesting];
@@ -402,5 +438,6 @@ void game::SetCoD4xFunctionOffsets()
 	Cvar_RegisterBool = Cvar_RegisterBool_t(offsets::GetOffset("Cvar_RegisterBool"));
 	Cvar_RegisterEnum = Cvar_RegisterEnum_t(offsets::GetOffset("Cvar_RegisterEnum"));
 	Cvar_RegisterString = Cvar_RegisterString_t(offsets::GetOffset("Cvar_RegisterString"));
+	Cvar_RegisterFloat = Cvar_RegisterFloat_t(offsets::GetOffset("Cvar_RegisterFloat"));
 	FS_AddSingleIwdFileForGameDirectory = FS_AddSingleIwdFileForGameDirectory_t(offsets::GetOffset("FS_AddSingleIwdFileForGameDirectory"));
 }

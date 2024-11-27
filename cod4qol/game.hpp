@@ -1446,6 +1446,63 @@ namespace game
 		int savedScreenTimes[4];
 	};
 
+	typedef struct
+	{
+		byte enabled;
+		byte pad[3];
+		float bloomCutoff;
+		float bloomDesaturation;
+		float bloomIntensity;
+		float radius;
+	}GfxGlow;
+
+	typedef struct
+	{
+		byte enabled;
+		byte pad[3];
+		float brightness;
+		float contrast;
+		float desaturation;
+		byte invert;
+		byte pad2[3];
+		float tintDark[3];
+		float tintLight[3];
+	}GfxFilm;
+
+	typedef struct
+	{
+		float viewModelStart;
+		float viewModelEnd;
+		float nearStart;
+		float nearEnd;
+		float farStart;
+		float farEnd;
+		float nearBlur;
+		float farBlur;
+	}GfxDepthOfField;
+
+	struct GfxViewport
+	{
+		int x;
+		int y;
+		int width;
+		int height;
+	};
+
+	struct GfxSceneParms
+	{
+		int localClientNum;
+		float blurRadius;
+		GfxDepthOfField dof;
+		GfxFilm film;
+		GfxGlow glow;
+		bool isRenderingFullScreen;
+		GfxViewport sceneViewport;
+		GfxViewport displayViewport;
+		GfxViewport scissorViewport;
+		GfxLight* primaryLights;
+	};
+
 	inline bool startup = true;
 
 	const static DWORD cod4x_entry = (DWORD)GetModuleHandleA(COD4QOL_COD4X_MODULE);
@@ -1529,6 +1586,16 @@ namespace game
 
 	void hookedCL_Disconnect(int localClientNum);
 
+	typedef void(*RB_DrawDebugPostEffects)();
+	inline RB_DrawDebugPostEffects pRB_DrawDebugPostEffects;
+
+	void hookedRB_DrawDebugPostEffects();
+
+	typedef char(*R_GenerateSortedDrawSurfs)(GfxSceneParms* sceneParms, int a2, int a3);
+	inline R_GenerateSortedDrawSurfs pR_GenerateSortedDrawSurfs;
+
+	char hookedR_GenerateSortedDrawSurfs(GfxSceneParms* sceneParms, int a2, int a3);
+
 	int	Cmd_Argc();
 	const char* Cmd_Argv(int arg);
 	HMODULE GetCurrentModule();
@@ -1564,8 +1631,17 @@ namespace game
 	typedef game::dvar_s* (*Cvar_RegisterString_t)(const char* name, const char* string, game::dvar_flags flags, const char* description);
 	extern Cvar_RegisterString_t Cvar_RegisterString;
 
+	typedef game::dvar_s* (*Cvar_RegisterFloat_t)(const char* name, float val, float min, float max, unsigned short flags, const char* description);
+	extern Cvar_RegisterFloat_t Cvar_RegisterFloat;
+
 	typedef bool(*FS_AddSingleIwdFileForGameDirectory_t)(const char* pakfile, const char* basename, const char* gamename);
 	extern FS_AddSingleIwdFileForGameDirectory_t FS_AddSingleIwdFileForGameDirectory;
+
+	typedef void(*RB_DrawFullScreenColoredQuad_t)(Material*, float s0, float t0, float s1, float t1, int color);
+	extern RB_DrawFullScreenColoredQuad_t RB_DrawFullScreenColoredQuad;
+
+	typedef Material*(*Material_RegisterHandle_t)(const char* fontName, int fontSize);
+	extern Material_RegisterHandle_t Material_RegisterHandle;
 
 	inline void* Cmd_AddCommand_fnc;
 	inline game::CmdArgs* cmd_args = reinterpret_cast<game::CmdArgs*>(0x1410B40);
@@ -1575,11 +1651,14 @@ namespace game
 	inline game::Cmd_ExecuteSingleCommand_t Cmd_ExecuteSingleCommand = Cmd_ExecuteSingleCommand_t(0x4F9AB0);
 	inline game::Com_PrintMessage_t Com_PrintMessage = game::Com_PrintMessage_t(0x4FCA50);
 	inline game::DB_LoadXAssets_t DB_LoadXAssets = DB_LoadXAssets_t(0x48A2B0);
+	inline game::RB_DrawFullScreenColoredQuad_t RB_DrawFullScreenColoredQuad = RB_DrawFullScreenColoredQuad_t(0x6113E0);
+	inline game::Material_RegisterHandle_t Material_RegisterHandle = Material_RegisterHandle_t(0x5F2A80);
 	inline game::Sys_CreateConsole_t Sys_CreateConsole;
 
 	inline game::Cvar_RegisterBool_t Cvar_RegisterBool;
 	inline game::Cvar_RegisterEnum_t Cvar_RegisterEnum;
 	inline game::Cvar_RegisterString_t Cvar_RegisterString;
+	inline game::Cvar_RegisterFloat_t Cvar_RegisterFloat;
 
 	inline game::FS_AddSingleIwdFileForGameDirectory_t FS_AddSingleIwdFileForGameDirectory;
 

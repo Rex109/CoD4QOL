@@ -74,6 +74,14 @@ void hooks::InitializeHooks()
 	game::pCL_Disconnect = (game::CL_Disconnect)(0x4696B0);
 	hooks::install(&(PVOID&)game::pCL_Disconnect, (PBYTE)game::hookedCL_Disconnect);
 
+	//RB_DrawDebugPostEffects
+	game::pRB_DrawDebugPostEffects = (game::RB_DrawDebugPostEffects)(0x64AD70);
+	hooks::install(&(PVOID&)game::pRB_DrawDebugPostEffects, (PBYTE)game::hookedRB_DrawDebugPostEffects);
+
+	//R_GenerateSortedDrawSurfs
+	game::pR_GenerateSortedDrawSurfs = (game::R_GenerateSortedDrawSurfs)(0x5F98E0);
+	hooks::install(&(PVOID&)game::pR_GenerateSortedDrawSurfs, (PBYTE)game::hookedR_GenerateSortedDrawSurfs);
+
 	std::cout << "Hooks installed!" << std::endl;
 }
 

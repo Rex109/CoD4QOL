@@ -2,6 +2,7 @@ material,discord_icon
 material,github_icon
 material,kofi_icon
 material,youtube_icon
+material,postfx_fsr1
 
 menufile,ui/options_game_pc.menu
 menufile,ui/options_graphics_defaults.menu

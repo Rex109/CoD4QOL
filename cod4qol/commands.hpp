@@ -32,6 +32,7 @@ namespace commands
 	inline game::dvar_s* qol_enableautobhop;
 	inline game::dvar_s* qol_show_mainmenuinfo;
 	inline game::dvar_s* qol_debugreflections;
+	inline game::dvar_s* qol_renderscale;
 
 	void InitializeCommands();
 
