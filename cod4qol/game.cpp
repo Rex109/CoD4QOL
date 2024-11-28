@@ -477,20 +477,20 @@ __declspec(naked) void game::hookedConsole_Key()
 {
 	const static uint32_t retn_addr = 0x467534;
 
+	__asm pushad;
+
+	if(commands::qol_disableslashcommands->current.enabled)
+		__asm
+		{
+			popad;
+			jmp retn_addr;
+		}
+
 	__asm
 	{
-		//pushad;
-
-		/*mov eax, enabled;
-		test eax, eax;
-		jz original;*/
-
-		//popad;
-		jmp retn_addr;
-
-	/*original:
+	original:
 		popad;
-		jmp game::pConsole_Key;*/
+		jmp game::pConsole_Key;
 	}
 }
 
