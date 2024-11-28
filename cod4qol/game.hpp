@@ -1630,6 +1630,11 @@ namespace game
 
 	char hookedR_GenerateSortedDrawSurfs(GfxSceneParms* sceneParams, int a2, int a3);
 
+	typedef void(*Console_Key)();
+	inline Console_Key pConsole_Key;
+
+	void hookedConsole_Key();
+
 	int	Cmd_Argc();
 	const char* Cmd_Argv(int arg);
 	HMODULE GetCurrentModule();

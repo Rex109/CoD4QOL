@@ -86,6 +86,8 @@ void commands::InitializeCommands()
 
     qol_renderscale = game::Cvar_RegisterFloat("qol_renderscale", 1.0f, 0.1f, 1.0f, game::dvar_flags::saved, "Render scale.");
 
+    qol_disableslashcommands = game::Cvar_RegisterBool("qol_disableslashcommands", 0, game::dvar_flags::saved, "Executes commands in console without slashes.");
+
     std::cout << "Commands initialized!" << std::endl;
 }
 

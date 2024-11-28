@@ -473,6 +473,27 @@ char game::hookedR_GenerateSortedDrawSurfs(GfxSceneParms* sceneParams, int a2, i
 	return game::pR_GenerateSortedDrawSurfs(sceneParams, a2, a3);
 }
 
+__declspec(naked) void game::hookedConsole_Key()
+{
+	const static uint32_t retn_addr = 0x467534;
+
+	__asm
+	{
+		//pushad;
+
+		/*mov eax, enabled;
+		test eax, eax;
+		jz original;*/
+
+		//popad;
+		jmp retn_addr;
+
+	/*original:
+		popad;
+		jmp game::pConsole_Key;*/
+	}
+}
+
 int	game::Cmd_Argc()
 {
 	return game::cmd_args->argc[game::cmd_args->nesting];

@@ -82,6 +82,10 @@ void hooks::InitializeHooks()
 	game::pR_GenerateSortedDrawSurfs = (game::R_GenerateSortedDrawSurfs)(0x5F98E0);
 	hooks::install(&(PVOID&)game::pR_GenerateSortedDrawSurfs, (PBYTE)game::hookedR_GenerateSortedDrawSurfs);
 
+	//Console_Key
+	game::pConsole_Key = (game::Console_Key)(0x46752F);
+	hooks::install(&(PVOID&)game::pConsole_Key, (PBYTE)game::hookedConsole_Key);
+
 	std::cout << "Hooks installed!" << std::endl;
 }
 

@@ -33,6 +33,7 @@ namespace commands
 	inline game::dvar_s* qol_show_mainmenuinfo;
 	inline game::dvar_s* qol_debugreflections;
 	inline game::dvar_s* qol_renderscale;
+	inline game::dvar_s* qol_disableslashcommands;
 
 	void InitializeCommands();
 
