@@ -1503,6 +1503,40 @@ namespace game
 		GfxLight* primaryLights;
 	};
 
+	enum GfxRenderTargetId
+	{
+		R_RENDERTARGET_SAVED_SCREEN = 0x0,
+		R_RENDERTARGET_FRAME_BUFFER = 0x1,
+		R_RENDERTARGET_SCENE = 0x2,
+		R_RENDERTARGET_RESOLVED_POST_SUN = 0x3,
+		R_RENDERTARGET_RESOLVED_SCENE = 0x4,
+		R_RENDERTARGET_FLOAT_Z = 0x5,
+		R_RENDERTARGET_DYNAMICSHADOWS = 0x6,
+		R_RENDERTARGET_PINGPONG_0 = 0x7,
+		R_RENDERTARGET_PINGPONG_1 = 0x8,
+		R_RENDERTARGET_SHADOWCOOKIE = 0x9,
+		R_RENDERTARGET_SHADOWCOOKIE_BLUR = 0xA,
+		R_RENDERTARGET_POST_EFFECT_0 = 0xB,
+		R_RENDERTARGET_POST_EFFECT_1 = 0xC,
+		R_RENDERTARGET_SHADOWMAP_SUN = 0xD,
+		R_RENDERTARGET_SHADOWMAP_SPOT = 0xE,
+		R_RENDERTARGET_COUNT = 0xF,
+		R_RENDERTARGET_NONE = 0x10,
+	};
+
+	struct ScreenPlacement
+	{
+		float scaleVirtualToReal[2];
+		float scaleVirtualToFull[2];
+		float scaleRealToVirtual[2];
+		float virtualViewableMin[2];
+		float virtualViewableMax[2];
+		float realViewportSize[2];
+		float realViewableMin[2];
+		float realViewableMax[2];
+		float subScreenLeft;
+	};
+
 	inline bool startup = true;
 
 	const static DWORD cod4x_entry = (DWORD)GetModuleHandleA(COD4QOL_COD4X_MODULE);
@@ -1591,10 +1625,10 @@ namespace game
 
 	void hookedRB_DrawDebugPostEffects();
 
-	typedef char(*R_GenerateSortedDrawSurfs)(GfxSceneParms* sceneParms, int a2, int a3);
+	typedef char(*R_GenerateSortedDrawSurfs)(GfxSceneParms* sceneParams, int a2, int a3);
 	inline R_GenerateSortedDrawSurfs pR_GenerateSortedDrawSurfs;
 
-	char hookedR_GenerateSortedDrawSurfs(GfxSceneParms* sceneParms, int a2, int a3);
+	char hookedR_GenerateSortedDrawSurfs(GfxSceneParms* sceneParams, int a2, int a3);
 
 	int	Cmd_Argc();
 	const char* Cmd_Argv(int arg);
@@ -1643,16 +1677,21 @@ namespace game
 	typedef Material*(*Material_RegisterHandle_t)(const char* fontName, int fontSize);
 	extern Material_RegisterHandle_t Material_RegisterHandle;
 
+	typedef void(*RB_EndTessSurface_t)();
+	extern RB_EndTessSurface_t RB_EndTessSurface;
+
 	inline void* Cmd_AddCommand_fnc;
 	inline game::CmdArgs* cmd_args = reinterpret_cast<game::CmdArgs*>(0x1410B40);
 	inline game::gclient_s* g_clients = reinterpret_cast<game::gclient_s*>(0x13255A8);
 	inline game::r_global_permanent_t* rgp = reinterpret_cast<game::r_global_permanent_t*>(0xCC98280);
+	inline game::ScreenPlacement* scrPlace = reinterpret_cast<game::ScreenPlacement*>(0xE34420);
 
 	inline game::Cmd_ExecuteSingleCommand_t Cmd_ExecuteSingleCommand = Cmd_ExecuteSingleCommand_t(0x4F9AB0);
 	inline game::Com_PrintMessage_t Com_PrintMessage = game::Com_PrintMessage_t(0x4FCA50);
 	inline game::DB_LoadXAssets_t DB_LoadXAssets = DB_LoadXAssets_t(0x48A2B0);
 	inline game::RB_DrawFullScreenColoredQuad_t RB_DrawFullScreenColoredQuad = RB_DrawFullScreenColoredQuad_t(0x6113E0);
 	inline game::Material_RegisterHandle_t Material_RegisterHandle = Material_RegisterHandle_t(0x5F2A80);
+	inline game::RB_EndTessSurface_t RB_EndTessSurface = RB_EndTessSurface_t(0x61A2F0);
 	inline game::Sys_CreateConsole_t Sys_CreateConsole;
 
 	inline game::Cvar_RegisterBool_t Cvar_RegisterBool;

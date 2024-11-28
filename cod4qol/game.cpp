@@ -337,13 +337,110 @@ void game::hookedCL_Disconnect(int localClientNum)
 	return game::pCL_Disconnect(localClientNum);
 }
 
+void R_SetRenderTarget(int target)
+{
+	const static uint32_t R_SetRenderTarget_func = 0x632B60;
+	const static uint32_t _gfxCmdBufSourceState = 0xD53F5F0;
+	const static uint32_t _gfxCmdBufSourceSource = 0xD5404F0;
+
+	__asm
+	{
+		pushad;
+		push	_gfxCmdBufSourceSource;
+		push	_gfxCmdBufSourceState;
+		mov     eax, target;
+
+		call	R_SetRenderTarget_func;
+		add     esp, 8;
+		popad;
+	}
+}
+
+void R_Set2D()
+{
+	const static uint32_t R_Set2D_func = 0x6336E0;
+	const static uint32_t _gfxCmdBufSourceState = 0xD53F5F0;
+
+	__asm
+	{
+		pushad;
+		mov		edi, [_gfxCmdBufSourceState];
+		call	R_Set2D_func;
+		popad;
+	}
+}
+
+void RB_DrawStretchPic(game::Material* material, float x, float y, float w, float h, float texcoord0, float texcoord1, float texcoord2, float texcoord3 /*-1 pushed*/)
+{
+	const static uint32_t RB_DrawStretchPic_func = 0x610E10;
+	__asm
+	{
+		pushad;
+		mov		eax, material;
+		push    0FFFFFFFFh;
+		sub     esp, 20h;
+
+		fld		texcoord3;
+		fstp[esp + 1Ch];
+
+		fld		texcoord2;
+		fstp[esp + 18h];
+
+		fld		texcoord1;
+		fstp[esp + 14h];
+
+		fld		texcoord0;
+		fstp[esp + 10h];
+
+		fld		h;
+		fstp[esp + 0Ch];
+
+		fld		w;
+		fstp[esp + 8h];
+
+		fld		y;
+		fstp[esp + 4h];
+
+		fld		x;
+		fstp[esp];
+
+		call	RB_DrawStretchPic_func;
+		add     esp, 24h;
+		popad;
+	}
+}
+
 void applyFsr1(int a1)
 {
 	float renderscale = commands::qol_renderscale->current.value;
-	if (commands::qol_renderscale->current.value != 1.0)
+
+	if (renderscale != 1.0)
 	{
-		const auto postfx_cas = game::Material_RegisterHandle("postfx_fsr1", 3);
-		game::RB_DrawFullScreenColoredQuad(postfx_cas, 0.0f, 0.0f, renderscale, renderscale, -1);
+		/*R_Set2D();
+		R_SetRenderTarget(game::GfxRenderTargetId::R_RENDERTARGET_RESOLVED_POST_SUN);
+
+		if (const auto material = game::rgp->postFxColorMaterial; material)
+		{
+			RB_DrawStretchPic(material, 0.0f, 0.0f, game::scrPlace->realViewableMax[0], game::scrPlace->realViewableMax[1], 0.0, 0.0, 1.0, 1.0);
+		}
+
+		game::RB_EndTessSurface();
+
+		R_SetRenderTarget(game::GfxRenderTargetId::R_RENDERTARGET_FRAME_BUFFER);*/
+
+		float centerX = 0.5f;
+		float centerY = 0.5f;
+
+		float halfWidth = 0.5f * renderscale;
+		float halfHeight = 0.5f * renderscale;
+
+		float s0 = centerX - halfWidth;
+		float t0 = centerY - halfHeight;
+		float s1 = centerX + halfWidth;
+		float t1 = centerY + halfHeight;
+
+		const auto postfx_fsr1 = game::Material_RegisterHandle("postfx_fsr1", 3);
+		game::RB_DrawFullScreenColoredQuad(postfx_fsr1, s0, t0, s1, t1, -1);
 	}
 }
 
@@ -363,14 +460,17 @@ __declspec(naked) void game::hookedRB_DrawDebugPostEffects()
 	}
 }
 
-char game::hookedR_GenerateSortedDrawSurfs(GfxSceneParms* sceneParms, int a2, int a3)
+char game::hookedR_GenerateSortedDrawSurfs(GfxSceneParms* sceneParams, int a2, int a3)
 {
 	float renderscale = commands::qol_renderscale->current.value;
 
-	sceneParms->sceneViewport.width *= renderscale;
-	sceneParms->sceneViewport.height *= renderscale;
+	sceneParams->sceneViewport.width *= renderscale;
+	sceneParams->sceneViewport.height *= renderscale;
 
-	return game::pR_GenerateSortedDrawSurfs(sceneParms, a2, a3);
+	sceneParams->sceneViewport.x = (game::scrPlace->realViewableMax[0] - game::scrPlace->realViewableMax[0] * renderscale) / 2;
+	sceneParams->sceneViewport.y = (game::scrPlace->realViewableMax[1] - game::scrPlace->realViewableMax[1] * renderscale) / 2;
+
+	return game::pR_GenerateSortedDrawSurfs(sceneParams, a2, a3);
 }
 
 int	game::Cmd_Argc()
