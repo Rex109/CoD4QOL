@@ -413,20 +413,22 @@ void RB_DrawStretchPic(game::Material* material, float x, float y, float w, floa
 void applyFsr1(int a1)
 {
 	float renderscale = commands::qol_renderscale->current.value;
+	const static int* visionApplied = reinterpret_cast<int*>(0xCEFBA08);
 
 	if (renderscale != 1.0)
 	{
-		/*R_Set2D();
-		R_SetRenderTarget(game::GfxRenderTargetId::R_RENDERTARGET_RESOLVED_POST_SUN);
-
-		if (const auto material = game::rgp->postFxColorMaterial; material)
+		if (*visionApplied)
 		{
-			RB_DrawStretchPic(material, 0.0f, 0.0f, game::scrPlace->realViewableMax[0], game::scrPlace->realViewableMax[1], 0.0, 0.0, 1.0, 1.0);
+			R_Set2D();
+			R_SetRenderTarget(game::GfxRenderTargetId::R_RENDERTARGET_RESOLVED_POST_SUN);
+
+			if (const auto material = game::rgp->postFxColorMaterial; material)
+				RB_DrawStretchPic(material, 0.0f, 0.0f, game::scrPlace->realViewableMax[0], game::scrPlace->realViewableMax[1], 0.0, 0.0, 1.0, 1.0);
+
+			game::RB_EndTessSurface();
+
+			R_SetRenderTarget(game::GfxRenderTargetId::R_RENDERTARGET_FRAME_BUFFER);
 		}
-
-		game::RB_EndTessSurface();
-
-		R_SetRenderTarget(game::GfxRenderTargetId::R_RENDERTARGET_FRAME_BUFFER);*/
 
 		float centerX = 0.5f;
 		float centerY = 0.5f;
