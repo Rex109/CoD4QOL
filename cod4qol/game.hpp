@@ -1635,6 +1635,16 @@ namespace game
 
 	void hookedConsole_Key();
 
+	typedef void(*R_RecoverLostDevice)();
+	inline R_RecoverLostDevice pR_RecoverLostDevice;
+
+	void hookedR_RecoverLostDevice();
+
+	typedef void(*R_RecoverLostDevice_End)();
+	inline R_RecoverLostDevice_End pR_RecoverLostDevice_End;
+
+	void hookedR_RecoverLostDevice_End();
+
 	int	Cmd_Argc();
 	const char* Cmd_Argv(int arg);
 	HMODULE GetCurrentModule();
@@ -1642,6 +1652,11 @@ namespace game
 	void LoadModFiles();
 	void WriteBytesToFile(const byte* data, DWORD size, const char* filename);
 	void cleanUpReflections();
+	void restoreReflections();
+	void R_SetRenderTarget(int target);
+	void R_Set2D();
+	void RB_DrawStretchPic(game::Material* material, float x, float y, float w, float h, float texcoord0, float texcoord1, float texcoord2, float texcoord3);
+	void applyFsr1(int a1);
 
 	dvar_s* Find(const char*);
 	cmd_function_s* Cmd_AddCommand(const char* cmdname, void(__cdecl* function)());
@@ -1711,6 +1726,7 @@ namespace game
 	inline game::dvar_s* fs_game = game::Find("fs_game");
 	inline game::dvar_s* fs_homepath = game::Find("fs_homepath");
 	inline game::dvar_s* sv_cheats = game::Find("sv_cheats");
+	inline game::dvar_s* cl_ingame = game::Find("cl_ingame");
 
 	inline int* modCount = reinterpret_cast<int*>(0xCAF7554);
 	inline int* modIndex = reinterpret_cast<int*>(0xCAF7558);

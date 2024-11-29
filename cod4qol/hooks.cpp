@@ -86,6 +86,14 @@ void hooks::InitializeHooks()
 	game::pConsole_Key = (game::Console_Key)(0x46752F);
 	hooks::install(&(PVOID&)game::pConsole_Key, (PBYTE)game::hookedConsole_Key);
 
+	//R_RecoverLostDevice
+	game::pR_RecoverLostDevice = (game::R_RecoverLostDevice)(0x5F5360);
+	hooks::install(&(PVOID&)game::pR_RecoverLostDevice, (PBYTE)game::hookedR_RecoverLostDevice);
+
+	//R_RecoverLostDevice_End
+	game::pR_RecoverLostDevice_End = (game::R_RecoverLostDevice_End)(0x5F5526);
+	hooks::install(&(PVOID&)game::pR_RecoverLostDevice_End, (PBYTE)game::hookedR_RecoverLostDevice_End);
+
 	std::cout << "Hooks installed!" << std::endl;
 }
 

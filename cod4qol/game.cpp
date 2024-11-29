@@ -111,6 +111,11 @@ void game::WriteBytesToFile(const byte* data, DWORD size, const char* filename)
 
 void game::cleanUpReflections()
 {
+	if (commands::qol_debugreflections->current.enabled)
+		return;
+
+	std::cout << "Cleaning up reflections..." << std::endl;
+
 	int removed = 0;
 	for (int i = 0; i < rgp->world->reflectionProbeCount; i++)
 	{
@@ -133,6 +138,19 @@ void game::cleanUpReflections()
 	}
 
 	std::cout << "Removed " << removed << " reflection probes." << std::endl;
+}
+
+void game::restoreReflections()
+{
+	if (oldReflectionProbes.empty())
+		return;
+
+	std::cout << "Restoring old reflection probes..." << std::endl;
+
+	for (auto& probe : oldReflectionProbes)
+		rgp->world->reflectionProbes[probe.first].reflectionImage->texture.cubemap = probe.second;
+
+	oldReflectionProbes.clear();
 }
 
 void game::hookedDB_LoadXZoneFromGfxConfig()
@@ -178,11 +196,7 @@ void game::hookedCL_InitCGame()
 {
 	std::cout << "Calling CL_InitCGame();" << std::endl;
 
-	if (!commands::qol_debugreflections->current.enabled)
-	{
-		std::cout << "Cleaning up reflections..." << std::endl;
-		game::cleanUpReflections();
-	}
+	game::cleanUpReflections();
 
 	LoadModFiles();
 
@@ -324,20 +338,12 @@ __declspec(naked) void game::hookedCL_CmdButtons()
 
 void game::hookedCL_Disconnect(int localClientNum)
 {
-	if(oldReflectionProbes.empty())
-		return game::pCL_Disconnect(localClientNum);
-
-	std::cout << "Restoring old reflection probes..." << std::endl;
-
-	for (auto& probe : oldReflectionProbes)
-		rgp->world->reflectionProbes[probe.first].reflectionImage->texture.cubemap = probe.second;
-
-	oldReflectionProbes.clear();
+	game::restoreReflections();
 
 	return game::pCL_Disconnect(localClientNum);
 }
 
-void R_SetRenderTarget(int target)
+void game::R_SetRenderTarget(int target)
 {
 	const static uint32_t R_SetRenderTarget_func = 0x632B60;
 	const static uint32_t _gfxCmdBufSourceState = 0xD53F5F0;
@@ -356,7 +362,7 @@ void R_SetRenderTarget(int target)
 	}
 }
 
-void R_Set2D()
+void game::R_Set2D()
 {
 	const static uint32_t R_Set2D_func = 0x6336E0;
 	const static uint32_t _gfxCmdBufSourceState = 0xD53F5F0;
@@ -370,7 +376,7 @@ void R_Set2D()
 	}
 }
 
-void RB_DrawStretchPic(game::Material* material, float x, float y, float w, float h, float texcoord0, float texcoord1, float texcoord2, float texcoord3 /*-1 pushed*/)
+void game::RB_DrawStretchPic(game::Material* material, float x, float y, float w, float h, float texcoord0, float texcoord1, float texcoord2, float texcoord3)
 {
 	const static uint32_t RB_DrawStretchPic_func = 0x610E10;
 	__asm
@@ -410,7 +416,7 @@ void RB_DrawStretchPic(game::Material* material, float x, float y, float w, floa
 	}
 }
 
-void applyFsr1(int a1)
+void game::applyFsr1(int a1)
 {
 	float renderscale = commands::qol_renderscale->current.value;
 	const static int* visionApplied = reinterpret_cast<int*>(0xCEFBA08);
@@ -425,7 +431,7 @@ void applyFsr1(int a1)
 			if (const auto material = game::rgp->postFxColorMaterial; material)
 				RB_DrawStretchPic(material, 0.0f, 0.0f, game::scrPlace->realViewableMax[0], game::scrPlace->realViewableMax[1], 0.0, 0.0, 1.0, 1.0);
 
-			game::RB_EndTessSurface();
+			RB_EndTessSurface();
 
 			R_SetRenderTarget(game::GfxRenderTargetId::R_RENDERTARGET_FRAME_BUFFER);
 		}
@@ -454,7 +460,7 @@ __declspec(naked) void game::hookedRB_DrawDebugPostEffects()
 	{
 		pushad;
 		push	esi;
-		call	applyFsr1;
+		call	game::applyFsr1;
 		add		esp, 4;
 		popad;
 
@@ -493,6 +499,33 @@ __declspec(naked) void game::hookedConsole_Key()
 	original:
 		popad;
 		jmp game::pConsole_Key;
+	}
+}
+
+__declspec(naked) void game::hookedR_RecoverLostDevice()
+{
+	__asm
+	{
+		pushad;
+		call game::restoreReflections;
+		popad;
+
+		jmp game::pR_RecoverLostDevice;
+	}
+}
+
+__declspec(naked) void game::hookedR_RecoverLostDevice_End()
+{
+	__asm pushad;
+
+	if(cl_ingame->current.enabled)
+		__asm call game::cleanUpReflections;
+
+	__asm 
+	{
+		popad;
+
+		jmp game::pR_RecoverLostDevice_End;
 	}
 }
 
