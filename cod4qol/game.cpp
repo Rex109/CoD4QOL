@@ -416,7 +416,7 @@ void game::RB_DrawStretchPic(game::Material* material, float x, float y, float w
 	}
 }
 
-void game::applyFsr1(int a1)
+void game::applyFsr1()
 {
 	float renderscale = commands::qol_renderscale->current.value;
 	const static int* visionApplied = reinterpret_cast<int*>(0xCEFBA08);
@@ -459,9 +459,7 @@ __declspec(naked) void game::hookedRB_DrawDebugPostEffects()
 	__asm
 	{
 		pushad;
-		push	esi;
 		call	game::applyFsr1;
-		add		esp, 4;
 		popad;
 
 		jmp		retn_addr;
@@ -470,6 +468,9 @@ __declspec(naked) void game::hookedRB_DrawDebugPostEffects()
 
 char game::hookedR_GenerateSortedDrawSurfs(GfxSceneParms* sceneParams, int a2, int a3)
 {
+	if(commands::r_fullbright->current.enabled)
+		return game::pR_GenerateSortedDrawSurfs(sceneParams, a2, a3);
+
 	float renderscale = commands::qol_renderscale->current.value;
 
 	sceneParams->sceneViewport.width *= renderscale;

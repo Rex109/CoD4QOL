@@ -1656,7 +1656,7 @@ namespace game
 	void R_SetRenderTarget(int target);
 	void R_Set2D();
 	void RB_DrawStretchPic(game::Material* material, float x, float y, float w, float h, float texcoord0, float texcoord1, float texcoord2, float texcoord3);
-	void applyFsr1(int a1);
+	void applyFsr1();
 
 	dvar_s* Find(const char*);
 	cmd_function_s* Cmd_AddCommand(const char* cmdname, void(__cdecl* function)());
@@ -1720,8 +1720,6 @@ namespace game
 	inline game::Cvar_RegisterFloat_t Cvar_RegisterFloat;
 
 	inline game::FS_AddSingleIwdFileForGameDirectory_t FS_AddSingleIwdFileForGameDirectory;
-
-	inline game::dvar_s* com_introplayed;
 
 	inline game::dvar_s* fs_game = game::Find("fs_game");
 	inline game::dvar_s* fs_homepath = game::Find("fs_homepath");
