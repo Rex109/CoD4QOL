@@ -421,7 +421,7 @@ void game::applyFsr1()
 	float renderscale = commands::qol_renderscale->current.value;
 	const static int* visionApplied = reinterpret_cast<int*>(0xCEFBA08);
 
-	if (renderscale != 1.0)
+	if (renderscale != 1.0 && !commands::r_fullbright->current.enabled)
 	{
 		if (*visionApplied)
 		{
