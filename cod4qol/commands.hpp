@@ -34,6 +34,7 @@ namespace commands
 	inline game::dvar_s* qol_debugreflections;
 	inline game::dvar_s* qol_renderscale;
 	inline game::dvar_s* qol_disableslashcommands;
+	inline game::dvar_s* qol_invertFlashbang;
 
 	void InitializeCommands();
 
@@ -47,6 +48,7 @@ namespace commands
 	void SetGun(game::GfxViewParms* view_parms);
 	void ToggleLoadingInfoUpdate();
 	void ToggleSteamAuthUpdate();
+	void ToggleFlashbangUpdate();
 	void OpenLink();
 
 	void LoadDemos();

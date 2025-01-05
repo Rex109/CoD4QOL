@@ -29,7 +29,6 @@ HMODULE game::GetCurrentModule()
 
 bool game::LoadLocalizedIWD(const char* pakfile, const char* basename, const char* gamename)
 {
-	
 	static int* iwd_flag_localized = reinterpret_cast<int*>(offsets::GetOffset("iwd_flag_localized"));
 	static int* iwd_flag_lang = reinterpret_cast<int*>(offsets::GetOffset("iwd_flag_lang"));
 	static dvar_s* loc_language = game::Find("loc_language");
@@ -197,6 +196,8 @@ void game::hookedCL_InitCGame()
 	std::cout << "Calling CL_InitCGame();" << std::endl;
 
 	game::cleanUpReflections();
+
+	game::Cbuf_AddText("toggleflashbangupdate\n", 0);
 
 	LoadModFiles();
 

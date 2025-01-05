@@ -15,6 +15,7 @@ void commands::InitializeCommands()
     game::Cmd_AddCommand("toggleconsoleupdate", ToggleConsoleUpdate);
     game::Cmd_AddCommand("toggleloadinginfoupdate", ToggleLoadingInfoUpdate);
     game::Cmd_AddCommand("togglesteamauthupdate", ToggleSteamAuthUpdate);
+    game::Cmd_AddCommand("toggleflashbangupdate", ToggleFlashbangUpdate);
     game::Cmd_AddCommand("openlink", OpenLink);
 
     game::Cmd_AddCommand("loaddemos", LoadDemos);
@@ -87,6 +88,8 @@ void commands::InitializeCommands()
     qol_renderscale = game::Cvar_RegisterFloat("qol_renderscale", 1.0f, 0.1f, 1.0f, game::dvar_flags::saved, "Render scale.");
 
     qol_disableslashcommands = game::Cvar_RegisterBool("qol_disableslashcommands", 0, game::dvar_flags::saved, "Executes commands in console without slashes.");
+
+    qol_invertFlashbang = game::Cvar_RegisterBool("qol_invertFlashbang", 0, game::dvar_flags::saved, "Invert the flashbang effect. In order to update it you need to execute \"toggleflashbangupdate\".");
 
     std::cout << "Commands initialized!" << std::endl;
 }
@@ -251,6 +254,17 @@ void commands::ToggleSteamAuthUpdate()
         hooks::write_addr(steam_auth_a, steam_auth_a_bytes_original.data.c_str(), steam_auth_a_bytes_original.size);
         hooks::write_addr(steam_auth_b, steam_auth_b_bytes_original.data.c_str(), steam_auth_b_bytes_original.size);
     }
+}
+
+void commands::ToggleFlashbangUpdate()
+{
+    static game::Material* flashMaterial = game::rgp->shellShockFlashedMaterial;
+    static game::Material* whiteMaterial = game::Material_RegisterHandle("black", 3);
+
+    if (commands::qol_invertFlashbang->current.enabled)
+		game::rgp->shellShockFlashedMaterial = whiteMaterial;
+    else
+		game::rgp->shellShockFlashedMaterial = flashMaterial;
 }
 
 void commands::OpenLink()
