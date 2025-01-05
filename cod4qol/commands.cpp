@@ -89,7 +89,7 @@ void commands::InitializeCommands()
 
     qol_disableslashcommands = game::Cvar_RegisterBool("qol_disableslashcommands", 0, game::dvar_flags::saved, "Executes commands in console without slashes.");
 
-    qol_invertFlashbang = game::Cvar_RegisterBool("qol_invertFlashbang", 0, game::dvar_flags::saved, "Invert the flashbang effect. In order to update it you need to execute \"toggleflashbangupdate\".");
+    qol_invertflashbang = game::Cvar_RegisterBool("qol_invertflashbang", 0, game::dvar_flags::saved, "Invert the flashbang effect. In order to update it you need to execute \"toggleflashbangupdate\".");
 
     std::cout << "Commands initialized!" << std::endl;
 }
@@ -261,7 +261,7 @@ void commands::ToggleFlashbangUpdate()
     static game::Material* flashMaterial = game::rgp->shellShockFlashedMaterial;
     static game::Material* whiteMaterial = game::Material_RegisterHandle("black", 3);
 
-    if (commands::qol_invertFlashbang->current.enabled)
+    if (commands::qol_invertflashbang->current.enabled)
 		game::rgp->shellShockFlashedMaterial = whiteMaterial;
     else
 		game::rgp->shellShockFlashedMaterial = flashMaterial;

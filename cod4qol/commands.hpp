@@ -34,7 +34,7 @@ namespace commands
 	inline game::dvar_s* qol_debugreflections;
 	inline game::dvar_s* qol_renderscale;
 	inline game::dvar_s* qol_disableslashcommands;
-	inline game::dvar_s* qol_invertFlashbang;
+	inline game::dvar_s* qol_invertflashbang;
 
 	void InitializeCommands();
 

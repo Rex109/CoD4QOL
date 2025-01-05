@@ -106,7 +106,7 @@ itemDef { \
         CHOICE_DVARFLOATLIST_VIS( 28, "Auto Bunnyhop", qol_enableautobhop, { "@MENU_OFF" 0 "@MENU_ON" 1 }, ;, when( localVarInt ( ui_qol ) == 2 );)
         CHOICE_DVARFLOATLIST_VIS( 29, "Disable slash commands", qol_disableslashcommands, { "@MENU_OFF" 0 "@MENU_ON" 1 }, ;, when( localVarInt ( ui_qol ) == 2 );)
         CHOICE_DVARFLOATLIST_VIS( 30, "Show red reflection probes", qol_debugreflections, { "@MENU_OFF" 0 "@MENU_ON" 1 }, ;, when( localVarInt ( ui_qol ) == 2 );)
-        CHOICE_DVARFLOATLIST_VIS( 31, "Invert flashbangs", qol_invertFlashbang, { "@MENU_OFF" 0 "@MENU_ON" 1 }, exec "toggleflashbangupdate";, when( localVarInt ( ui_qol ) == 2 );)
+        CHOICE_DVARFLOATLIST_VIS( 31, "Invert flashbangs", qol_invertflashbang, { "@MENU_OFF" 0 "@MENU_ON" 1 }, exec "toggleflashbangupdate";, when( localVarInt ( ui_qol ) == 2 );)
 
 		itemDef 
 		{
