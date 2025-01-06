@@ -5,6 +5,7 @@
 #include "resource.h"
 #include "offsets.hpp"
 #include <crc32/crc32.h>
+#include <thread>
 
 std::vector<std::pair<int, IDirect3DCubeTexture9*>> oldReflectionProbes;
 
@@ -65,7 +66,6 @@ void game::LoadModFiles()
 
 		HGLOBAL hData = LoadResource(game::GetCurrentModule(), hRes);
 
-
 		if (!hData)
 		{
 			std::cout << "Failed to load resource: " << GetLastError() << std::endl;
@@ -88,6 +88,19 @@ void game::LoadModFiles()
 			commands::qol_forceiwdextract->current.enabled = false;
 			commands::qol_forceiwdextract->latched.enabled = false;
 		}
+	}
+
+	CRC32 crc32;
+	std::ifstream file(relative_dir, std::ios::binary);
+	std::vector<byte> file_bytes((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+	std::string hash = crc32(file_bytes.data(), file_bytes.size());
+
+	if (hash != COD4QOL_IWD_CRC32)
+	{
+		std::thread msgbox([] {MessageBox(NULL, "xcommon_cod4qol.iwd is corrupted or outdated. Delete it from main/xcommon_cod4qol.iwd and restart your game.", "CoD4QOL", MB_OK | MB_ICONERROR); });
+		msgbox.detach();
+
+		return;
 	}
 
 	LoadLocalizedIWD(relative_dir.c_str(), "xcommon_cod4qol.iwd", "main");
