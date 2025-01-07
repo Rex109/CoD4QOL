@@ -91,6 +91,8 @@ void commands::InitializeCommands()
 
     qol_invertflashbang = game::Cvar_RegisterBool("qol_invertflashbang", 0, game::dvar_flags::saved, "Invert the flashbang effect. In order to update it you need to execute \"toggleflashbangupdate\".");
 
+    qol_loadcustomlocalizedresources = game::Cvar_RegisterBool("qol_loadcustomlocalizedresources", 0, game::dvar_flags::saved, "Load custom localized resources from \\main\\custom_localized_resources.iwd.");
+
     std::cout << "Commands initialized!" << std::endl;
 }
 

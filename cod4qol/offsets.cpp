@@ -88,3 +88,8 @@ void offsets::SetCRC32(std::string crc32)
 
 	current_crc32 = crc32;
 }
+
+std::string offsets::GetCRC32()
+{
+	return current_crc32;
+}

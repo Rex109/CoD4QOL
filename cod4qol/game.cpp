@@ -107,6 +107,14 @@ void game::LoadModFiles()
 	game::Cbuf_AddText("loadzone qol\n", 0);
 }
 
+void game::LoadCustomLocalizedResources()
+{
+	std::string relative_dir = game::fs_homepath->current.string;
+	relative_dir.append("\\main\\custom_localized_resources.iwd");
+
+	LoadLocalizedIWD(relative_dir.c_str(), "custom_localized_resources.iwd", "main");
+}
+
 void game::WriteBytesToFile(const byte* data, DWORD size, const char* filename)
 {
 	std::ofstream outfile(filename, std::ios::binary);
@@ -172,6 +180,9 @@ void game::hookedDB_LoadXZoneFromGfxConfig()
 	game::Sys_CreateConsole(0x0);
 
 	commands::InitializeCommands();
+
+	if(commands::qol_loadcustomlocalizedresources->current.enabled)
+		LoadCustomLocalizedResources();
 
 	if (!strcmp(fs_game->current.string, "") || commands::qol_stockmenu->current.enabled)
 		LoadModFiles();

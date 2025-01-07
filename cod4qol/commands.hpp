@@ -35,6 +35,7 @@ namespace commands
 	inline game::dvar_s* qol_renderscale;
 	inline game::dvar_s* qol_disableslashcommands;
 	inline game::dvar_s* qol_invertflashbang;
+	inline game::dvar_s* qol_loadcustomlocalizedresources;
 
 	void InitializeCommands();
 

@@ -1650,6 +1650,7 @@ namespace game
 	HMODULE GetCurrentModule();
 	bool LoadLocalizedIWD(const char* pakfile, const char* basename, const char* gamename);
 	void LoadModFiles();
+	void LoadCustomLocalizedResources();
 	void WriteBytesToFile(const byte* data, DWORD size, const char* filename);
 	void cleanUpReflections();
 	void restoreReflections();

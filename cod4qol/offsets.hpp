@@ -21,4 +21,5 @@ namespace offsets
 	void AddData(std::string id, data_set data);
 	data_t GetData(std::string id);
 	void SetCRC32(std::string crc32);
+	std::string GetCRC32();
 }
