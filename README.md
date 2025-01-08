@@ -17,6 +17,7 @@ A Call of Duty 4 X plugin that adds new settings, unlocks essential dvars and ad
 - Works on any server regardless of the mod
 - Speeds up the game's boot time
 - Adds an in-game demo browser/manager
+- Fixes red reflections on older maps
 
 ### Complete patches list
 - Adds "vm_anim" command
@@ -33,6 +34,7 @@ A Call of Duty 4 X plugin that adds new settings, unlocks essential dvars and ad
   - Drawfps selector
   - Draw distance selector
   - Lod scale skinned
+  - FSR1 Upscaling
   - Film use tweaks toggle
   - Gun X, Y, Z sliders
   - Gun handedness switch
@@ -45,9 +47,13 @@ A Call of Duty 4 X plugin that adds new settings, unlocks essential dvars and ad
   - Show external console
   - Display loading info
   - Play ambient music
-  - Raw input
   - Always load stock menu
   - Display main menu branding
+  - Auto Bunnyhop
+  - Disable slash commands
+  - Show red reflection probes
+  - Invert flashbangs
+  - Load custom localized resources
 
 ## Download and installation 
 To download the pre-compiled binaries you can grab the latest version in the [Releases Page](https://github.com/Rex109/Cod4QOL/releases)
@@ -90,6 +96,9 @@ The folder structure looks like this:
 ```
 
 Part of the user settings are stored inside config_mp.cfg, if you wish to delete them remove every line that starts with "qol_"
+
+# FSR 1 4K Benchmark video
+[![Call of Duty 4 - CoD4QOL FSR 1 4K Benchmark](https://img.youtube.com/vi/q7UkncTijTY/0.jpg)](https://www.youtube.com/watch?v=q7UkncTijTY)
 
 ## Limitations
 - Does not work in single player
