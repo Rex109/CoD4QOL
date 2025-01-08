@@ -261,7 +261,7 @@ void commands::ToggleSteamAuthUpdate()
 void commands::ToggleFlashbangUpdate()
 {
     static game::Material* flashMaterial = game::rgp->shellShockFlashedMaterial;
-    static game::Material* whiteMaterial = game::Material_RegisterHandle("black", 3);
+    game::Material* whiteMaterial = game::Material_RegisterHandle("black", 3);
 
     if (commands::qol_invertflashbang->current.enabled)
 		game::rgp->shellShockFlashedMaterial = whiteMaterial;
