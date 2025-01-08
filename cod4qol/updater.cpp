@@ -33,7 +33,7 @@ bool updater::CheckForUpdates()
 
     nlohmann::json parsed = nlohmann::json::parse(readBuffer);
 
-    if (parsed["tag_name"] == COD4QOL_VERSION)
+    if (parsed["tag_name"] == COD4QOL_BASE_VERSION)
     {
         std::cout << "You are using the latest version of " << COD4QOL_NAME << std::endl;
         return false;
