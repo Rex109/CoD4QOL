@@ -260,13 +260,12 @@ void commands::ToggleSteamAuthUpdate()
 
 void commands::ToggleFlashbangUpdate()
 {
-    game::Material* flashMaterial = game::rgp->shellShockFlashedMaterial;
-    game::Material* whiteMaterial = game::Material_RegisterHandle("black", 3);
+    //game::Material* flashMaterial = game::rgp->shellShockFlashedMaterial;
 
     if (commands::qol_invertflashbang->current.enabled)
-		game::rgp->shellShockFlashedMaterial = whiteMaterial;
-    else
-		game::rgp->shellShockFlashedMaterial = flashMaterial;
+		game::rgp->shellShockFlashedMaterial = game::Material_RegisterHandle("black", 3);;
+    //else
+	//	game::rgp->shellShockFlashedMaterial = flashMaterial;
 }
 
 void commands::OpenLink()
