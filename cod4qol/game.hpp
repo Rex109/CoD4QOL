@@ -1993,4 +1993,6 @@ namespace game
 	inline int* modIndex = reinterpret_cast<int*>(0xCAF7558);
 	inline const char** modName = reinterpret_cast<const char**>(0xCAF7354);
 	inline const char** modDesc = reinterpret_cast<const char**>(0xCAF7358);
+
+	inline int* dvar_modifiedFlags = reinterpret_cast<int*>(0x0CBA73F4);
 }

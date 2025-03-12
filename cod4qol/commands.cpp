@@ -521,27 +521,37 @@ void commands::CrosshairConfig()
 
                     std::getline(iss, line);
                     qol_customcrosshairsize->current.integer = std::stoi(line);
+                    qol_customcrosshairsize->latched.integer = std::stoi(line);
 
                     std::getline(iss, line);
                     qol_customcrosshairthickness->current.integer = std::stoi(line);
+                    qol_customcrosshairthickness->latched.integer = std::stoi(line);
 
                     std::getline(iss, line);
                     qol_customcrosshairgap->current.integer = std::stoi(line);
+                    qol_customcrosshairgap->latched.integer = std::stoi(line);
 
                     std::getline(iss, line);
                     qol_customcrosshairdot->current.enabled = std::stoi(line);
+                    qol_customcrosshairdot->latched.enabled = std::stoi(line);
 
                     std::getline(iss, line);
                     qol_customcrosshaircolor_r->current.value = std::stof(line);
+                    qol_customcrosshaircolor_r->latched.value = std::stof(line);
 
                     std::getline(iss, line);
                     qol_customcrosshaircolor_g->current.value = std::stof(line);
+                    qol_customcrosshaircolor_g->latched.value = std::stof(line);
 
                     std::getline(iss, line);
                     qol_customcrosshaircolor_b->current.value = std::stof(line);
+                    qol_customcrosshaircolor_b->latched.value = std::stof(line);
 
                     std::getline(iss, line);
                     qol_customcrosshaircolor_a->current.value = std::stof(line);
+                    qol_customcrosshaircolor_a->latched.value = std::stof(line);
+
+                    *game::dvar_modifiedFlags |= 1u;
                 }
                 catch (const std::exception& e)
                 {
