@@ -1654,6 +1654,7 @@ namespace game
 	void WriteBytesToFile(const byte* data, DWORD size, const char* filename);
 	void cleanUpReflections();
 	void restoreReflections();
+	void GatherFlashBangMaterials();
 	void R_SetRenderTarget(int target);
 	void R_Set2D();
 	void RB_DrawStretchPic(game::Material* material, float x, float y, float w, float h, float texcoord0, float texcoord1, float texcoord2, float texcoord3);
@@ -1726,6 +1727,9 @@ namespace game
 	inline game::dvar_s* fs_homepath = game::Find("fs_homepath");
 	inline game::dvar_s* sv_cheats = game::Find("sv_cheats");
 	inline game::dvar_s* cl_ingame = game::Find("cl_ingame");
+
+	inline game::Material* flashMaterial;
+	inline game::Material* whiteMaterial;
 
 	inline int* modCount = reinterpret_cast<int*>(0xCAF7554);
 	inline int* modIndex = reinterpret_cast<int*>(0xCAF7558);

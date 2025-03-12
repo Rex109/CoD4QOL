@@ -221,6 +221,7 @@ void game::hookedCL_InitCGame()
 
 	game::cleanUpReflections();
 
+	game::GatherFlashBangMaterials();
 	game::Cbuf_AddText("toggleflashbangupdate\n", 0);
 
 	LoadModFiles();
@@ -366,6 +367,13 @@ void game::hookedCL_Disconnect(int localClientNum)
 	game::restoreReflections();
 
 	return game::pCL_Disconnect(localClientNum);
+}
+
+
+void game::GatherFlashBangMaterials()
+{
+	game::flashMaterial = game::Material_RegisterHandle("shellshock_flashed", 3);
+	game::whiteMaterial = game::Material_RegisterHandle("black", 3);
 }
 
 void game::R_SetRenderTarget(int target)
