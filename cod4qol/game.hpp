@@ -1537,6 +1537,239 @@ namespace game
 		float subScreenLeft;
 	};
 
+	enum trType_t
+	{
+		TR_STATIONARY = 0x0,
+		TR_INTERPOLATE = 0x1,
+		TR_LINEAR = 0x2,
+		TR_LINEAR_STOP = 0x3,
+		TR_SINE = 0x4,
+		TR_GRAVITY = 0x5,
+		TR_ACCELERATE = 0x6,
+		TR_DECELERATE = 0x7,
+		TR_PHYSICS = 0x8,
+		TR_FIRST_RAGDOLL = 0x9,
+		TR_RAGDOLL = 0x9,
+		TR_RAGDOLL_GRAVITY = 0xA,
+		TR_RAGDOLL_INTERPOLATE = 0xB,
+		TR_LAST_RAGDOLL = 0xB,
+	};
+
+	struct trajectory_t
+	{
+		trType_t trType;
+		int trTime;
+		int trDuration;
+		float trBase[3];
+		float trDelta[3];
+	};
+
+	struct LerpEntityStateEarthquake
+	{
+		float scale;
+		float radius;
+		int duration;
+	};
+
+	struct LerpEntityStateLoopFx
+	{
+		float cullDist;
+		int period;
+	};
+
+	struct LerpEntityStateCustomExplode
+	{
+		int startTime;
+	};
+
+	struct LerpEntityStateTurret
+	{
+		float gunAngles[3];
+	};
+
+	struct LerpEntityStateExplosion
+	{
+		float innerRadius;
+		float magnitude;
+	};
+
+	struct LerpEntityStateBulletHit
+	{
+		float start[3];
+	};
+
+	struct LerpEntityStatePrimaryLight
+	{
+		char colorAndExp[4];
+		float intensity;
+		float radius;
+		float cosHalfFovOuter;
+		float cosHalfFovInner;
+	};
+
+	struct LerpEntityStatePlayer
+	{
+		float leanf;
+		int movementDir;
+	};
+
+	struct LerpEntityStateVehicle
+	{
+		float bodyPitch;
+		float bodyRoll;
+		float steerYaw;
+		int materialTime;
+		float gunPitch;
+		float gunYaw;
+		int teamAndOwnerIndex;
+	};
+
+	struct LerpEntityStateMissile
+	{
+		int launchTime;
+	};
+
+	struct LerpEntityStateSoundBlend
+	{
+		float lerp;
+	};
+
+	struct LerpEntityStateExplosionJolt
+	{
+		float innerRadius;
+		float impulse[3];
+	};
+
+	struct LerpEntityStatePhysicsJitter
+	{
+		float innerRadius;
+		float minDisplacement;
+		float maxDisplacement;
+	};
+
+	struct LerpEntityStateAnonymous
+	{
+		int data[7];
+	};
+
+	union LerpEntityStateTypeUnion
+	{
+		LerpEntityStateTurret turret;
+		LerpEntityStateLoopFx loopFx;
+		LerpEntityStatePrimaryLight primaryLight;
+		LerpEntityStatePlayer player;
+		LerpEntityStateVehicle vehicle;
+		LerpEntityStateMissile missile;
+		LerpEntityStateSoundBlend soundBlend;
+		LerpEntityStateBulletHit bulletHit;
+		LerpEntityStateEarthquake earthquake;
+		LerpEntityStateCustomExplode customExplode;
+		LerpEntityStateExplosion explosion;
+		LerpEntityStateExplosionJolt explosionJolt;
+		LerpEntityStatePhysicsJitter physicsJitter;
+		LerpEntityStateAnonymous anonymous;
+	};
+
+	struct LerpEntityState
+	{
+		int eFlags;
+		trajectory_t pos;
+		trajectory_t apos;
+		LerpEntityStateTypeUnion u;
+	};
+
+	struct entityState_s
+	{
+		int number;
+		int eType;
+		LerpEntityState lerp;
+		int time2;
+		int otherEntityNum;
+		int attackerEntityNum;
+		int groundEntityNum;
+		int loopSound;
+		int surfType;
+		int index;
+		int clientNum;
+		int iHeadIcon;
+		int iHeadIconTeam;
+		int solid;
+		unsigned int eventParm;
+		int eventSequence;
+		int events[4];
+		int eventParms[4];
+		int weapon;
+		int weaponModel;
+		int legsAnim;
+		int torsoAnim;
+		int indexUnion1;
+		int indexUnion2;
+		float fTorsoPitch;
+		float fWaistPitch;
+		unsigned int partBits[4];
+	};
+
+	enum team_t
+	{
+		TEAM_FREE = 0x0,
+		TEAM_AXIS = 0x1,
+		TEAM_ALLIES = 0x2,
+		TEAM_SPECTATOR = 0x3,
+		TEAM_NUM_TEAMS = 0x4,
+	};
+
+	struct clientState_s
+	{
+		int clientIndex;
+		team_t team;
+		int modelindex;
+		int attachModelIndex[6];
+		int attachTagIndex[6];
+		char name[16];
+		float maxSprintTimeMultiplier;
+		int rank;
+		int prestige;
+		int perks;
+		int attachedVehEntNum;
+		int attachedVehSlotIndex;
+	};
+
+	struct snapshot_s
+	{
+		int snapFlags;
+		int ping;
+		int serverTime;
+		playerState_s ps;
+		int numEntities;
+		int numClients;
+		entityState_s entities[512];
+		clientState_s clients[64];
+		int serverCommandSequence;
+	};
+
+	struct cg_s
+	{
+		int clientNum;
+		int localClientNum;
+		DemoType demoType;
+		CubemapShot cubemapShot;
+		int cubemapSize;
+		int renderScreen;
+		int latestSnapshotNum;
+		int latestSnapshotTime;
+		snapshot_s* snap;
+		snapshot_s* nextSnap;
+		snapshot_s activeSnapshots[2];
+		float frameInterpolation;
+		int frametime;
+		int time;
+		int oldTime;
+		int physicsTime;
+		int mapRestart;
+		int renderingThirdPerson;
+		playerState_s predictedPlayerState;
+	};
+
 	inline bool startup = true;
 
 	const static DWORD cod4x_entry = (DWORD)GetModuleHandleA(COD4QOL_COD4X_MODULE);
@@ -1721,6 +1954,7 @@ namespace game
 	inline game::CmdArgs* cmd_args = reinterpret_cast<game::CmdArgs*>(0x1410B40);
 	inline game::gclient_s* g_clients = reinterpret_cast<game::gclient_s*>(0x13255A8);
 	inline game::r_global_permanent_t* rgp = reinterpret_cast<game::r_global_permanent_t*>(0xCC98280);
+	inline game::cg_s* cg = reinterpret_cast<game::cg_s*>(0x74E338);
 	inline game::ScreenPlacement* scrPlace = reinterpret_cast<game::ScreenPlacement*>(0xE34420);
 
 	inline game::Cmd_ExecuteSingleCommand_t Cmd_ExecuteSingleCommand = Cmd_ExecuteSingleCommand_t(0x4F9AB0);

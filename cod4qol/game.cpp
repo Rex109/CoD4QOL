@@ -611,7 +611,6 @@ void drawCustomCrosshair()
 	game::R_AddCmdDrawStretchPic(material, game::scrPlace->realViewableMax[0] / 2 - commands::qol_customcrosshairsize->current.integer - commands::qol_customcrosshairgap->current.integer, game::scrPlace->realViewableMax[1] / 2 - commands::qol_customcrosshairthickness->current.integer / 2, commands::qol_customcrosshairsize->current.integer, commands::qol_customcrosshairthickness->current.integer, 0.0f, 0.0f, 0.0f, 0.0f, commands::qol_customcrosshaircolor->current.vector);
 	game::R_AddCmdDrawStretchPic(material, game::scrPlace->realViewableMax[0] / 2 + commands::qol_customcrosshairgap->current.integer, game::scrPlace->realViewableMax[1] / 2 - commands::qol_customcrosshairthickness->current.integer / 2, commands::qol_customcrosshairsize->current.integer, commands::qol_customcrosshairthickness->current.integer, 0.0f, 0.0f, 0.0f, 0.0f, commands::qol_customcrosshaircolor->current.vector);
 	game::R_AddCmdDrawStretchPic(material, game::scrPlace->realViewableMax[0] / 2 - commands::qol_customcrosshairthickness->current.integer / 2, game::scrPlace->realViewableMax[1] / 2 - commands::qol_customcrosshairsize->current.integer - commands::qol_customcrosshairgap->current.integer, commands::qol_customcrosshairthickness->current.integer, commands::qol_customcrosshairsize->current.integer, 0.0f, 0.0f, 0.0f, 0.0f, commands::qol_customcrosshaircolor->current.vector);
-
 }
 
 void game::hookedCG_DrawCrosshair(int a1)
@@ -622,7 +621,7 @@ void game::hookedCG_DrawCrosshair(int a1)
 		return;
 	}
 		
-	if (game::shouldDrawCross(0x794474) && *reinterpret_cast<int*>(0x79455C) != 0)
+	if (game::shouldDrawCross(0x794474) && *reinterpret_cast<int*>(0x79455C) != 0 && cg->predictedPlayerState.fWeaponPosFrac != 1.0f)
 		drawCustomCrosshair();
 }
 
