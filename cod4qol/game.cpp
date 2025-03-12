@@ -625,6 +625,23 @@ void game::hookedCG_DrawCrosshair(int a1)
 		drawCustomCrosshair();
 }
 
+void game::Cmd_Give_f_stub()
+{
+	game::Cbuf_AddText("give ammo\n", 0);
+}
+
+__declspec(naked) void game::hookedCmd_Give_f()
+{
+	__asm
+	{
+		pushad;
+		call game::Cmd_Give_f_stub;
+		popad;
+
+		jmp game::pCmd_Give_f;
+	}
+}
+
 int	game::Cmd_Argc()
 {
 	return game::cmd_args->argc[game::cmd_args->nesting];

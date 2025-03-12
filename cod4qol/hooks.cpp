@@ -107,6 +107,10 @@ void hooks::InitializeHooks()
 	game::pCG_DrawCrosshair = (game::CG_DrawCrosshair)(0x4311A0);
 	hooks::install(&(PVOID&)game::pCG_DrawCrosshair, (PBYTE)game::hookedCG_DrawCrosshair);
 
+	//Give
+	game::pCmd_Give_f = (game::Cmd_Give_f)(0x4B27EC);
+	hooks::install(&(PVOID&)game::pCmd_Give_f, (PBYTE)game::hookedCmd_Give_f);
+
 	std::cout << "Hooks installed!" << std::endl;
 }
 

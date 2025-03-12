@@ -1883,6 +1883,11 @@ namespace game
 
 	void hookedCG_DrawCrosshair(int a1);
 
+	typedef void(*Cmd_Give_f)();
+	inline Cmd_Give_f pCmd_Give_f;
+
+	void hookedCmd_Give_f();
+
 	int	Cmd_Argc();
 	const char* Cmd_Argv(int arg);
 	HMODULE GetCurrentModule();
@@ -1898,6 +1903,7 @@ namespace game
 	void RB_DrawStretchPic(game::Material* material, float x, float y, float w, float h, float texcoord0, float texcoord1, float texcoord2, float texcoord3);
 	void R_AddCmdDrawStretchPic(game::Material* material, float x, float y, float w, float h, float null1, float null2, float null3, float null4, float* color);
 	void applyFsr1();
+	void Cmd_Give_f_stub();
 
 	dvar_s* Find(const char*);
 	cmd_function_s* Cmd_AddCommand(const char* cmdname, void(__cdecl* function)());
