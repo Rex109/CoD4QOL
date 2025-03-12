@@ -2,6 +2,8 @@
 #include "updater.hpp"
 #include "hooks.hpp"
 #include <filesystem>
+#include "base64.h"
+#include <sstream>
 
 void commands::InitializeCommands()
 {
@@ -25,6 +27,8 @@ void commands::InitializeCommands()
     game::Cmd_AddCommand("renameselecteddemo", RenameSelectedDemo);
 
     game::Cmd_AddCommand("updatecod4qol", updater::Update);
+
+    game::Cmd_AddCommand("crosshair_config", CrosshairConfig);
 
     cg_fovscale = game::Find("cg_fovscale");
     cg_fovscale->flags = game::none;
@@ -101,7 +105,12 @@ void commands::InitializeCommands()
 
     qol_customcrosshairgap = game::Cvar_RegisterInt("qol_customcrosshairgap", 5, 0, 5000, game::dvar_flags::saved, "Custom crosshair gap.");
 
-    qol_customcrosshaircolor = game::Cvar_RegisterVec4("qol_customcrosshaircolor", 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f, game::dvar_flags::saved, "Custom crosshair color.");
+    qol_customcrosshaircolor_r = game::Cvar_RegisterFloat("qol_customcrosshaircolor_r", 1.0f, 0.0f, 1.0f, game::dvar_flags::saved, "Custom crosshair color red component.");
+    qol_customcrosshaircolor_g = game::Cvar_RegisterFloat("qol_customcrosshaircolor_g", 1.0f, 0.0f, 1.0f, game::dvar_flags::saved, "Custom crosshair color green component.");
+    qol_customcrosshaircolor_b = game::Cvar_RegisterFloat("qol_customcrosshaircolor_b", 1.0f, 0.0f, 1.0f, game::dvar_flags::saved, "Custom crosshair color blue component.");
+    qol_customcrosshaircolor_a = game::Cvar_RegisterFloat("qol_customcrosshaircolor_a", 1.0f, 0.0f, 1.0f, game::dvar_flags::saved, "Custom crosshair color alpha component.");
+
+    qol_customcrosshairdot = game::Cvar_RegisterBool("qol_customcrosshairdot", 0, game::dvar_flags::saved, "Enable custom crosshair dot.");
 
     std::cout << "Commands initialized!" << std::endl;
 }
@@ -430,4 +439,117 @@ bool isValidDestinationName(const std::string destination)
         }
 
     return true;
+}
+
+void commands::CrosshairConfig()
+{
+    if (game::Cmd_Argc() < 2)
+    {
+        game::Com_PrintMessage(0, "Usage: crosshair_config <mode>\n", 0);
+        return;
+    }
+
+    std::string mode = game::Cmd_Argv(1);
+
+    if (mode == "0")
+    {
+        std::string crosshair_config = "VERSION 1.0";
+        crosshair_config.append("\n");
+        crosshair_config.append(std::to_string(qol_customcrosshairsize->current.integer));
+        crosshair_config.append("\n");
+        crosshair_config.append(std::to_string(qol_customcrosshairthickness->current.integer));
+        crosshair_config.append("\n");
+        crosshair_config.append(std::to_string(qol_customcrosshairgap->current.integer));
+        crosshair_config.append("\n");
+        crosshair_config.append(std::to_string(qol_customcrosshairdot->current.enabled));
+        crosshair_config.append("\n");
+        crosshair_config.append(std::to_string(qol_customcrosshaircolor_r->current.value));
+        crosshair_config.append("\n");
+        crosshair_config.append(std::to_string(qol_customcrosshaircolor_g->current.value));
+        crosshair_config.append("\n");
+        crosshair_config.append(std::to_string(qol_customcrosshaircolor_b->current.value));
+        crosshair_config.append("\n");
+        crosshair_config.append(std::to_string(qol_customcrosshaircolor_a->current.value));
+
+        std::string base64 = base64_encode(reinterpret_cast<const unsigned char*>(crosshair_config.c_str()), crosshair_config.length());
+		const char* output = base64.c_str();
+
+        if (OpenClipboard(0))
+        {
+			EmptyClipboard();
+			HGLOBAL hg = GlobalAlloc(GMEM_MOVEABLE, strlen(output) + 1);
+            if (hg)
+            {
+				memcpy(GlobalLock(hg), output, strlen(output) + 1);
+				GlobalUnlock(hg);
+				SetClipboardData(CF_TEXT, hg);
+			}
+
+			CloseClipboard();
+			GlobalFree(hg);
+		}
+	}
+    else if (mode == "1")
+    {
+        if (!IsClipboardFormatAvailable(CF_TEXT))
+        {
+			game::Com_PrintMessage(0, "No text data in clipboard.\n", 0);
+			return;
+		}
+
+        if (OpenClipboard(0))
+        {
+			HGLOBAL hg = GetClipboardData(CF_TEXT);
+            if (hg)
+            {
+				char* output = static_cast<char*>(GlobalLock(hg));
+				std::string base64 = output;
+				GlobalUnlock(hg);
+
+                try {
+                    std::string crosshair_config = base64_decode(base64);
+                    std::istringstream iss(crosshair_config);
+                    std::string line;
+
+                    std::getline(iss, line);
+                    if (line != "VERSION 1.0")
+                    {
+                        game::Com_PrintMessage(0, "Invalid crosshair config version.\n", 0);
+                        CloseClipboard();
+                        return;
+                    }
+
+                    std::getline(iss, line);
+                    qol_customcrosshairsize->current.integer = std::stoi(line);
+
+                    std::getline(iss, line);
+                    qol_customcrosshairthickness->current.integer = std::stoi(line);
+
+                    std::getline(iss, line);
+                    qol_customcrosshairgap->current.integer = std::stoi(line);
+
+                    std::getline(iss, line);
+                    qol_customcrosshairdot->current.enabled = std::stoi(line);
+
+                    std::getline(iss, line);
+                    qol_customcrosshaircolor_r->current.value = std::stof(line);
+
+                    std::getline(iss, line);
+                    qol_customcrosshaircolor_g->current.value = std::stof(line);
+
+                    std::getline(iss, line);
+                    qol_customcrosshaircolor_b->current.value = std::stof(line);
+
+                    std::getline(iss, line);
+                    qol_customcrosshaircolor_a->current.value = std::stof(line);
+                }
+                catch (const std::exception& e)
+                {
+					game::Com_PrintMessage(0, "Invalid crosshair config.\n", 0);
+				}
+
+                CloseClipboard();
+			}
+		}
+    }
 }

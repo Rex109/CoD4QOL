@@ -40,7 +40,11 @@ namespace commands
 	inline game::dvar_s* qol_customcrosshairsize;
 	inline game::dvar_s* qol_customcrosshairthickness;
 	inline game::dvar_s* qol_customcrosshairgap;
-	inline game::dvar_s* qol_customcrosshaircolor;
+	inline game::dvar_s* qol_customcrosshaircolor_r;
+	inline game::dvar_s* qol_customcrosshaircolor_g;
+	inline game::dvar_s* qol_customcrosshaircolor_b;
+	inline game::dvar_s* qol_customcrosshaircolor_a;
+	inline game::dvar_s* qol_customcrosshairdot;
 
 	void InitializeCommands();
 
@@ -62,6 +66,8 @@ namespace commands
 	void DeleteSelectedDemo();
 	void RenameSelectedDemo();
 	void GetDemoName();
+
+	void CrosshairConfig();
 }
 
 std::string getDemosFolder();
