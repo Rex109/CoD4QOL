@@ -102,7 +102,22 @@ void commands::LoadZone()
     {
         game::Com_PrintMessage(0, "Usage: loadzone <zoneName>\n", 0);
         return;
-    }   
+    }
+
+    std::string relative_dir = game::fs_homepath->current.string;
+    relative_dir.append("\\zone\\");
+    relative_dir.append(game::localization);
+    relative_dir.append("\\");
+    relative_dir.append(game::Cmd_Argv(1));
+    relative_dir.append(".ff");
+
+    std::cout << relative_dir << std::endl;
+
+    if (!std::filesystem::exists(relative_dir))
+    {
+		game::Com_PrintMessage(0, "Zone file not found\n", 0);
+		return;
+	}
 
     game::XZoneInfo info[2];
     std::string zone = game::Cmd_Argv(1);
