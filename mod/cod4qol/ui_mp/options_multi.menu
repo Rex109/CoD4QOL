@@ -1,9 +1,52 @@
 #include "ui/menudef.h"
 #include "ui_mp/common_macro.inc"
-#define 	OPTIONS_STYLE			1
-#define 	CHOICE_SEP_1			23
+#define OPTIONS_STYLE			1
+#define CHOICE_SEP_1 26
+#define CHOICE_SEP_2 30
 #include "ui_mp/menustyle.inc"
 #include "ui/choices_setup_common.menu"
+
+#define CHOICE_DVARSLIDER_VIS_EXTR( itemIndex, textArg, dvarArg, defaultArg, minArg, maxArg, actionArg, extraArg, visArg ) \
+		CHOICE_BUTTON_BG( itemIndex, visArg ) \
+		CHOICE_HIGHLIGHT( itemIndex, visArg ) \
+		CHOICE_CAPTION_VIS( itemIndex, textArg, visArg ) \
+		itemDef \
+		{ \
+			type			ITEM_TYPE_SLIDER \
+			dvarfloat		dvarArg defaultArg minArg maxArg \
+			rect			CHOICE_ORIGIN( itemIndex ) (CHOICE_SIZE_X+120) CHOICE_SIZE_Y CHOICE_HORIZONTAL_ALIGN CHOICE_VERTICAL_ALIGN \
+			textalign		ITEM_ALIGN_MIDDLE_LEFT \
+			textalignx		(CHOICE_SIZE_X+20) /*(-(CHOICE_TEXT_OFFSET_X))*/ \
+			textscale		CHOICE_TEXTSIZE \
+			textstyle		ITEM_TEXTSTYLE_SHADOWED \
+			style			WINDOW_STYLE_FILLED \
+			forecolor		CHOICE_TEXTCOLOR \
+			visible			visArg \
+			extraArg \
+			CHOICE_SCRIPTS_ACTION( itemIndex, actionArg ) \
+		}
+
+#define CHOICE_DVAREDIT_VIS_EXTR( itemIndex, textArg, dvarArg, max_chars, max_paintchars, actionArg, visArg ) \
+		CHOICE_BUTTON_BG( itemIndex, visArg ) \
+		CHOICE_HIGHLIGHT( itemIndex, visArg ) \
+		CHOICE_CAPTION_VIS( itemIndex, textArg, visArg ) \
+		itemDef \
+		{ \
+			type			ITEM_TYPE_EDITFIELD \
+			text			" " \
+			dvar			dvarArg \
+			rect			CHOICE_ORIGIN( itemIndex ) (CHOICE_SIZE_X+120) CHOICE_SIZE_Y CHOICE_HORIZONTAL_ALIGN CHOICE_VERTICAL_ALIGN \
+			textalign		ITEM_ALIGN_MIDDLE_LEFT \
+			textalignx		(CHOICE_SIZE_X+8) /*(-(CHOICE_TEXT_OFFSET_X))*/ \
+			textscale		CHOICE_TEXTSIZE \
+			textstyle		ITEM_TEXTSTYLE_SHADOWED \
+			style			WINDOW_STYLE_FILLED \
+			forecolor		CHOICE_TEXTCOLOR \
+			visible			visArg \
+			maxChars		max_chars \
+			maxpaintchars	max_paintchars \
+			CHOICE_SCRIPTS_ACTION( itemIndex, actionArg ) \
+		}
 
 {
 	menuDef 
@@ -45,610 +88,30 @@
 
 		#include "ui_mp/leftside_options_mod.inc"
 		
-		CHOICE_SECTION_TITLE( 21, "@MENU_MULTIPLAYER_OPTIONS" )
+		CHOICE_SECTION_TITLE_VIS( 21, "@MENU_MULTIPLAYER_OPTIONS", when( localVarInt ( ui_qol ) == 0 );)
 		
-		CHOICE_DVARYESNO( 22, "@MPUI_PUNKBUSTER", cl_punkbuster, ; )
-		CHOICE_DVARYESNO( 23, "@MENU_ALLOW_DOWNLOAD", cl_allowdownload, ; )
-		//CHOICE_DVARYESNO( 24, "@MENU_DRAW_HUD", hud_enable, ; )
-		CHOICE_SEPARATOR( CHOICE_SEP_1 )
-		//CHOICE_DVAREDIT( 24, "@MENU_PLAYER_NAME", ui_name, ; )
-		CHOICE_DVAREDIT_VIS( 24, "@MENU_PLAYER_NAME", ui_name, 15, 15, ;, 1 )
-		CHOICE_BUTTON( 25, "@MENU_ENTER_KEY_CODE", open cdkey_menu; )
-				
-		//CHOICE_BACK( "@MENU_BACK", close self )
+		CHOICE_DVARYESNO_VIS( 22, "@MPUI_PUNKBUSTER", cl_punkbuster, ;, when( localVarInt ( ui_qol ) == 0 );)
+		CHOICE_DVARYESNO_VIS( 23, "@MENU_ALLOW_DOWNLOAD", cl_allowdownload, ;, when( localVarInt ( ui_qol ) == 0 );)
+		//CHOICE_SEPARATOR_VIS( CHOICE_SEP_1, when( localVarInt ( ui_qol ) == 0 );)
+		CHOICE_DVAREDIT_VIS_EXTR( 24, "@MENU_PLAYER_NAME", ui_name, 15, 15, ;, when( localVarInt ( ui_qol ) == 0 );)
+		CHOICE_BUTTON_VIS( 25, "@MENU_ENTER_KEY_CODE", open cdkey_menu;, when( localVarInt ( ui_qol ) == 0 );)
 
-		CHOICE_KEYBINDHELP
+        //Customize crosshair
+
+        CHOICE_SECTION_TITLE_VIS( 21, "Customize crosshair...", when( localVarInt ( ui_qol ) == 3 );)
+        CHOICE_DVARFLOATLIST_VIS( 22, "Enable custom crosshair", qol_enablecustomcrosshair, { "@MENU_ON" 1 "@MENU_OFF" 0 }, ;, when( localVarInt ( ui_qol ) == 3 );)
+        CHOICE_DVARSLIDER_VIS_EXTR( 23, "Crosshair size", qol_customcrosshairsize, 5, 0, 50, ;, ;, when( localVarInt ( ui_qol ) == 3 );)
+        CHOICE_DVARSLIDER_VIS_EXTR( 24, "Crosshair thickness", qol_customcrosshairthickness, 2, 0, 50, ;, ;, when( localVarInt ( ui_qol ) == 3 );)
+        CHOICE_DVARSLIDER_VIS_EXTR( 25, "Crosshair gap", qol_customcrosshairgap, 5, 0, 50, ;, ;, when( localVarInt ( ui_qol ) == 3 );)
+        CHOICE_DVARFLOATLIST_VIS( 26, "Enable dot", qol_customcrosshairdot, { "@MENU_ON" 1 "@MENU_OFF" 0 }, ;, when( localVarInt ( ui_qol ) == 3 );)
+        CHOICE_SEPARATOR_VIS( CHOICE_SEP_1, when( localVarInt ( ui_qol ) == 3 );)
+        CHOICE_DVARSLIDER_VIS_EXTR( 27, "Crosshair red", qol_customcrosshaircolor_r, 1, 0, 1, ;, ;, when( localVarInt ( ui_qol ) == 3 );)
+        CHOICE_DVARSLIDER_VIS_EXTR( 28, "Crosshair green", qol_customcrosshaircolor_g, 1, 0, 1, ;, ;, when( localVarInt ( ui_qol ) == 3 );)
+        CHOICE_DVARSLIDER_VIS_EXTR( 29, "Crosshair blue", qol_customcrosshaircolor_b, 1, 0, 1, ;, ;, when( localVarInt ( ui_qol ) == 3 );)
+        CHOICE_DVARSLIDER_VIS_EXTR( 30, "Crosshair alpha", qol_customcrosshaircolor_a, 1, 0, 1, ;, ;, when( localVarInt ( ui_qol ) == 3 );)
+        CHOICE_SEPARATOR_VIS( CHOICE_SEP_2, when( localVarInt ( ui_qol ) == 3 );)
+        CHOICE_BUTTON_VIS( 31, "Reset to default", exec "set qol_customcrosshairsize 5; set qol_customcrosshairthickness 2; set qol_customcrosshairgap 5; set qol_customcrosshairdot 0; set qol_customcrosshaircolor_r 1; set qol_customcrosshaircolor_g 1; set qol_customcrosshaircolor_b 1; set qol_customcrosshaircolor_a 1;", when( localVarInt ( ui_qol ) == 3 );)
+        CHOICE_BUTTON_VIS( 32, "Export config to clipboard", exec "crosshair_config 0", when( localVarInt ( ui_qol ) == 3 );)
+        CHOICE_BUTTON_VIS( 33, "Import config from clipboard", exec "crosshair_config 1", when( localVarInt ( ui_qol ) == 3 );)
 	}
 }
-
-
-
-/*
-{
-menuDef 
-{
-	name options_multi
-	fullScreen 0				
-	rect 0 0 370 480				// Size and position of the menu
-	focusColor COLOR_FOCUSED			// Menu focus color for text and items
-	soundloop ""
-	onOpen
-	{
-		exec "setfromdvar ui_name name"
-		setdvar ui_background_gradient_show "1";
-	}
-	onClose
-	{
-		exec "setfromdvar name ui_name"
-	}
-	onESC 
-	{ 
-		close options_multi;		
-	}
-	itemDef
-	{
-		type			ITEM_TYPE_TEXT
-		origin			ORIGIN_TITLE
-		forecolor		1 1 1 1
-		text			"@MENU_MULTIPLAYER"
-		textfont		UI_FONT_NORMAL
-		textscale		TEXTSIZE_TITLE
-		visible			1
-		decoration
-	}
-	itemDef
-	{
-		name misc		
-		type ITEM_TYPE_BUTTON
-		text "@MENU_VOICE_CHAT_BUTTON"
-		rect		0 0 1 13 
-		origin 50 120
-		textstyle	ITEM_TEXTSTYLE_SHADOWED
-		textalign	ITEM_ALIGN_LEFT
-		textaligny	11
-		textscale	0.25
-		style		WINDOW_STYLE_FILLED
-		backcolor	0 0 0 0
-		forecolor	.9 .9 .9 1
-		visible		1 
-		decoration
-   	}
-	itemDef
-	{
-		name misc		
-		type ITEM_TYPE_BUTTON
-		text "@MENU_VOTE_YES"
-		rect		0 15 1 13 
-		origin 50 120
-		textstyle	ITEM_TEXTSTYLE_SHADOWED
-		textalign	ITEM_ALIGN_LEFT
-		textaligny	11
-		textscale	0.25
-		style		WINDOW_STYLE_FILLED
-		backcolor	0 0 0 0
-		forecolor	.9 .9 .9 1
-		visible		1 
-		decoration
-    	}
-	itemDef
-	{
-		name misc		
-		type ITEM_TYPE_BUTTON
-		text "@MENU_VOTE_NO"
-		rect		0 30 1 13 
-		origin 50 120
-		textstyle	ITEM_TEXTSTYLE_SHADOWED
-		textalign	ITEM_ALIGN_LEFT
-		textaligny	11
-		textscale	0.25
-		style		WINDOW_STYLE_FILLED
-		backcolor	0 0 0 0
-		forecolor	.9 .9 .9 1
-		visible		1 
-		decoration
-    	}
-	itemDef
-	{
-		name misc		
-		type ITEM_TYPE_BUTTON
-		text "@MENU_CHAT"
-		rect		0 45 1 13 
-		origin 50 120
-		textstyle	ITEM_TEXTSTYLE_SHADOWED
-		textalign	ITEM_ALIGN_LEFT
-		textaligny	11
-		textscale	0.25
-		style		WINDOW_STYLE_FILLED
-		backcolor	0 0 0 0
-		forecolor	.9 .9 .9 1
-		visible		1 
-		decoration
-    	}
-	itemDef
-	{
-		name misc		
-		type ITEM_TYPE_BUTTON
-		text "@MENU_TEAM_CHAT"
-		rect		0 60 1 13 
-		origin 50 120
-		textstyle	ITEM_TEXTSTYLE_SHADOWED
-		textalign	ITEM_ALIGN_LEFT
-		textaligny	11
-		textscale	0.25
-		style		WINDOW_STYLE_FILLED
-		backcolor	0 0 0 0
-		forecolor	.9 .9 .9 1
-		visible		1 
-		decoration
-    	}
-	itemDef
-	{
-		name misc		
-		type ITEM_TYPE_BUTTON
-		text "@MENU_QUICK_CHAT"
-		rect		0 75 1 13 
-		origin 50 120
-		textstyle	ITEM_TEXTSTYLE_SHADOWED
-		textalign	ITEM_ALIGN_LEFT
-		textaligny	11
-		textscale	0.25
-		style		WINDOW_STYLE_FILLED
-		backcolor	0 0 0 0
-		forecolor	.9 .9 .9 1
-		visible		1 
-		decoration
-    	}
-	itemDef
-	{
-		name misc		
-		type ITEM_TYPE_BUTTON
-		text "@MENU_ALLOW_DOWNLOAD"
-		rect		0 90 1 13 
-		origin 50 120
-		textstyle	ITEM_TEXTSTYLE_SHADOWED
-		textalign	ITEM_ALIGN_LEFT
-		textaligny	11
-		textscale	0.25
-		style		WINDOW_STYLE_FILLED
-		backcolor	0 0 0 0
-		forecolor	.9 .9 .9 1
-		visible		1 
-		decoration
-    	}
-	itemDef
-	{
-		name misc		
-		type ITEM_TYPE_BUTTON
-		text "@MENU_DRAW_HUD"
-		rect		0 105 1 13 
-		origin 50 120
-		textstyle	ITEM_TEXTSTYLE_SHADOWED
-		textalign	ITEM_ALIGN_LEFT
-		textaligny	11
-		textscale	0.25
-		style		WINDOW_STYLE_FILLED
-		backcolor	0 0 0 0
-		forecolor	.9 .9 .9 1
-		visible		1 
-		decoration
-    	}
-	itemDef
-	{
-		name misc		
-		type ITEM_TYPE_BUTTON
-		text "@MENU_CONNECTION"
-		rect		0 120 1 13 
-		origin 50 120
-		textstyle	ITEM_TEXTSTYLE_SHADOWED
-		textalign	ITEM_ALIGN_LEFT
-		textaligny	11
-		textscale	0.25
-		style		WINDOW_STYLE_FILLED
-		backcolor	0 0 0 0
-		forecolor	.9 .9 .9 1
-		visible		1 
-		decoration
-    	}
-
-	itemDef
-	{
-		name misc		
-		type ITEM_TYPE_BUTTON
-		text "@MENU_WEAPON_MENU"
-		rect		0 135 1 13 
-		origin 50 120
-		textstyle	ITEM_TEXTSTYLE_SHADOWED
-		textalign	ITEM_ALIGN_LEFT
-		textaligny	11
-		textscale	0.25
-		style		WINDOW_STYLE_FILLED
-		backcolor	0 0 0 0
-		forecolor	.9 .9 .9 1
-		visible		1 
-		decoration
-    	}
-
-	itemDef
-	{
-		name		player_name
-		type		ITEM_TYPE_BUTTON
-		text		"@MENU_PLAYER_NAME"
-		rect		0 150 1 13 
-		origin 50 120
-		textstyle	ITEM_TEXTSTYLE_SHADOWED
-		textalign	ITEM_ALIGN_LEFT
-		textaligny	11
-		textscale	0.25
-		style		WINDOW_STYLE_FILLED
-		backcolor	0 0 0 0
-		forecolor	.9 .9 .9 1
-		visible		1 
-		decoration
-
-	}
-
-
-	itemDef
-	{
-		name		misc
-		type		ITEM_TYPE_BUTTON
-		text		"@MPUI_PUNKBUSTER"
-		rect		0 165 1 13 
-		origin 50 120
-		textstyle	ITEM_TEXTSTYLE_SHADOWED
-		textalign	ITEM_ALIGN_LEFT
-		textaligny	11
-		textscale	0.25
-		style		WINDOW_STYLE_FILLED
-		backcolor	0 0 0 0
-		forecolor	.9 .9 .9 1
-		visible		1 
-		decoration
-
-	}
-
-
-	itemDef
-	{
-		name misc		
-		type ITEM_TYPE_BIND
-		text " "
-		dvar "+talk"
-		rect		0 0 320 13
-		origin 50 120
-		textstyle	ITEM_TEXTSTYLE_SHADOWED
-		textalign	ITEM_ALIGN_LEFT
-		textalignx	170 
-		textaligny	11
-		textscale	0.25
-		style		WINDOW_STYLE_FILLED
-		backcolor	0 0 0 0
-		forecolor	.9 .9 .9 1
-		visible		1 
-		mouseEnter 
-		{
-			play "mouse_over";
-			show keyBindStatus
-		}
-		mouseexit { hide keyBindStatus }
-		action { play "mouse_click"; }
-   	}
-
-	itemDef
-	{
-		name misc		
-		type ITEM_TYPE_BIND
-		text " "
-		dvar "vote yes"
-		rect		0 15 320 13
-		origin 50 120
-		textstyle	ITEM_TEXTSTYLE_SHADOWED
-		textalign	ITEM_ALIGN_LEFT
-		textalignx	170 
-		textaligny	11
-		textscale	0.25
-		style		WINDOW_STYLE_FILLED
-		backcolor	0 0 0 0
-		forecolor	.9 .9 .9 1
-		visible		1 
-		mouseEnter 
-		{
-			play "mouse_over";
-			show keyBindStatus
-		}
-		mouseexit { hide keyBindStatus }
-		action { play "mouse_click"; }
-    	}
-
-	itemDef
-	{
-		name misc		
-		type ITEM_TYPE_BIND
-		text " "
-		dvar "vote no"
-		rect		0 30 320 13
-		origin 50 120
-		textstyle	ITEM_TEXTSTYLE_SHADOWED
-		textalign	ITEM_ALIGN_LEFT
-		textalignx	170 
-		textaligny	11
-		textscale	0.25
-		style		WINDOW_STYLE_FILLED
-		backcolor	0 0 0 0
-		forecolor	.9 .9 .9 1
-		visible		1 
-		mouseEnter 
-		{
-			play "mouse_over";
-			show keyBindStatus
-		}
-		mouseexit { hide keyBindStatus }
-		action { play "mouse_click"; }
-    	}
-	itemDef
-	{
-		name misc		
-		type ITEM_TYPE_BIND
-		text " "
-		dvar "chatmodepublic"
-		rect		0 45 320 13
-		origin 50 120
-		textstyle	ITEM_TEXTSTYLE_SHADOWED
-		textalign	ITEM_ALIGN_LEFT
-		textalignx	170 
-		textaligny	11
-		textscale	0.25
-		style		WINDOW_STYLE_FILLED
-		backcolor	0 0 0 0
-		forecolor	.9 .9 .9 1
-		visible		1 
-		mouseEnter 
-		{
-			play "mouse_over";
-			show keyBindStatus
-		}
-		mouseexit { hide keyBindStatus }
-		action { play "mouse_click"; }
-    	}
-	itemDef
-	{
-		name misc		
-		type ITEM_TYPE_BIND
-		text " "
-		dvar "chatmodeteam"
-		rect		0 60 320 13
-		origin 50 120
-		textstyle	ITEM_TEXTSTYLE_SHADOWED
-		textalign	ITEM_ALIGN_LEFT
-		textalignx	170 
-		textaligny	11
-		textscale	0.25
-		style		WINDOW_STYLE_FILLED
-		backcolor	0 0 0 0
-		forecolor	.9 .9 .9 1
-		visible		1 
-		mouseEnter 
-		{
-			play "mouse_over";
-			show keyBindStatus
-		}
-		mouseexit { hide keyBindStatus }
-		action { play "mouse_click"; }
-    	}
-	itemDef
-	{
-		name misc		
-		type ITEM_TYPE_BIND
-		text " "
-		dvar "mp_QuickMessage"
-		rect		0 75 320 13
-		origin 50 120
-		textstyle	ITEM_TEXTSTYLE_SHADOWED
-		textalign	ITEM_ALIGN_LEFT
-		textalignx	170 
-		textaligny	11
-		textscale	0.25
-		style		WINDOW_STYLE_FILLED
-		backcolor	0 0 0 0
-		forecolor	.9 .9 .9 1
-		visible		1 
-		mouseEnter 
-		{
-			play "mouse_over";
-			show keyBindStatus
-		}
-		mouseexit { hide keyBindStatus }
-		action { play "mouse_click"; }
-    	}
-
-	itemDef
-	{
-		name misc		
-		type ITEM_TYPE_YESNO
-		text " "
-		dvar "cl_allowdownload"
-		rect		0 90 320 13
-		origin 50 120
-		textstyle	ITEM_TEXTSTYLE_SHADOWED
-		textalign	ITEM_ALIGN_LEFT
-		textalignx	170 
-		textaligny	11
-		textscale	0.25
-		style		WINDOW_STYLE_FILLED
-		backcolor	0 0 0 0
-		forecolor	.9 .9 .9 1
-		visible		1 
-		action { play "mouse_click"; }
-		mouseEnter 
-		{
-			play "mouse_over";
-		}
-    	}
-	itemDef
-	{
-		name misc		
-		type ITEM_TYPE_YESNO
-		text " "
-		dvar "hud_enable"
-		rect		0 105 320 13
-		origin 50 120
-		textstyle	ITEM_TEXTSTYLE_SHADOWED
-		textalign	ITEM_ALIGN_LEFT
-		textalignx	170 
-		textaligny	11
-		textscale	0.25
-		style		WINDOW_STYLE_FILLED
-		backcolor	0 0 0 0
-		forecolor	.9 .9 .9 1
-		visible		1 
-		action { play "mouse_click"; }
-		mouseEnter 
-		{
-			play "mouse_over";
-		}
-    	}
-
-
-	itemDef
-	{
-		name misc		
-		type ITEM_TYPE_MULTI
-		text " "
-		dvar "rate"
-		dvarFloatList { "@MENU_ISDN" 5000 "@MENU_LAN_CABLE_XDSL" 25000  }
-		rect		0 120 320 13
-		origin 50 120
-		textstyle	ITEM_TEXTSTYLE_SHADOWED
-		textalign	ITEM_ALIGN_LEFT
-		textalignx	170 
-		textaligny	11
-		textscale	0.25
-		style		WINDOW_STYLE_FILLED
-		backcolor	0 0 0 0
-		forecolor	.9 .9 .9 1
-		visible		1 
-		action { play "mouse_click"; }
-		mouseEnter 
-		{
-			play "mouse_over";
-		}
-    	}
-	itemDef
-	{
-		name misc		
-		type ITEM_TYPE_BIND
-		text " "
-		dvar "openscriptmenu ingame changeweapon"
-		rect		0 135 320 13
-		origin 50 120
-		textstyle	ITEM_TEXTSTYLE_SHADOWED
-		textalign	ITEM_ALIGN_LEFT
-		textalignx	170 
-		textaligny	11
-		textscale	0.25
-		style		WINDOW_STYLE_FILLED
-		backcolor	0 0 0 0
-		forecolor	.9 .9 .9 1
-		visible		1 
-		action { play "mouse_click"; }
-		mouseEnter 
-		{
-			play "mouse_over";
-		}
-    }
-	itemDef
-	{
-		name		player_name
-		type		ITEM_TYPE_EDITFIELD
-		text		" "
-		dvar		"ui_name"
-		rect		0 150 320 13
-		origin 50 120
-		textstyle	ITEM_TEXTSTYLE_SHADOWED
-		textalign	ITEM_ALIGN_LEFT
-		textalignx	170 
-		textaligny	11
-		textscale	0.25
-		style		WINDOW_STYLE_FILLED
-		backcolor	0 0 0 0
-		forecolor	.9 .9 .9 1
-		visible		1 
-		maxChars	31
-		maxpaintchars	18
-		mouseEnter 
-		{
-			play "mouse_over";
-		}
-	}
-
-	itemDef
-	{
-		name misc		
-		type ITEM_TYPE_YESNO
-		text " "
-		dvar "cl_punkbuster"
-		rect		0 165 320 13
-		origin 50 120
-		textstyle	ITEM_TEXTSTYLE_SHADOWED
-		textalign	ITEM_ALIGN_LEFT
-		textalignx	170 
-		textaligny	11
-		textscale	0.25
-		style		WINDOW_STYLE_FILLED
-		backcolor	0 0 0 0
-		forecolor	.9 .9 .9 1
-		visible		1 
-		action { play "mouse_click"; }
-		mouseEnter 
-		{
-			play "mouse_over";
-		}
-   	}
-
-///////////////////////////////////////////////////////////
-	itemDef 
-	{
-		name		cdkeybt
-		text		"@MENU_ENTER_KEY_CODE"
-		type		ITEM_TYPE_BUTTON
-		style		WINDOW_STYLE_FILLED
-		textstyle	ITEM_TEXTSTYLE_SHADOWED
-		rect		102 330 150 20 
-		textalign	ITEM_ALIGN_CENTER
-		textscale	.3		
-		textaligny	14
-		forecolor	.9 .9 .95 1
-		visible		1
-		textfont	UI_FONT_NORMAL
-		mouseEnter 
-		{
-			play "mouse_over";
-		}
-		action 
-		{ 
-			play "mouse_click";
-			open cdkey_menu;
-		}
-	}
-
-	itemDef 
-	{
-		name keyBindStatus
-		rect 0 350 360 15 
-		ownerdraw UI_KEYBINDSTATUS
-		text " "      
-		style WINDOW_STYLE_FILLED
-		backcolor 0 0 0 0
-		forecolor .9 .9 .9 1
-		textscale .20
-		textalignx -12
-		textalign ITEM_ALIGN_CENTER
-		textaligny 12
-		visible 0
-		decoration 
-	}
-
-}
-
-}//
-*/
