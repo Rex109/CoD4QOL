@@ -409,6 +409,46 @@ void game::R_Set2D()
 	}
 }
 
+void game::R_AddCmdDrawStretchPic(game::Material* material, float x, float y, float w, float h, float null1, float null2, float null3, float null4, float* color)
+{
+	const static uint32_t R_AddCmdDrawStretchPic_func = 0x5F65F0;
+	__asm
+	{
+		pushad;
+		push	color;
+		mov		eax, [material];
+		sub		esp, 20h;
+
+		fld		null4;
+		fstp[esp + 1Ch];
+
+		fld		null3;
+		fstp[esp + 18h];
+
+		fld		null2;
+		fstp[esp + 14h];
+
+		fld		null1;
+		fstp[esp + 10h];
+
+		fld		h;
+		fstp[esp + 0Ch];
+
+		fld		w;
+		fstp[esp + 8h];
+
+		fld		y;
+		fstp[esp + 4h];
+
+		fld		x;
+		fstp[esp];
+
+		call	R_AddCmdDrawStretchPic_func;
+		add		esp, 24h;
+		popad;
+	}
+}
+
 void game::RB_DrawStretchPic(game::Material* material, float x, float y, float w, float h, float texcoord0, float texcoord1, float texcoord2, float texcoord3)
 {
 	const static uint32_t RB_DrawStretchPic_func = 0x610E10;
@@ -563,6 +603,29 @@ __declspec(naked) void game::hookedR_RecoverLostDevice_End()
 	}
 }
 
+void drawCustomCrosshair()
+{
+	static auto material = game::Material_RegisterHandle("white", 3);
+	
+	game::R_AddCmdDrawStretchPic(material, game::scrPlace->realViewableMax[0] / 2 - commands::qol_customcrosshairthickness->current.integer / 2, game::scrPlace->realViewableMax[1] / 2 + commands::qol_customcrosshairgap->current.integer, commands::qol_customcrosshairthickness->current.integer, commands::qol_customcrosshairsize->current.integer, 0.0f, 0.0f, 0.0f, 0.0f, commands::qol_customcrosshaircolor->current.vector);
+	game::R_AddCmdDrawStretchPic(material, game::scrPlace->realViewableMax[0] / 2 - commands::qol_customcrosshairsize->current.integer - commands::qol_customcrosshairgap->current.integer, game::scrPlace->realViewableMax[1] / 2 - commands::qol_customcrosshairthickness->current.integer / 2, commands::qol_customcrosshairsize->current.integer, commands::qol_customcrosshairthickness->current.integer, 0.0f, 0.0f, 0.0f, 0.0f, commands::qol_customcrosshaircolor->current.vector);
+	game::R_AddCmdDrawStretchPic(material, game::scrPlace->realViewableMax[0] / 2 + commands::qol_customcrosshairgap->current.integer, game::scrPlace->realViewableMax[1] / 2 - commands::qol_customcrosshairthickness->current.integer / 2, commands::qol_customcrosshairsize->current.integer, commands::qol_customcrosshairthickness->current.integer, 0.0f, 0.0f, 0.0f, 0.0f, commands::qol_customcrosshaircolor->current.vector);
+	game::R_AddCmdDrawStretchPic(material, game::scrPlace->realViewableMax[0] / 2 - commands::qol_customcrosshairthickness->current.integer / 2, game::scrPlace->realViewableMax[1] / 2 - commands::qol_customcrosshairsize->current.integer - commands::qol_customcrosshairgap->current.integer, commands::qol_customcrosshairthickness->current.integer, commands::qol_customcrosshairsize->current.integer, 0.0f, 0.0f, 0.0f, 0.0f, commands::qol_customcrosshaircolor->current.vector);
+
+}
+
+void game::hookedCG_DrawCrosshair(int a1)
+{
+	if (!commands::qol_enablecustomcrosshair->current.enabled)
+	{
+		game::pCG_DrawCrosshair(a1);
+		return;
+	}
+		
+	if (game::shouldDrawCross(0x794474) && *reinterpret_cast<int*>(0x79455C) != 0)
+		drawCustomCrosshair();
+}
+
 int	game::Cmd_Argc()
 {
 	return game::cmd_args->argc[game::cmd_args->nesting];
@@ -629,5 +692,7 @@ void game::SetCoD4xFunctionOffsets()
 	Cvar_RegisterEnum = Cvar_RegisterEnum_t(offsets::GetOffset("Cvar_RegisterEnum"));
 	Cvar_RegisterString = Cvar_RegisterString_t(offsets::GetOffset("Cvar_RegisterString"));
 	Cvar_RegisterFloat = Cvar_RegisterFloat_t(offsets::GetOffset("Cvar_RegisterFloat"));
+	Cvar_RegisterVec4 = Cvar_RegisterVec4_t(offsets::GetOffset("Cvar_RegisterVec4"));
+	Cvar_RegisterInt = Cvar_RegisterInt_t(offsets::GetOffset("Cvar_RegisterInt"));
 	FS_AddSingleIwdFileForGameDirectory = FS_AddSingleIwdFileForGameDirectory_t(offsets::GetOffset("FS_AddSingleIwdFileForGameDirectory"));
 }

@@ -1645,6 +1645,11 @@ namespace game
 
 	void hookedR_RecoverLostDevice_End();
 
+	typedef void(*CG_DrawCrosshair)(int a1);
+	inline CG_DrawCrosshair pCG_DrawCrosshair;
+
+	void hookedCG_DrawCrosshair(int a1);
+
 	int	Cmd_Argc();
 	const char* Cmd_Argv(int arg);
 	HMODULE GetCurrentModule();
@@ -1658,6 +1663,7 @@ namespace game
 	void R_SetRenderTarget(int target);
 	void R_Set2D();
 	void RB_DrawStretchPic(game::Material* material, float x, float y, float w, float h, float texcoord0, float texcoord1, float texcoord2, float texcoord3);
+	void R_AddCmdDrawStretchPic(game::Material* material, float x, float y, float w, float h, float null1, float null2, float null3, float null4, float* color);
 	void applyFsr1();
 
 	dvar_s* Find(const char*);
@@ -1690,6 +1696,12 @@ namespace game
 	typedef game::dvar_s* (*Cvar_RegisterFloat_t)(const char* name, float val, float min, float max, unsigned short flags, const char* description);
 	extern Cvar_RegisterFloat_t Cvar_RegisterFloat;
 
+	typedef game::dvar_s* (*Cvar_RegisterVec4_t)(const char* name, float x, float y, float z, float imag, float min, float max, unsigned short flags, const char* description);
+	extern Cvar_RegisterVec4_t Cvar_RegisterVec4;
+
+	typedef game::dvar_s* (*Cvar_RegisterInt_t)(const char* name, int integer, int min, int max, unsigned short flags, const char* description);
+	extern Cvar_RegisterInt_t Cvar_RegisterInt;
+
 	typedef bool(*FS_AddSingleIwdFileForGameDirectory_t)(const char* pakfile, const char* basename, const char* gamename);
 	extern FS_AddSingleIwdFileForGameDirectory_t FS_AddSingleIwdFileForGameDirectory;
 
@@ -1701,6 +1713,9 @@ namespace game
 
 	typedef void(*RB_EndTessSurface_t)();
 	extern RB_EndTessSurface_t RB_EndTessSurface;
+
+	typedef bool(*shouldDrawCross_t)(int a1);
+	extern shouldDrawCross_t shouldDrawCross;
 
 	inline void* Cmd_AddCommand_fnc;
 	inline game::CmdArgs* cmd_args = reinterpret_cast<game::CmdArgs*>(0x1410B40);
@@ -1714,12 +1729,15 @@ namespace game
 	inline game::RB_DrawFullScreenColoredQuad_t RB_DrawFullScreenColoredQuad = RB_DrawFullScreenColoredQuad_t(0x6113E0);
 	inline game::Material_RegisterHandle_t Material_RegisterHandle = Material_RegisterHandle_t(0x5F2A80);
 	inline game::RB_EndTessSurface_t RB_EndTessSurface = RB_EndTessSurface_t(0x61A2F0);
+	inline game::shouldDrawCross_t shouldDrawCross = shouldDrawCross_t(0x430B50);
 	inline game::Sys_CreateConsole_t Sys_CreateConsole;
 
 	inline game::Cvar_RegisterBool_t Cvar_RegisterBool;
 	inline game::Cvar_RegisterEnum_t Cvar_RegisterEnum;
 	inline game::Cvar_RegisterString_t Cvar_RegisterString;
 	inline game::Cvar_RegisterFloat_t Cvar_RegisterFloat;
+	inline game::Cvar_RegisterVec4_t Cvar_RegisterVec4;
+	inline game::Cvar_RegisterInt_t Cvar_RegisterInt;
 
 	inline game::FS_AddSingleIwdFileForGameDirectory_t FS_AddSingleIwdFileForGameDirectory;
 

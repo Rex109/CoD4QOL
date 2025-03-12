@@ -34,6 +34,8 @@ void offsets::InitOffsets()
 	AddOffset("Cvar_RegisterEnum", { {COD4QOL_COD4X_CRC32_212, (game::cod4x_entry + 0x60640)}, {COD4QOL_COD4X_CRC32_211, (game::cod4x_entry + 0x2DCAF)} });
 	AddOffset("Cvar_RegisterString", { {COD4QOL_COD4X_CRC32_212, (game::cod4x_entry + 0x60960)}, {COD4QOL_COD4X_CRC32_211, (game::cod4x_entry + 0x2D87D)} });
 	AddOffset("Cvar_RegisterFloat", { {COD4QOL_COD4X_CRC32_212, (game::cod4x_entry + 0x60E60)}, {COD4QOL_COD4X_CRC32_211, (game::cod4x_entry + 0x2D9DA)} });
+	AddOffset("Cvar_RegisterVec4", { {COD4QOL_COD4X_CRC32_212, (game::cod4x_entry + 0x618D0)}, {COD4QOL_COD4X_CRC32_211, (game::cod4x_entry + 0x2DB45)} });
+	AddOffset("Cvar_RegisterInt", { {COD4QOL_COD4X_CRC32_212, (game::cod4x_entry + 0x61110)}, {COD4QOL_COD4X_CRC32_211, (game::cod4x_entry + 0x2D967)} });
 	AddOffset("FS_AddSingleIwdFileForGameDirectory", { {COD4QOL_COD4X_CRC32_212, (game::cod4x_entry + 0x2E310)}, {COD4QOL_COD4X_CRC32_211, (game::cod4x_entry + 0x3867C)} });
 
 	//Strings

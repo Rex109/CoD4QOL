@@ -103,6 +103,10 @@ void hooks::InitializeHooks()
 	game::pR_RecoverLostDevice_End = (game::R_RecoverLostDevice_End)(0x5F5526);
 	hooks::install(&(PVOID&)game::pR_RecoverLostDevice_End, (PBYTE)game::hookedR_RecoverLostDevice_End);
 
+	//CG_DrawCrosshair
+	game::pCG_DrawCrosshair = (game::CG_DrawCrosshair)(0x4311A0);
+	hooks::install(&(PVOID&)game::pCG_DrawCrosshair, (PBYTE)game::hookedCG_DrawCrosshair);
+
 	std::cout << "Hooks installed!" << std::endl;
 }
 

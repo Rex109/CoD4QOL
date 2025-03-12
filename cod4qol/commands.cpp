@@ -93,6 +93,16 @@ void commands::InitializeCommands()
 
     qol_loadcustomlocalizedresources = game::Cvar_RegisterBool("qol_loadcustomlocalizedresources", 0, game::dvar_flags::saved, "Load custom localized resources from \\main\\custom_localized_resources.iwd.");
 
+    qol_enablecustomcrosshair = game::Cvar_RegisterBool("qol_enablecustomcrosshair", 0, game::dvar_flags::saved, "Enable custom crosshair.");
+
+    qol_customcrosshairsize = game::Cvar_RegisterInt("qol_customcrosshairsize", 5, 0, 5000, game::dvar_flags::saved, "Custom crosshair size.");
+
+    qol_customcrosshairthickness = game::Cvar_RegisterInt("qol_customcrosshairthickness", 2, 0, 5000, game::dvar_flags::saved, "Custom crosshair thickness.");
+
+    qol_customcrosshairgap = game::Cvar_RegisterInt("qol_customcrosshairgap", 5, 0, 5000, game::dvar_flags::saved, "Custom crosshair gap.");
+
+    qol_customcrosshaircolor = game::Cvar_RegisterVec4("qol_customcrosshaircolor", 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f, game::dvar_flags::saved, "Custom crosshair color.");
+
     std::cout << "Commands initialized!" << std::endl;
 }
 

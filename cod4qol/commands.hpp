@@ -36,6 +36,11 @@ namespace commands
 	inline game::dvar_s* qol_disableslashcommands;
 	inline game::dvar_s* qol_invertflashbang;
 	inline game::dvar_s* qol_loadcustomlocalizedresources;
+	inline game::dvar_s* qol_enablecustomcrosshair;
+	inline game::dvar_s* qol_customcrosshairsize;
+	inline game::dvar_s* qol_customcrosshairthickness;
+	inline game::dvar_s* qol_customcrosshairgap;
+	inline game::dvar_s* qol_customcrosshaircolor;
 
 	void InitializeCommands();
 
