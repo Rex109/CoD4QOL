@@ -2,7 +2,7 @@
 #include "updater.hpp"
 #include "hooks.hpp"
 #include <filesystem>
-#include "base64.h"
+#include "base64/base64.h"
 #include <sstream>
 
 void commands::InitializeCommands()
