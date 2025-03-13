@@ -2205,6 +2205,8 @@ namespace game
 	void R_AddCmdDrawStretchPic(game::Material* material, float x, float y, float w, float h, float null1, float null2, float null3, float null4, float* color);
 	void applyFsr1();
 	void Cmd_Give_f_stub();
+	void drawCustomCrosshair();
+	void HSVtoRGB(float h, float s, float v, float* r, float* g, float* b);
 
 	dvar_s* Find(const char*);
 	cmd_function_s* Cmd_AddCommand(const char* cmdname, void(__cdecl* function)());

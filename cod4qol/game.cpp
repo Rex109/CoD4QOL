@@ -603,15 +603,46 @@ __declspec(naked) void game::hookedR_RecoverLostDevice_End()
 	}
 }
 
-void drawCustomCrosshair()
+void game::HSVtoRGB(float h, float s, float v, float* r, float* g, float* b)
+{
+	float c = v * s;
+	float x = c * (1 - fabs(fmod(h / 60.0f, 2) - 1));
+	float m = v - c;
+
+	float r1, g1, b1;
+	if (h < 60) { r1 = c; g1 = x; b1 = 0; }
+	else if (h < 120) { r1 = x; g1 = c; b1 = 0; }
+	else if (h < 180) { r1 = 0; g1 = c; b1 = x; }
+	else if (h < 240) { r1 = 0; g1 = x; b1 = c; }
+	else if (h < 300) { r1 = x; g1 = 0; b1 = c; }
+	else { r1 = c; g1 = 0; b1 = x; }
+
+	*r = r1 + m;
+	*g = g1 + m;
+	*b = b1 + m;
+}
+
+void game::drawCustomCrosshair()
 {
 	static auto material = game::Material_RegisterHandle("white", 3);
+	static int hue = 0;
 
 	float color[4];
 
-	color[0] = commands::qol_customcrosshaircolor_r->current.value;
-	color[1] = commands::qol_customcrosshaircolor_g->current.value;
-	color[2] = commands::qol_customcrosshaircolor_b->current.value;
+	if (!commands::qol_customcrosshairspectrum->current.enabled)
+	{
+		color[0] = commands::qol_customcrosshaircolor_r->current.value;
+		color[1] = commands::qol_customcrosshaircolor_g->current.value;
+		color[2] = commands::qol_customcrosshaircolor_b->current.value;
+	}
+	else
+	{
+		hue += 1;
+		if (hue >= 360) hue = 0;
+
+		game::HSVtoRGB(hue, 1.0f, 1.0f, &color[0], &color[1], &color[2]);
+	}
+
 	color[3] = commands::qol_customcrosshaircolor_a->current.value;
 
 	game::R_AddCmdDrawStretchPic(material, game::scrPlace->realViewableMax[0] / 2 - commands::qol_customcrosshairthickness->current.integer / 2, game::scrPlace->realViewableMax[1] / 2 + commands::qol_customcrosshairgap->current.integer, commands::qol_customcrosshairthickness->current.integer, commands::qol_customcrosshairsize->current.integer, 0.0f, 0.0f, 0.0f, 0.0f, color);
@@ -632,7 +663,7 @@ void game::hookedCG_DrawCrosshair(int a1)
 	}
 		
 	if (game::shouldDrawCross(0x794474) && *reinterpret_cast<int*>(0x79455C) != 0 && cg->predictedPlayerState.fWeaponPosFrac != 1.0f)
-		drawCustomCrosshair();
+		game::drawCustomCrosshair();
 }
 
 void game::Cmd_Give_f_stub()
@@ -721,5 +752,5 @@ void game::SetCoD4xFunctionOffsets()
 	Cvar_RegisterVec4 = Cvar_RegisterVec4_t(offsets::GetOffset("Cvar_RegisterVec4"));
 	Cvar_RegisterInt = Cvar_RegisterInt_t(offsets::GetOffset("Cvar_RegisterInt"));
 	FS_AddSingleIwdFileForGameDirectory = FS_AddSingleIwdFileForGameDirectory_t(offsets::GetOffset("FS_AddSingleIwdFileForGameDirectory"));
-	BG_WeaponNames = reinterpret_cast<game::WeaponDef**>(offsets::GetOffset("BG_WeaponNames")); //reinterpret_cast<game::WeaponDef**>(0x736DB8);
+	BG_WeaponNames = reinterpret_cast<game::WeaponDef**>(offsets::GetOffset("BG_WeaponNames"));
 }

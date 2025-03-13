@@ -112,6 +112,8 @@ void commands::InitializeCommands()
 
     qol_customcrosshairdot = game::Cvar_RegisterBool("qol_customcrosshairdot", 0, game::dvar_flags::saved, "Enable custom crosshair dot.");
 
+    qol_customcrosshairspectrum = game::Cvar_RegisterBool("qol_customcrosshairspectrum", 0, game::dvar_flags::saved, "Enable custom crosshair color spectrum.");
+
     std::cout << "Commands initialized!" << std::endl;
 }
 
@@ -470,6 +472,8 @@ void commands::CrosshairConfig()
         crosshair_config.append(std::to_string(qol_customcrosshaircolor_b->current.value));
         crosshair_config.append("\n");
         crosshair_config.append(std::to_string(qol_customcrosshaircolor_a->current.value));
+        crosshair_config.append("\n");
+        crosshair_config.append(std::to_string(qol_customcrosshairspectrum->current.enabled));
 
         std::string base64 = base64_encode(reinterpret_cast<const unsigned char*>(crosshair_config.c_str()), crosshair_config.length());
 		const char* output = base64.c_str();
@@ -550,6 +554,10 @@ void commands::CrosshairConfig()
                     std::getline(iss, line);
                     qol_customcrosshaircolor_a->current.value = std::stof(line);
                     qol_customcrosshaircolor_a->latched.value = std::stof(line);
+
+                    std::getline(iss, line);
+                    qol_customcrosshairspectrum->current.enabled = std::stoi(line);
+                    qol_customcrosshairspectrum->latched.enabled = std::stoi(line);
 
                     *game::dvar_modifiedFlags |= 1u;
                 }
