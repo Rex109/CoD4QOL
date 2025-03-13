@@ -625,7 +625,7 @@ void drawCustomCrosshair()
 
 void game::hookedCG_DrawCrosshair(int a1)
 {
-	if (!commands::qol_enablecustomcrosshair->current.enabled)
+	if (!commands::qol_enablecustomcrosshair->current.enabled || (BG_WeaponNames[cg->predictedPlayerState.weapon]->overlayReticle != game::WEAPOVERLAYRETICLE_NONE && cg->predictedPlayerState.fWeaponPosFrac == 1.0f))
 	{
 		game::pCG_DrawCrosshair(a1);
 		return;
@@ -721,4 +721,5 @@ void game::SetCoD4xFunctionOffsets()
 	Cvar_RegisterVec4 = Cvar_RegisterVec4_t(offsets::GetOffset("Cvar_RegisterVec4"));
 	Cvar_RegisterInt = Cvar_RegisterInt_t(offsets::GetOffset("Cvar_RegisterInt"));
 	FS_AddSingleIwdFileForGameDirectory = FS_AddSingleIwdFileForGameDirectory_t(offsets::GetOffset("FS_AddSingleIwdFileForGameDirectory"));
+	BG_WeaponNames = reinterpret_cast<game::WeaponDef**>(offsets::GetOffset("BG_WeaponNames")); //reinterpret_cast<game::WeaponDef**>(0x736DB8);
 }

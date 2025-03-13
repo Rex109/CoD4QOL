@@ -26,6 +26,7 @@ void offsets::InitOffsets()
 	AddOffset("ss_switch", { {COD4QOL_COD4X_CRC32_212, (game::cod4x_entry + 0xB21FB)}, {COD4QOL_COD4X_CRC32_211, (game::cod4x_entry + 0xEA62B)} });
 	AddOffset("steam_auth_a", { {COD4QOL_COD4X_CRC32_212, (game::cod4x_entry + 0x10982)}, {COD4QOL_COD4X_CRC32_211, (game::cod4x_entry + 0x1A70A)} });
 	AddOffset("steam_auth_b", { {COD4QOL_COD4X_CRC32_212, (game::cod4x_entry + 0x1098B)}, {COD4QOL_COD4X_CRC32_211, (game::cod4x_entry + 0x1A717)} });
+	AddOffset("BG_WeaponNames", { {COD4QOL_COD4X_CRC32_212, (game::cod4x_entry + 0x408A40)}, {COD4QOL_COD4X_CRC32_211, (game::cod4x_entry + 0x443DDE0)} });
 
 	//Functions
 	AddOffset("Cmd_AddCommand_fnc", { {COD4QOL_COD4X_CRC32_212, (game::cod4x_entry + 0x639B0)}, {COD4QOL_COD4X_CRC32_211, (game::cod4x_entry + 0x2116C)} });
