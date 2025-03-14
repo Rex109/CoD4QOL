@@ -297,7 +297,7 @@ void commands::ToggleSteamAuthUpdate()
 void commands::ToggleFlashbangUpdate()
 {
     if (commands::qol_invertflashbang->current.enabled)
-		game::rgp->shellShockFlashedMaterial = game::whiteMaterial;
+		game::rgp->shellShockFlashedMaterial = game::blackMaterial;
     else
 		game::rgp->shellShockFlashedMaterial = game::flashMaterial;
 }
