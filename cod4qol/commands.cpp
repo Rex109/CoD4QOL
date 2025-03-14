@@ -64,6 +64,12 @@ void commands::InitializeCommands()
     cg_fov->domain.value.min = 1;
     cg_fov->domain.value.max = 180;
 
+    r_lodBiasRigid = game::Find("r_lodBiasRigid");
+    r_lodBiasRigid->domain.value.min = -1000000;
+
+    r_lodBiasSkinned = game::Find("r_lodBiasSkinned");
+    r_lodBiasSkinned->domain.value.min = -1000000;
+
     qol_version = game::Cvar_RegisterString("qol_version", COD4QOL_VERSION, game::dvar_flags::read_only, "CoD4QOL version.");
 
     qol_show_mainmenuinfo = game::Cvar_RegisterBool("qol_show_mainmenuinfo", 1, game::dvar_flags::saved, "Show the CoD4QOL version and social media links in the main menu.");
