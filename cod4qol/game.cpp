@@ -369,7 +369,6 @@ void game::hookedCL_Disconnect(int localClientNum)
 	return game::pCL_Disconnect(localClientNum);
 }
 
-
 void game::GatherInternalMaterials()
 {
 	game::flashMaterial = game::Material_RegisterHandle("shellshock_flashed", 3);
@@ -680,6 +679,20 @@ __declspec(naked) void game::hookedCmd_Give_f()
 		popad;
 
 		jmp game::pCmd_Give_f;
+	}
+}
+
+__declspec(naked) void game::hookedCG_DrawChatMessages()
+{
+	__asm
+	{
+		push eax;
+		mov eax, [commands::qol_chatfontsize];
+		movss xmm0, [eax + 0Ch];
+		pop eax;
+		movss[esp + 14h], xmm0;
+
+		jmp pCG_DrawChatMessages;
 	}
 }
 

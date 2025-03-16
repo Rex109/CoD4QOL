@@ -124,6 +124,8 @@ void commands::InitializeCommands()
 
     qol_customcrosshairspectrum = game::Cvar_RegisterBool("qol_customcrosshairspectrum", 0, game::dvar_flags::saved, "Enable custom crosshair color spectrum.");
 
+    qol_chatfontsize = game::Cvar_RegisterFloat("qol_chatfontsize", 10.0f, 0.0f, 100.0f, game::dvar_flags::saved, "Chat font size.");
+
     std::cout << "Commands initialized!" << std::endl;
 }
 

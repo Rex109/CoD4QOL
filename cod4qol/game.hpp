@@ -2189,6 +2189,11 @@ namespace game
 
 	void hookedCmd_Give_f();
 
+	typedef void(*CG_DrawChatMessages)();
+	inline CG_DrawChatMessages pCG_DrawChatMessages;
+
+	void hookedCG_DrawChatMessages();
+
 	int	Cmd_Argc();
 	const char* Cmd_Argv(int arg);
 	HMODULE GetCurrentModule();

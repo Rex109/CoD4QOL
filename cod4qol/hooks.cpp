@@ -111,6 +111,11 @@ void hooks::InitializeHooks()
 	game::pCmd_Give_f = (game::Cmd_Give_f)(0x4B27EC);
 	hooks::install(&(PVOID&)game::pCmd_Give_f, (PBYTE)game::hookedCmd_Give_f);
 
+	//CG_DrawChatMessages
+	game::pCG_DrawChatMessages = (game::CG_DrawChatMessages)(0x42D141);
+	hooks::install(&(PVOID&)game::pCG_DrawChatMessages, (PBYTE)game::hookedCG_DrawChatMessages);
+
+
 	std::cout << "Hooks installed!" << std::endl;
 }
 
