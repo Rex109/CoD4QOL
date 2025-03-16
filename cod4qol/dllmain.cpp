@@ -7,6 +7,7 @@
 #include "updater.hpp"
 #include <thread>
 #include "offsets.hpp"
+#include "exception.hpp"
 
 void Initialize();
 bool CheckCoD4XVersion();
@@ -30,6 +31,8 @@ BOOL APIENTRY DllMain( HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpRese
             CHAR FileName[MAX_PATH];
             GetModuleFileName(hModule, FileName, MAX_PATH);
             GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_PIN, strrchr(FileName, '\\') + 0x1, &dummy);
+
+            SetUnhandledExceptionFilter(exception::ExceptionFilter);
 
             Initialize();
             break;

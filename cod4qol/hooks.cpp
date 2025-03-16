@@ -12,7 +12,8 @@ void hooks::InitializeHooks()
 	hooks::write_addr(offsets::GetOffset("safechecks"), "\xC3", 1);
 
 	//Fast startup
-	hooks::write_addr(offsets::GetOffset("faststartup"), "\xC3", 1);
+	//hooks::write_addr(offsets::GetOffset("faststartup"), "\xC3", 1);
+	hooks::write_addr(offsets::GetOffset("faststartup"), "\xD3", 1);
 
 	//Remove localized IWD restrictions
 	if (offsets::GetCRC32() == COD4QOL_COD4X_CRC32_212)

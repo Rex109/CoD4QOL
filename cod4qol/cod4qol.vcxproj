@@ -70,7 +70,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);libcurl_a.lib;Ws2_32.lib;Crypt32.lib;Wldap32.lib;Normaliz.lib</AdditionalDependencies>
+      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);libcurl_a.lib;Ws2_32.lib;Crypt32.lib;Wldap32.lib;Normaliz.lib;Dbghelp.lib</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>for /f "tokens=*" %%i in ('git describe --dirty --always') do (
@@ -100,7 +100,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);libcurl_a.lib;Ws2_32.lib;Crypt32.lib;Wldap32.lib;Normaliz.lib</AdditionalDependencies>
+      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);libcurl_a.lib;Ws2_32.lib;Crypt32.lib;Wldap32.lib;Normaliz.lib;Dbghelp.lib</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>for /f "tokens=*" %%i in ('git describe --dirty --always') do (
@@ -117,6 +117,7 @@
     <ClCompile Include="..\include\zip\zip.c" />
     <ClCompile Include="commands.cpp" />
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="exception.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="hooks.cpp" />
     <ClCompile Include="offsets.cpp" />
@@ -126,6 +127,7 @@
     <ClInclude Include="commands.hpp" />
     <ClInclude Include="CommitInfo.hpp" />
     <ClInclude Include="defines.hpp" />
+    <ClInclude Include="exception.hpp" />
     <ClInclude Include="game.hpp" />
     <ClInclude Include="hooks.hpp" />
     <ClInclude Include="offsets.hpp" />
