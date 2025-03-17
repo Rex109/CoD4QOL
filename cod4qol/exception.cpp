@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <sstream>
 #include "resource.h"
+#include <mutex>
 
 #pragma warning(disable:4996) 
 #include <sphelper.h>
@@ -11,13 +12,16 @@
 
 #define ID_BUTTON_COPY 1
 #define ID_BUTTON_DUMP 2
-#define ID_BUTTON_EXIT 3
-#define ID_EDIT_CRASH  4
-#define ID_STATIC_IMAGE 5
+#define ID_BUTTON_HELP 3
+#define ID_BUTTON_EXIT 4
+#define ID_EDIT_CRASH  5
+#define ID_STATIC_IMAGE 6
 
 HBITMAP hBitmap;
 std::string g_crashDetails;
 EXCEPTION_POINTERS* exceptionInfo;
+
+std::string moduleName;
 
 void exception::OnPaint(HWND hwnd)
 {
@@ -50,7 +54,7 @@ std::string exception::GetCrashDetails(EXCEPTION_POINTERS* pExceptionInfo)
     GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, (LPCTSTR)pExceptionInfo->ExceptionRecord->ExceptionAddress, &hModule);
     char szModule[MAX_PATH];
     GetModuleFileName(hModule, szModule, MAX_PATH);
-    std::string moduleName = szModule;
+    moduleName = szModule;
     moduleName = moduleName.substr(moduleName.find_last_of("\\") + 1);
     ss << std::dec << "Exception Module: " << moduleName << "\r\n\r\n";
 
@@ -66,7 +70,7 @@ std::string exception::GetCrashDetails(EXCEPTION_POINTERS* pExceptionInfo)
     MEMORYSTATUSEX memInfo;
     memInfo.dwLength = sizeof(MEMORYSTATUSEX);
     GlobalMemoryStatusEx(&memInfo);
-    ss << "Memory: " << memInfo.ullTotalPhys / 1024 / 1024 << " MB total, " << memInfo.ullAvailPhys / 1024 / 1024 << " MB available\r\n";
+    ss << "Memory: " << memInfo.ullTotalPhys / 1024 / 1024 << " MB total, " << memInfo.ullAvailPhys / 1024 / 1024 << " MB available, " << (int)(((float)(memInfo.ullTotalPhys - memInfo.ullAvailPhys) / memInfo.ullTotalPhys) * 100) << "% used\r\n";
 
     // GPU info
     DISPLAY_DEVICE dd;
@@ -77,24 +81,34 @@ std::string exception::GetCrashDetails(EXCEPTION_POINTERS* pExceptionInfo)
     return ss.str();
 }
 
+std::string exception::AnalyzeCrash()
+{
+    std::string crashHelp;
+
+    if (moduleName == "cod4qol.asi")
+        crashHelp = "CoD4QOL crashed.\nThis is certainly a bug in CoD4QOL.\n\nSolution: To temporarily fix it, uninstall CoD4QOL and wait for a new update that fixes this problem.\n\nPlease report this crash (alongside with the dump) to the developer for further information.";
+    else if (moduleName == "iw3mp.exe")
+        crashHelp = "CoD4 crashed.\nThis might be a bug in CoD4QOL.\n\nThis crash happend in game itself and may be caused by another module like CoD4X or CoD4QOL.\n\nSolution: Try uninstalling any third-party module (including CoD4QOL).\n\nPlease report this crash (alongside with the dump) to the developer for further information.";
+    else if (moduleName.find("cod4x") != std::string::npos)
+		crashHelp = "CoD4X crashed.\nThis might be a bug in CoD4QOL.\n\nThis crash happend in the CoD4X module and may be caused by another module like CoD4QOL.\n\nSolution: Try uninstalling any third-party module (including CoD4QOL).\n\nPlease report this crash (alongside with the dump) to the developer for further information.";
+    else
+        crashHelp = "Unknown module crashed.\nThis might be a bug in CoD4QOL.\n\nSolution: Try uninstalling any third-party module (including CoD4QOL).\n\nPlease report this crash (alongside with the dump) to the developer for further information.";
+
+	return crashHelp;
+}
+
 LRESULT CALLBACK exception::CrashWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     switch (msg)
     {
     case WM_CREATE:
     {
-        CreateWindowEx(WS_EX_CLIENTEDGE, "EDIT", g_crashDetails.c_str(),
-            WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_MULTILINE | ES_READONLY,
-            10, 10, 460, 200, hwnd, (HMENU)ID_EDIT_CRASH, GetModuleHandle(NULL), NULL);
+        CreateWindowEx(WS_EX_CLIENTEDGE, "EDIT", g_crashDetails.c_str(), WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_MULTILINE | ES_READONLY, 10, 10, 460, 200, hwnd, (HMENU)ID_EDIT_CRASH, GetModuleHandle(NULL), NULL);
 
-        CreateWindow("BUTTON", "Copy Details", WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
-            10, 220, 100, 30, hwnd, (HMENU)ID_BUTTON_COPY, GetModuleHandle(NULL), NULL);
-
-        CreateWindow("BUTTON", "Create Dump", WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
-			140, 220, 100, 30, hwnd, (HMENU)ID_BUTTON_DUMP, GetModuleHandle(NULL), NULL);
-
-        CreateWindow("BUTTON", "Exit", WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
-            370, 220, 100, 30, hwnd, (HMENU)ID_BUTTON_EXIT, GetModuleHandle(NULL), NULL);
+        CreateWindow("BUTTON", "Copy Details", WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON, 10, 220, 100, 30, hwnd, (HMENU)ID_BUTTON_COPY, GetModuleHandle(NULL), NULL);
+        CreateWindow("BUTTON", "Create Dump", WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON, 130, 220, 100, 30, hwnd, (HMENU)ID_BUTTON_DUMP, GetModuleHandle(NULL), NULL);
+        CreateWindow("BUTTON", "Quick Help", WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON, 250, 220, 100, 30, hwnd, (HMENU)ID_BUTTON_HELP, GetModuleHandle(NULL), NULL);
+        CreateWindow("BUTTON", "Exit", WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON, 370, 220, 100, 30, hwnd, (HMENU)ID_BUTTON_EXIT, GetModuleHandle(NULL), NULL);
 
         hBitmap = LoadBitmap(game::GetCurrentModule(), MAKEINTRESOURCE(COD4QOL_CRASH_LOGO));
     }
@@ -104,7 +118,7 @@ LRESULT CALLBACK exception::CrashWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPA
         switch (LOWORD(wParam))
         {
         case ID_BUTTON_COPY:
-            {
+        {
             OpenClipboard(hwnd);
             EmptyClipboard();
             HGLOBAL hMem = GlobalAlloc(GMEM_MOVEABLE, g_crashDetails.size() + 1);
@@ -117,7 +131,7 @@ LRESULT CALLBACK exception::CrashWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPA
             CloseClipboard();
             MessageBox(hwnd, "Crash details copied to clipboard!", "CoD4QOL", MB_OK | MB_ICONINFORMATION);
             break;
-            }
+        }
         case ID_BUTTON_EXIT:
             DeleteObject(hBitmap);
             PostQuitMessage(0);
@@ -126,6 +140,10 @@ LRESULT CALLBACK exception::CrashWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPA
         case ID_BUTTON_DUMP:
             CreateCrashDump();
             MessageBox(hwnd, "Crash dump created!", "CoD4QOL", MB_OK | MB_ICONINFORMATION);
+            break;
+
+        case ID_BUTTON_HELP:
+            MessageBox(hwnd, AnalyzeCrash().c_str(), "CoD4QOL", MB_OK | MB_ICONINFORMATION);
             break;
         }
         break;
@@ -219,8 +237,21 @@ void exception::CreateCrashDump()
     }
 }
 
+bool exception::isHarmlessError(const LPEXCEPTION_POINTERS exceptioninfo)
+{
+    const auto code = exceptioninfo->ExceptionRecord->ExceptionCode;
+    return code == STATUS_INTEGER_OVERFLOW || code == STATUS_FLOAT_OVERFLOW || code == STATUS_SINGLE_STEP;
+}
+
 LONG WINAPI exception::ExceptionFilter(EXCEPTION_POINTERS* pExceptionInfo)
 {
+    static std::mutex crashMutex;
+
+    if (isHarmlessError(pExceptionInfo))
+        return EXCEPTION_CONTINUE_EXECUTION;
+
+    std::lock_guard<std::mutex> lock(crashMutex);
+
     g_crashDetails = GetCrashDetails(pExceptionInfo);
     exceptionInfo = pExceptionInfo;
 
