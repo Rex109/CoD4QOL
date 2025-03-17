@@ -86,7 +86,7 @@ std::string exception::AnalyzeCrash()
     std::string crashHelp;
 
     if (moduleName == "cod4qol.asi")
-        crashHelp = "CoD4QOL crashed.\nThis is certainly a bug in CoD4QOL.\n\nSolution: To temporarily fix it, uninstall CoD4QOL and wait for a new update that fixes this problem.\n\nPlease report this crash (alongside with the dump) to the developer for further information.";
+        crashHelp = "CoD4QOL crashed.\nThis is most certainly a bug in CoD4QOL.\n\nThis crash happend in the CoD4QOL module and may be caused by another module like CoD4X.\n\nSolution: Try uninstalling any third-party module and if the crash is still happening, uninstall CoD4QOL and wait for a new update that fixes this problem.\n\nPlease report this crash (alongside with the dump) to the developer for further information.";
     else if (moduleName == "iw3mp.exe")
         crashHelp = "CoD4 crashed.\nThis might be a bug in CoD4QOL.\n\nThis crash happend in game itself and may be caused by another module like CoD4X or CoD4QOL.\n\nSolution: Try uninstalling any third-party module (including CoD4QOL).\n\nPlease report this crash (alongside with the dump) to the developer for further information.";
     else if (moduleName.find("cod4x") != std::string::npos)
