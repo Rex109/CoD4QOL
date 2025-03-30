@@ -655,13 +655,15 @@ void game::drawCustomCrosshair()
 
 void game::hookedCG_DrawCrosshair(int a1)
 {
+	static dvar_s* cg_thirdperson = game::Find("cg_thirdperson");
+
 	if (!commands::qol_enablecustomcrosshair->current.enabled || (BG_WeaponNames[cg->predictedPlayerState.weapon]->overlayReticle != game::WEAPOVERLAYRETICLE_NONE && cg->predictedPlayerState.fWeaponPosFrac == 1.0f))
 	{
 		game::pCG_DrawCrosshair(a1);
 		return;
 	}
 		
-	if (game::shouldDrawCross(0x794474) && *reinterpret_cast<int*>(0x79455C) != 0 && cg->predictedPlayerState.fWeaponPosFrac != 1.0f)
+	if (game::shouldDrawCross(0x794474) && *reinterpret_cast<int*>(0x79455C) != 0 && cg->predictedPlayerState.fWeaponPosFrac != 1.0f && !cg_thirdperson->current.enabled)
 		game::drawCustomCrosshair();
 }
 
