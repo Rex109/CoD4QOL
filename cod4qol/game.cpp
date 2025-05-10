@@ -643,6 +643,23 @@ void game::drawCustomCrosshair()
 	}
 
 	color[3] = commands::qol_customcrosshaircolor_a->current.value;
+	float black[4] = { 0, 0, 0, color[3] };
+
+	//Draw outline
+
+	if (commands::qol_customcrosshairoutlinethickness->current.integer > 0)
+	{
+		game::R_AddCmdDrawStretchPic(game::whiteMaterial, game::scrPlace->realViewableMax[0] / 2 - commands::qol_customcrosshairthickness->current.integer / 2 - commands::qol_customcrosshairoutlinethickness->current.integer, game::scrPlace->realViewableMax[1] / 2 + commands::qol_customcrosshairgap->current.integer - commands::qol_customcrosshairoutlinethickness->current.integer, commands::qol_customcrosshairthickness->current.integer + (commands::qol_customcrosshairoutlinethickness->current.integer * 2), commands::qol_customcrosshairsize->current.integer + (commands::qol_customcrosshairoutlinethickness->current.integer * 2), 0.0f, 0.0f, 0.0f, 0.0f, black);
+		game::R_AddCmdDrawStretchPic(game::whiteMaterial, game::scrPlace->realViewableMax[0] / 2 - commands::qol_customcrosshairsize->current.integer - commands::qol_customcrosshairgap->current.integer - commands::qol_customcrosshairoutlinethickness->current.integer, game::scrPlace->realViewableMax[1] / 2 - commands::qol_customcrosshairthickness->current.integer / 2 - commands::qol_customcrosshairoutlinethickness->current.integer, commands::qol_customcrosshairsize->current.integer + (commands::qol_customcrosshairoutlinethickness->current.integer * 2), commands::qol_customcrosshairthickness->current.integer + (commands::qol_customcrosshairoutlinethickness->current.integer * 2), 0.0f, 0.0f, 0.0f, 0.0f, black);
+		game::R_AddCmdDrawStretchPic(game::whiteMaterial, game::scrPlace->realViewableMax[0] / 2 + commands::qol_customcrosshairgap->current.integer - commands::qol_customcrosshairoutlinethickness->current.integer, game::scrPlace->realViewableMax[1] / 2 - commands::qol_customcrosshairthickness->current.integer / 2 - commands::qol_customcrosshairoutlinethickness->current.integer, commands::qol_customcrosshairsize->current.integer + (commands::qol_customcrosshairoutlinethickness->current.integer * 2), commands::qol_customcrosshairthickness->current.integer + (commands::qol_customcrosshairoutlinethickness->current.integer * 2), 0.0f, 0.0f, 0.0f, 0.0f, black);
+		game::R_AddCmdDrawStretchPic(game::whiteMaterial, game::scrPlace->realViewableMax[0] / 2 - commands::qol_customcrosshairthickness->current.integer / 2 - commands::qol_customcrosshairoutlinethickness->current.integer, game::scrPlace->realViewableMax[1] / 2 - commands::qol_customcrosshairsize->current.integer - commands::qol_customcrosshairgap->current.integer - commands::qol_customcrosshairoutlinethickness->current.integer, commands::qol_customcrosshairthickness->current.integer + (commands::qol_customcrosshairoutlinethickness->current.integer * 2), commands::qol_customcrosshairsize->current.integer + (commands::qol_customcrosshairoutlinethickness->current.integer * 2), 0.0f, 0.0f, 0.0f, 0.0f, black);
+
+		if (commands::qol_customcrosshairdot->current.enabled)
+			game::R_AddCmdDrawStretchPic(game::whiteMaterial, game::scrPlace->realViewableMax[0] / 2 - commands::qol_customcrosshairthickness->current.integer / 2 - commands::qol_customcrosshairoutlinethickness->current.integer, game::scrPlace->realViewableMax[1] / 2 - commands::qol_customcrosshairthickness->current.integer / 2 - commands::qol_customcrosshairoutlinethickness->current.integer, commands::qol_customcrosshairthickness->current.integer + (commands::qol_customcrosshairoutlinethickness->current.integer * 2), commands::qol_customcrosshairthickness->current.integer + (commands::qol_customcrosshairoutlinethickness->current.integer * 2), 0.0f, 0.0f, 0.0f, 0.0f, black);
+
+	}
+
+	//Draw crosshair
 
 	game::R_AddCmdDrawStretchPic(game::whiteMaterial, game::scrPlace->realViewableMax[0] / 2 - commands::qol_customcrosshairthickness->current.integer / 2, game::scrPlace->realViewableMax[1] / 2 + commands::qol_customcrosshairgap->current.integer, commands::qol_customcrosshairthickness->current.integer, commands::qol_customcrosshairsize->current.integer, 0.0f, 0.0f, 0.0f, 0.0f, color);
 	game::R_AddCmdDrawStretchPic(game::whiteMaterial, game::scrPlace->realViewableMax[0] / 2 - commands::qol_customcrosshairsize->current.integer - commands::qol_customcrosshairgap->current.integer, game::scrPlace->realViewableMax[1] / 2 - commands::qol_customcrosshairthickness->current.integer / 2, commands::qol_customcrosshairsize->current.integer, commands::qol_customcrosshairthickness->current.integer, 0.0f, 0.0f, 0.0f, 0.0f, color);

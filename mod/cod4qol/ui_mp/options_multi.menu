@@ -1,8 +1,8 @@
 #include "ui/menudef.h"
 #include "ui_mp/common_macro.inc"
 #define OPTIONS_STYLE			1
-#define CHOICE_SEP_1 26
-#define CHOICE_SEP_2 31
+#define CHOICE_SEP_1 27
+#define CHOICE_SEP_2 32
 #include "ui_mp/menustyle.inc"
 #include "ui/choices_setup_common.menu"
 
@@ -103,23 +103,24 @@
         CHOICE_DVARSLIDER_VIS_EXTR( 23, "Crosshair size", qol_customcrosshairsize, 5, 0, 50, ;, ;, when( localVarInt ( ui_qol ) == 3 );)
         CHOICE_DVARSLIDER_VIS_EXTR( 24, "Crosshair thickness", qol_customcrosshairthickness, 2, 0, 50, ;, ;, when( localVarInt ( ui_qol ) == 3 );)
         CHOICE_DVARSLIDER_VIS_EXTR( 25, "Crosshair gap", qol_customcrosshairgap, 5, 0, 50, ;, ;, when( localVarInt ( ui_qol ) == 3 );)
-        CHOICE_DVARFLOATLIST_VIS( 26, "Enable dot", qol_customcrosshairdot, { "@MENU_ON" 1 "@MENU_OFF" 0 }, ;, when( localVarInt ( ui_qol ) == 3 );)
+        CHOICE_DVARSLIDER_VIS_EXTR( 26, "Outline thickness", qol_customcrosshairoutlinethickness, 0, 0, 5, ;, ;, when( localVarInt ( ui_qol ) == 3 );)
+        CHOICE_DVARFLOATLIST_VIS( 27, "Enable dot", qol_customcrosshairdot, { "@MENU_ON" 1 "@MENU_OFF" 0 }, ;, when( localVarInt ( ui_qol ) == 3 );)
         CHOICE_SEPARATOR_VIS( CHOICE_SEP_1, when( localVarInt ( ui_qol ) == 3 );)
 
-        CHOICE_DVARSLIDER_VIS_EXTR( 27, "Crosshair red", qol_customcrosshaircolor_r, 1, 0, 1, ;, ;, when( localVarInt ( ui_qol ) == 3 && dvarInt(qol_customcrosshairspectrum)==0 );)
-        CHOICE_DVARSLIDER_VIS_EXTR( 28, "Crosshair green", qol_customcrosshaircolor_g, 1, 0, 1, ;, ;, when( localVarInt ( ui_qol ) == 3 && dvarInt(qol_customcrosshairspectrum)==0 );)
-        CHOICE_DVARSLIDER_VIS_EXTR( 29, "Crosshair blue", qol_customcrosshaircolor_b, 1, 0, 1, ;, ;, when( localVarInt ( ui_qol ) == 3 && dvarInt(qol_customcrosshairspectrum)==0 );)
+        CHOICE_DVARSLIDER_VIS_EXTR( 28, "Crosshair red", qol_customcrosshaircolor_r, 1, 0, 1, ;, ;, when( localVarInt ( ui_qol ) == 3 && dvarInt(qol_customcrosshairspectrum)==0 );)
+        CHOICE_DVARSLIDER_VIS_EXTR( 29, "Crosshair green", qol_customcrosshaircolor_g, 1, 0, 1, ;, ;, when( localVarInt ( ui_qol ) == 3 && dvarInt(qol_customcrosshairspectrum)==0 );)
+        CHOICE_DVARSLIDER_VIS_EXTR( 30, "Crosshair blue", qol_customcrosshaircolor_b, 1, 0, 1, ;, ;, when( localVarInt ( ui_qol ) == 3 && dvarInt(qol_customcrosshairspectrum)==0 );)
 
-        CHOICE_DBUTTON_VIS(27, "Crosshair red", when( localVarInt ( ui_qol ) == 3 && dvarInt(qol_customcrosshairspectrum)==1);)
-        CHOICE_DBUTTON_VIS(28, "Crosshair green", when( localVarInt ( ui_qol ) == 3 && dvarInt(qol_customcrosshairspectrum)==1);)
-        CHOICE_DBUTTON_VIS(29, "Crosshair blue", when( localVarInt ( ui_qol ) == 3 && dvarInt(qol_customcrosshairspectrum)==1);)
+        CHOICE_DBUTTON_VIS(28, "Crosshair red", when( localVarInt ( ui_qol ) == 3 && dvarInt(qol_customcrosshairspectrum)==1);)
+        CHOICE_DBUTTON_VIS(29, "Crosshair green", when( localVarInt ( ui_qol ) == 3 && dvarInt(qol_customcrosshairspectrum)==1);)
+        CHOICE_DBUTTON_VIS(30, "Crosshair blue", when( localVarInt ( ui_qol ) == 3 && dvarInt(qol_customcrosshairspectrum)==1);)
 
-        CHOICE_DVARSLIDER_VIS_EXTR( 30, "Crosshair alpha", qol_customcrosshaircolor_a, 1, 0, 1, ;, ;, when( localVarInt ( ui_qol ) == 3 );)
+        CHOICE_DVARSLIDER_VIS_EXTR( 31, "Crosshair alpha", qol_customcrosshaircolor_a, 1, 0, 1, ;, ;, when( localVarInt ( ui_qol ) == 3 );)
 
-        CHOICE_DVARFLOATLIST_VIS( 31, "Enable color spectrum cycle", qol_customcrosshairspectrum, { "@MENU_ON" 1 "@MENU_OFF" 0 }, ;, when( localVarInt ( ui_qol ) == 3 );)
+        CHOICE_DVARFLOATLIST_VIS( 32, "Enable color spectrum cycle", qol_customcrosshairspectrum, { "@MENU_ON" 1 "@MENU_OFF" 0 }, ;, when( localVarInt ( ui_qol ) == 3 );)
         CHOICE_SEPARATOR_VIS( CHOICE_SEP_2, when( localVarInt ( ui_qol ) == 3 );)
-        CHOICE_BUTTON_VIS( 32, "Reset to default", exec "set qol_customcrosshairsize 5; set qol_customcrosshairthickness 2; set qol_customcrosshairgap 5; set qol_customcrosshairdot 0; set qol_customcrosshaircolor_r 1; set qol_customcrosshaircolor_g 1; set qol_customcrosshaircolor_b 1; set qol_customcrosshaircolor_a 1; set qol_customcrosshairspectrum 0;", when( localVarInt ( ui_qol ) == 3 );)
-        CHOICE_BUTTON_VIS( 33, "Export config to clipboard", exec "crosshair_config 0", when( localVarInt ( ui_qol ) == 3 );)
-        CHOICE_BUTTON_VIS( 34, "Import config from clipboard", exec "crosshair_config 1", when( localVarInt ( ui_qol ) == 3 );)
+        CHOICE_BUTTON_VIS( 33, "Reset to default", exec "set qol_customcrosshairsize 5; set qol_customcrosshairthickness 2; set qol_customcrosshairgap 5; set qol_customcrosshairoutlinethickness 0; set qol_customcrosshairdot 0; set qol_customcrosshaircolor_r 1; set qol_customcrosshaircolor_g 1; set qol_customcrosshaircolor_b 1; set qol_customcrosshaircolor_a 1; set qol_customcrosshairspectrum 0;", when( localVarInt ( ui_qol ) == 3 );)
+        CHOICE_BUTTON_VIS( 34, "Export config to clipboard", exec "crosshair_config 0", when( localVarInt ( ui_qol ) == 3 );)
+        CHOICE_BUTTON_VIS( 35, "Import config from clipboard", exec "crosshair_config 1", when( localVarInt ( ui_qol ) == 3 );)
 	}
 }

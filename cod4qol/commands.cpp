@@ -124,6 +124,8 @@ void commands::InitializeCommands()
 
     qol_customcrosshairspectrum = game::Cvar_RegisterBool("qol_customcrosshairspectrum", 0, game::dvar_flags::saved, "Enable custom crosshair color spectrum.");
 
+    qol_customcrosshairoutlinethickness = game::Cvar_RegisterInt("qol_customcrosshairoutlinethickness", 0, 0, 5000, game::dvar_flags::saved, "Custom crosshair outline thickness.");
+
     qol_chatfontsize = game::Cvar_RegisterFloat("qol_chatfontsize", 10.0f, 0.0f, 100.0f, game::dvar_flags::saved, "Chat font size.");
 
     std::cout << "Commands initialized!" << std::endl;
@@ -475,6 +477,8 @@ void commands::CrosshairConfig()
         crosshair_config.append("\n");
         crosshair_config.append(std::to_string(qol_customcrosshairgap->current.integer));
         crosshair_config.append("\n");
+        crosshair_config.append(std::to_string(qol_customcrosshairoutlinethickness->current.integer));
+        crosshair_config.append("\n");
         crosshair_config.append(std::to_string(qol_customcrosshairdot->current.enabled));
         crosshair_config.append("\n");
         crosshair_config.append(std::to_string(qol_customcrosshaircolor_r->current.value));
@@ -546,6 +550,10 @@ void commands::CrosshairConfig()
                     std::getline(iss, line);
                     qol_customcrosshairgap->current.integer = std::stoi(line);
                     qol_customcrosshairgap->latched.integer = std::stoi(line);
+
+                    std::getline(iss, line);
+                    qol_customcrosshairoutlinethickness->current.integer = std::stoi(line);
+                    qol_customcrosshairoutlinethickness->latched.integer = std::stoi(line);
 
                     std::getline(iss, line);
                     qol_customcrosshairdot->current.enabled = std::stoi(line);
