@@ -18,6 +18,8 @@ A Call of Duty 4 X plugin that adds new settings, unlocks essential dvars and ad
 - Speeds up the game's boot time
 - Adds an in-game demo browser/manager
 - Fixes red reflections on older maps
+- Customizable crosshair
+- Increase LOD distance for better visuals
 
 ### Complete patches list
 - Adds "vm_anim" command
@@ -36,6 +38,8 @@ A Call of Duty 4 X plugin that adds new settings, unlocks essential dvars and ad
   - Lod scale skinned
   - FSR1 Upscaling
   - Film use tweaks toggle
+  - Rigid model detail distance selector
+  - Skinned model detail distance selector
   - Gun X, Y, Z sliders
   - Gun handedness switch
 - Adds "Privacy options" menu:
@@ -54,6 +58,8 @@ A Call of Duty 4 X plugin that adds new settings, unlocks essential dvars and ad
   - Show red reflection probes
   - Invert flashbangs
   - Load custom localized resources
+  - Chat font size slider
+  - Customize crosshair
 
 ## Download and installation 
 To download the pre-compiled binaries you can grab the latest version in the [Releases Page](https://github.com/Rex109/Cod4QOL/releases)
