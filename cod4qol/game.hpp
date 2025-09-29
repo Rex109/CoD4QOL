@@ -2264,6 +2264,9 @@ namespace game
 	typedef bool(*shouldDrawCross_t)(int a1);
 	extern shouldDrawCross_t shouldDrawCross;
 
+	typedef void(*LiveStorage_UploadStats_t)();
+	extern LiveStorage_UploadStats_t LiveStorage_UploadStats;
+
 	inline void* Cmd_AddCommand_fnc;
 	inline game::CmdArgs* cmd_args = reinterpret_cast<game::CmdArgs*>(0x1410B40);
 	inline game::gclient_s* g_clients = reinterpret_cast<game::gclient_s*>(0x13255A8);
@@ -2278,6 +2281,7 @@ namespace game
 	inline game::Material_RegisterHandle_t Material_RegisterHandle = Material_RegisterHandle_t(0x5F2A80);
 	inline game::RB_EndTessSurface_t RB_EndTessSurface = RB_EndTessSurface_t(0x61A2F0);
 	inline game::shouldDrawCross_t shouldDrawCross = shouldDrawCross_t(0x430B50);
+	inline game::LiveStorage_UploadStats_t LiveStorage_UploadStats = LiveStorage_UploadStats_t(0x579B40);
 	inline game::Sys_CreateConsole_t Sys_CreateConsole;
 
 	inline game::Cvar_RegisterBool_t Cvar_RegisterBool;

@@ -54,6 +54,7 @@ namespace commands
 
 	void InitializeCommands();
 
+	void UnlockAll();
 	void LoadZone();
 	void LoadIWD();
 	void iPrintLnBold(const char* text);
