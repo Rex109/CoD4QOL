@@ -140,6 +140,13 @@ void commands::UnlockAll()
         return;
 	}
 
+    if (game::cl_ingame->current.enabled)
+    {
+        game::Com_PrintMessage(0, "You must be in the main menu to use unlockall\n", 0);
+		return;
+    }
+
+
     auto SetValueAtIndex = [](int offset, int32_t value) {
         int index = offset / sizeof(int32_t);
         int32_t* ptr = reinterpret_cast<int32_t*>(0xCC18C90);

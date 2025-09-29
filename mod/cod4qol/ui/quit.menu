@@ -119,5 +119,12 @@
 			accept			{ exec "renameselecteddemo"; exec "loaddemos"; close self; }
 		}
 		CHOICE_BUTTON_VIS( 4, "@MENU_OK", exec "renameselecteddemo"; exec "loaddemos"; close self;, when(dvarInt("qol_dialog") == 3))
+
+        CHOICE_POPMENU_TITLE_VIS_EXTR( "Are you sure you want to unlock all stats and challenges?", when(dvarInt("qol_dialog") == 4), 0.32)
+		CHOICE_BUTTON_VIS( 3, "@MENU_YES", exec "unlockall"; close self; setdvar qol_dialog 5; open quit_popmenu;, when(dvarInt("qol_dialog") == 4))
+		CHOICE_BUTTON_VIS( 4, "@MENU_NO", close self;, when(dvarInt("qol_dialog") == 4))
+
+        CHOICE_POPMENU_TITLE_VIS_EXTR( "Set to max level and unlocked all challenges.", when(dvarInt("qol_dialog") == 5), 0.32)
+		CHOICE_BUTTON_VIS( 4, "@MENU_OK", close self;, when(dvarInt("qol_dialog") == 5))
 	}
 }
