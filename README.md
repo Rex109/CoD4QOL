@@ -9,10 +9,7 @@
 > [!WARNING]
 > Even if this tool is not directly a cheat, lots of players have been banned by servers while playing with this tool installed.
 >
-> **UNTIL FURTHER NOTICE** i really suggest you NOT to play online for now while you have it installed.
-> You can still use it to play offline/private matches or use it for modding/developing purposes.
->
-> Please spread the word if you want to keep the development alive: [More information here](https://i.imgur.com/0ysXqBo.png)
+> Use it at your own risk!
 
 ![211422660-af8afa37-87a0-45c0-b1ff-a2fb60b77228 copy](https://github.com/Rex109/CoD4QOL/assets/8615649/b907fe74-cef3-4690-b28b-b5889f6dd9cd)
 *<p align="center"><sub>Play the way YOU want</sub></p>*
