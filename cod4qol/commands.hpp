@@ -51,6 +51,7 @@ namespace commands
 	inline game::dvar_s* qol_customcrosshairspectrum;
 	inline game::dvar_s* qol_customcrosshairoutlinethickness;
 	inline game::dvar_s* qol_chatfontsize;
+	inline game::dvar_s* qol_disableshellshockloop;
 
 	void InitializeCommands();
 

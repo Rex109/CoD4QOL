@@ -773,6 +773,25 @@ __declspec(naked) const char* game::String_Alloc(const char* string)
 	}
 }
 
+__declspec(naked) void game::hookedUpdateShellShockSound()
+{
+	static const uint32_t retn_addr = 0x44CD4E;
+	static const uint32_t SND_PlayBlendedSoundAliases = 0x5C4130;
+
+	__asm
+	{
+		push edx;
+		mov edx, commands::qol_disableshellshockloop;
+		cmp byte ptr[edx + 12], 0;
+		pop edx;
+		jne STOCK;
+		call SND_PlayBlendedSoundAliases;
+
+	STOCK:
+		jmp retn_addr;
+	}
+}
+
 void game::SetCoD4xFunctionOffsets()
 {
 	Cmd_AddCommand_fnc = (void*)(offsets::GetOffset("Cmd_AddCommand_fnc"));

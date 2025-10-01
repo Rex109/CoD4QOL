@@ -129,6 +129,8 @@ void commands::InitializeCommands()
 
     qol_chatfontsize = game::Cvar_RegisterFloat("qol_chatfontsize", 10.0f, 0.0f, 100.0f, game::dvar_flags::saved, "Chat font size.");
 
+	qol_disableshellshockloop = game::Cvar_RegisterBool("qol_disableshellshockloop", 0, game::dvar_flags::saved, "Disable the shellshock sound loop.");
+
     std::cout << "Commands initialized!" << std::endl;
 }
 

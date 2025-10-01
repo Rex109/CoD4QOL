@@ -2194,6 +2194,11 @@ namespace game
 
 	void hookedCG_DrawChatMessages();
 
+	typedef void(*UpdateShellShockSound)();
+	inline UpdateShellShockSound pUpdateShellShockSound;
+
+	void hookedUpdateShellShockSound();
+
 	int	Cmd_Argc();
 	const char* Cmd_Argv(int arg);
 	HMODULE GetCurrentModule();

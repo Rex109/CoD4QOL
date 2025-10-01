@@ -115,6 +115,10 @@ void hooks::InitializeHooks()
 	game::pCG_DrawChatMessages = (game::CG_DrawChatMessages)(0x42D141);
 	hooks::install(&(PVOID&)game::pCG_DrawChatMessages, (PBYTE)game::hookedCG_DrawChatMessages);
 
+	//UpdateShellShockSound
+	game::pUpdateShellShockSound = (game::UpdateShellShockSound)(0x44CD49);
+	hooks::install(&(PVOID&)game::pUpdateShellShockSound, (PBYTE)game::hookedUpdateShellShockSound);
+
 
 	std::cout << "Hooks installed!" << std::endl;
 }
