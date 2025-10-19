@@ -25,6 +25,7 @@ A Call of Duty 4 X plugin that adds new settings, unlocks essential dvars and ad
 - Fixes red reflections on older maps
 - Customizable crosshair
 - Increase LOD distance for better visuals
+- Unlock all button + console command
 
 ### Complete patches list
 - Adds "vm_anim" command
@@ -62,9 +63,11 @@ A Call of Duty 4 X plugin that adds new settings, unlocks essential dvars and ad
   - Disable slash commands
   - Show red reflection probes
   - Invert flashbangs
+  - Disable flashbang sound
   - Load custom localized resources
   - Chat font size slider
   - Customize crosshair
+  - Unlock All
 
 ## Download and installation 
 To download the pre-compiled binaries you can grab the latest version in the [Releases Page](https://github.com/Rex109/Cod4QOL/releases)
