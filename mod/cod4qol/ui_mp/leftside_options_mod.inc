@@ -26,13 +26,13 @@ CHOICE_MENU_TITLE( "@MENU_OPTIONS" )
 #define CHOICE_VERTICAL_ALIGN VERTICAL_ALIGN_TOP
 
 //CHOICE_SECTION_TITLE( 1, "@MENU_SYSTEM" )
-CHOICE_BUTTON_VIS( 2, "@MENU_GRAPHICS", LOCAL_CLOSE_ALL open options_graphics, when( dvarInt( arcademode ) == 0 ); )
-//CHOICE_DBUTTON_VIS( 2, "@MENU_GRAPHICS", when( ( dvarint( sv_running ) && dvarInt(ui_allow_graphic_change)==0 ) || dvarBool( arcademode ) ); )
+CHOICE_BUTTON_VIS( 2, "@MENU_GRAPHICS", LOCAL_CLOSE_ALL open options_graphics, when( ( !dvarint( sv_running ) || dvarInt( ui_allow_graphic_change ) ) && dvarInt( arcademode ) == 0 ); )
+CHOICE_DBUTTON_VIS( 2, "@MENU_GRAPHICS", when( ( dvarint( sv_running ) && dvarInt(ui_allow_graphic_change)==0 ) || dvarBool( arcademode ) ); )
 CHOICE_BUTTON( 3, "Additional graphics...", LOCAL_CLOSE_ALL open options_voice; setLocalVarBool ui_showApply 0; setLocalVarInt ui_qol 1; )
 CHOICE_BUTTON( 4, "Privacy settings...", LOCAL_CLOSE_ALL open options_sound; setLocalVarBool ui_showApply 0; setLocalVarInt ui_qol 1; )
 CHOICE_BUTTON( 5, "CoD4QOL settings...", LOCAL_CLOSE_ALL open options_sound; setLocalVarBool ui_showApply 0; setLocalVarInt ui_qol 2; )
-CHOICE_BUTTON_VIS( 6, "@MENU_TEXTURE_SETTINGS", LOCAL_CLOSE_ALL  open options_graphics_texture, when( dvarInt( arcademode ) == 0 ); )
-//CHOICE_DBUTTON_VIS( 6, "@MENU_TEXTURE_SETTINGS", when( ( dvarint( sv_running ) && dvarInt(ui_allow_graphic_change)==0 ) || dvarBool( arcademode ) ); )
+CHOICE_BUTTON_VIS( 6, "@MENU_TEXTURE_SETTINGS", LOCAL_CLOSE_ALL  open options_graphics_texture, when( ( !dvarint( sv_running ) || dvarInt( ui_allow_graphic_change ) ) && dvarInt( arcademode ) == 0 ); )
+CHOICE_DBUTTON_VIS( 6, "@MENU_TEXTURE_SETTINGS", when( ( dvarint( sv_running ) && dvarInt(ui_allow_graphic_change)==0 ) || dvarBool( arcademode ) ); )
 CHOICE_BUTTON( 7, "@MENU_SOUND", LOCAL_CLOSE_ALL open options_sound; setLocalVarInt ui_qol 0; )
 CHOICE_BUTTON_VIS( 8, "@MENU_VOICECHAT", LOCAL_CLOSE_ALL open options_voice; setLocalVarInt ui_qol 0;, when( dvarint( ui_multiplayer ) ) )
 CHOICE_DBUTTON_VIS( 8, "@MENU_VOICECHAT", when( !dvarint( ui_multiplayer ) ); )
@@ -42,8 +42,8 @@ CHOICE_BUTTON_VIS( 10, "@MENU_CHEATS_LOWCASE", open menu_special_features; close
 CHOICE_BUTTON_VIS( 10, "@MENU_MULTIPLAYER_OPTIONS", LOCAL_CLOSE_ALL open options_multi; setLocalVarInt ui_qol 0;, when( dvarint( ui_multiplayer ) ) )
 CHOICE_DBUTTON_VIS( 10, "@MENU_CHEATS_LOWCASE", when( ( !dvarBool( sv_running ) || dvarBool( arcademode ) || dvarBool( arcademode_full ) ) && !dvarBool(ui_multiplayer) ); )
 
-CHOICE_BUTTON_VIS( 11, "@MENU_RESET_SYSTEM_DEFAULTS", LOCAL_CLOSE_ALL open options_graphics_defaults, when( dvarInt( arcademode ) == 0 ); )
-//CHOICE_DBUTTON_VIS( 11, "@MENU_RESET_SYSTEM_DEFAULTS", when( ( dvarint( sv_running ) && dvarInt(ui_allow_graphic_change)==0 ) || dvarBool( arcademode ) ); )
+CHOICE_BUTTON_VIS( 11, "@MENU_RESET_SYSTEM_DEFAULTS", LOCAL_CLOSE_ALL open options_graphics_defaults, when( ( !dvarint( sv_running ) || dvarInt( ui_allow_graphic_change ) ) && dvarInt( arcademode ) == 0 ); )
+CHOICE_DBUTTON_VIS( 11, "@MENU_RESET_SYSTEM_DEFAULTS", when( ( dvarint( sv_running ) && dvarInt(ui_allow_graphic_change)==0 ) || dvarBool( arcademode ) ); )
 
 // ---
 
