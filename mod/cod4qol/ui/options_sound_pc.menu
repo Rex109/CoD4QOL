@@ -117,7 +117,7 @@ itemDef { \
         CHOICE_SEPARATOR_VIS( CHOICE_SEP_2, when( localVarInt ( ui_qol ) == 2 ); )
         CHOICE_BUTTON_VIS( 36, "Customize crosshair", open options_multi; setLocalVarBool ui_showApply 0; setLocalVarInt ui_qol 3;, when( localVarInt ( ui_qol ) == 2 ) )
         CHOICE_BUTTON_VIS( 37, "Unlock All", setdvar qol_dialog 4; open quit_popmenu; , when( localVarInt ( ui_qol ) == 2 && dvarInt( cl_ingame ) == 0 && dvarString( fs_game ) == "") )
-        CHOICE_DBUTTON_VIS( 38, "Unlock All", when( localVarInt ( ui_qol ) == 2  && (dvarInt( cl_ingame ) == 1 || dvarString( fs_game ) != "") ) )
+        CHOICE_DBUTTON_VIS( 37, "Unlock All", when( localVarInt ( ui_qol ) == 2  && (dvarInt( cl_ingame ) == 1 || dvarString( fs_game ) != "") ) )
 
 		itemDef 
 		{
