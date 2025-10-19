@@ -1,8 +1,8 @@
 #include "ui/menudef.h"
 #include "ui_mp/common_macro.inc"
 #define OPTIONS_STYLE			1
-#define CHOICE_SEP_1            32
-#define CHOICE_SEP_2            34
+#define CHOICE_SEP_1            33
+#define CHOICE_SEP_2            35
 #include "ui_mp/menustyle.inc"
 #include "ui/choices_setup_common.menu"
 
@@ -109,14 +109,15 @@ itemDef { \
         CHOICE_DVARFLOATLIST_VIS( 29, "Disable slash commands", qol_disableslashcommands, { "@MENU_OFF" 0 "@MENU_ON" 1 }, ;, when( localVarInt ( ui_qol ) == 2 );)
         CHOICE_DVARFLOATLIST_VIS( 30, "Show red reflection probes", qol_debugreflections, { "@MENU_OFF" 0 "@MENU_ON" 1 }, ;, when( localVarInt ( ui_qol ) == 2 );)
         CHOICE_DVARFLOATLIST_VIS( 31, "Invert flashbangs", qol_invertflashbang, { "@MENU_OFF" 0 "@MENU_ON" 1 }, exec "toggleflashbangupdate";, when( localVarInt ( ui_qol ) == 2 );)
-        CHOICE_DVARFLOATLIST_VIS( 32, "Load custom localized resources", qol_loadcustomlocalizedresources, { "@MENU_OFF" 0 "@MENU_ON" 1 }, ;, when( localVarInt ( ui_qol ) == 2 );)
+        CHOICE_DVARFLOATLIST_VIS( 32, "Disable flashbang sound", qol_disableshellshockloop, { "@MENU_OFF" 0 "@MENU_ON" 1 }, ;, when( localVarInt ( ui_qol ) == 2 );)
+        CHOICE_DVARFLOATLIST_VIS( 33, "Load custom localized resources", qol_loadcustomlocalizedresources, { "@MENU_OFF" 0 "@MENU_ON" 1 }, ;, when( localVarInt ( ui_qol ) == 2 );)
         CHOICE_SEPARATOR_VIS( CHOICE_SEP_1, when( localVarInt ( ui_qol ) == 2 ); )
-        CHOICE_DVARSLIDER_VIS_EXTR( 33, "Chat font size", qol_chatfontsize, 10, 5, 30, ;, ;, when( localVarInt ( ui_qol ) == 2 );)
-        CHOICE_BUTTON_VIS( 34, "Reset chat font size", exec "set qol_chatfontsize 10;", when( localVarInt ( ui_qol ) == 2 );)
+        CHOICE_DVARSLIDER_VIS_EXTR( 34, "Chat font size", qol_chatfontsize, 10, 5, 30, ;, ;, when( localVarInt ( ui_qol ) == 2 );)
+        CHOICE_BUTTON_VIS( 35, "Reset chat font size", exec "set qol_chatfontsize 10;", when( localVarInt ( ui_qol ) == 2 );)
         CHOICE_SEPARATOR_VIS( CHOICE_SEP_2, when( localVarInt ( ui_qol ) == 2 ); )
-        CHOICE_BUTTON_VIS( 35, "Customize crosshair", open options_multi; setLocalVarBool ui_showApply 0; setLocalVarInt ui_qol 3;, when( localVarInt ( ui_qol ) == 2 ) )
-        CHOICE_BUTTON_VIS( 36, "Unlock All", setdvar qol_dialog 4; open quit_popmenu; , when( localVarInt ( ui_qol ) == 2 && dvarInt( cl_ingame ) == 0 && dvarString( fs_game ) == "") )
-        CHOICE_DBUTTON_VIS( 36, "Unlock All", when( localVarInt ( ui_qol ) == 2  && (dvarInt( cl_ingame ) == 1 || dvarString( fs_game ) != "") ) )
+        CHOICE_BUTTON_VIS( 36, "Customize crosshair", open options_multi; setLocalVarBool ui_showApply 0; setLocalVarInt ui_qol 3;, when( localVarInt ( ui_qol ) == 2 ) )
+        CHOICE_BUTTON_VIS( 37, "Unlock All", setdvar qol_dialog 4; open quit_popmenu; , when( localVarInt ( ui_qol ) == 2 && dvarInt( cl_ingame ) == 0 && dvarString( fs_game ) == "") )
+        CHOICE_DBUTTON_VIS( 38, "Unlock All", when( localVarInt ( ui_qol ) == 2  && (dvarInt( cl_ingame ) == 1 || dvarString( fs_game ) != "") ) )
 
 		itemDef 
 		{
