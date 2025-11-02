@@ -684,6 +684,42 @@ void game::hookedCG_DrawCrosshair(int a1)
 		game::drawCustomCrosshair();
 }
 
+void game::CG_SetClientDvarFromServer_stub(const char* dvarname, const char* value, [[maybe_unused]] cg_s* _cgs)
+{
+	std::cout << "Received server dvar: " << dvarname << std::endl;
+
+	if (!strcmp(dvarname, "cg_fov") || !strcmp(dvarname, "cg_fovscale") || !strcmp(dvarname, "r_fullbright"))
+		return;
+
+	__asm
+	{
+		mov eax, dvarname
+		mov edi, value
+		push _cgs
+		call dword ptr[pCG_SetClientDvarFromServer]
+		add esp, 4
+	}
+}
+
+__declspec(naked) void game::hookedCG_SetClientDvarFromServer()
+{
+	__asm
+	{
+		push ebx;
+		mov ebx, [esp + 8h];
+
+		push ebx;
+		push edi;
+		push eax;
+
+		call CG_SetClientDvarFromServer_stub;
+		add esp, 0xC;
+
+		pop ebx;
+		retn;
+	}
+}
+
 void game::Cmd_Give_f_stub()
 {
 	game::Cbuf_AddText("give ammo\n", 0);

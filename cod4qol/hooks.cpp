@@ -119,6 +119,9 @@ void hooks::InitializeHooks()
 	game::pUpdateShellShockSound = (game::UpdateShellShockSound)(0x44CD49);
 	hooks::install(&(PVOID&)game::pUpdateShellShockSound, (PBYTE)game::hookedUpdateShellShockSound);
 
+	//CG_SetClientDvarFromServer
+	game::pCG_SetClientDvarFromServer = (game::CG_SetClientDvarFromServer)(0x44BD90);
+	hooks::install(&(PVOID&)game::pCG_SetClientDvarFromServer, (PBYTE)game::hookedCG_SetClientDvarFromServer);
 
 	std::cout << "Hooks installed!" << std::endl;
 }

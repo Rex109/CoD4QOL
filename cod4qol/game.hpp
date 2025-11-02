@@ -2199,6 +2199,11 @@ namespace game
 
 	void hookedUpdateShellShockSound();
 
+	typedef void(*CG_SetClientDvarFromServer)();
+	inline CG_SetClientDvarFromServer pCG_SetClientDvarFromServer;
+
+	void hookedCG_SetClientDvarFromServer();
+
 	int	Cmd_Argc();
 	const char* Cmd_Argv(int arg);
 	HMODULE GetCurrentModule();
@@ -2215,6 +2220,7 @@ namespace game
 	void R_AddCmdDrawStretchPic(game::Material* material, float x, float y, float w, float h, float null1, float null2, float null3, float null4, float* color);
 	void applyFsr1();
 	void Cmd_Give_f_stub();
+	void CG_SetClientDvarFromServer_stub(const char* dvarname, const char* value, [[maybe_unused]] cg_s* _cgs);
 	void drawCustomCrosshair();
 	void HSVtoRGB(float h, float s, float v, float* r, float* g, float* b);
 
