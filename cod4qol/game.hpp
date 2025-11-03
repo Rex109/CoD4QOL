@@ -1524,6 +1524,20 @@ namespace game
 		R_RENDERTARGET_NONE = 0x10,
 	};
 
+	struct GfxRenderTargetSurface
+	{
+		IDirect3DSurface9* color;
+		IDirect3DSurface9* depthStencil;
+	};
+
+	struct GfxRenderTarget
+	{
+		GfxImage* image;
+		GfxRenderTargetSurface surface;
+		unsigned int width;
+		unsigned int height;
+	};
+
 	struct ScreenPlacement
 	{
 		float scaleVirtualToReal[2];
@@ -2159,6 +2173,11 @@ namespace game
 
 	void hookedRB_DrawDebugPostEffects();
 
+	typedef void(*RB_DebugShaderDrawCommandsCommon)();
+	inline RB_DebugShaderDrawCommandsCommon pRB_DebugShaderDrawCommandsCommon;
+
+	void hookedRB_DebugShaderDrawCommandsCommon();
+
 	typedef char(*R_GenerateSortedDrawSurfs)(GfxSceneParms* sceneParams, int a2, int a3);
 	inline R_GenerateSortedDrawSurfs pR_GenerateSortedDrawSurfs;
 
@@ -2217,6 +2236,7 @@ namespace game
 	void R_SetRenderTarget(int target);
 	void R_Set2D();
 	void RB_DrawStretchPic(game::Material* material, float x, float y, float w, float h, float texcoord0, float texcoord1, float texcoord2, float texcoord3);
+	void R_CopyRenderTarget(IDirect3DDevice9* device, game::GfxRenderTargetId dstId, game::GfxRenderTargetId srcId);
 	void R_AddCmdDrawStretchPic(game::Material* material, float x, float y, float w, float h, float null1, float null2, float null3, float null4, float* color);
 	void applyFsr1();
 	void Cmd_Give_f_stub();

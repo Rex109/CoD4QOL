@@ -489,14 +489,34 @@ void game::RB_DrawStretchPic(game::Material* material, float x, float y, float w
 	}
 }
 
+void game::R_CopyRenderTarget(IDirect3DDevice9* device, game::GfxRenderTargetId dstId, game::GfxRenderTargetId srcId)
+{
+	static game::GfxRenderTarget* gfxRenderTargets = reinterpret_cast<game::GfxRenderTarget*>(0xD573EB0);
+
+	IDirect3DSurface9* src = gfxRenderTargets[srcId].surface.color;
+	IDirect3DSurface9* dst = gfxRenderTargets[dstId].surface.color;
+
+	if (!src || !dst)
+		return;
+
+	HRESULT hr = device->StretchRect(src, nullptr, dst, nullptr, D3DTEXF_NONE);
+	if (FAILED(hr))
+	{
+		std::cout << "R_CopyRenderTarget: StretchRect failed (" << hr << ")" << std::endl;
+	}
+}
+
+
 void game::applyFsr1()
 {
 	float renderscale = commands::qol_renderscale->current.value;
 	const static int* visionApplied = reinterpret_cast<int*>(0xCEFBA08);
 
-	if (renderscale != 1.0 && !commands::r_fullbright->current.enabled)
+	if (renderscale != 1.0 )
 	{
-		if (*visionApplied)
+		if(commands::r_fullbright->current.enabled)
+			R_CopyRenderTarget(*game::dx9_device_ptr, game::GfxRenderTargetId::R_RENDERTARGET_RESOLVED_POST_SUN, game::GfxRenderTargetId::R_RENDERTARGET_SCENE);
+		else if (*visionApplied)
 		{
 			R_Set2D();
 			R_SetRenderTarget(game::GfxRenderTargetId::R_RENDERTARGET_RESOLVED_POST_SUN);
@@ -505,7 +525,6 @@ void game::applyFsr1()
 				RB_DrawStretchPic(material, 0.0f, 0.0f, game::scrPlace->realViewableMax[0], game::scrPlace->realViewableMax[1], 0.0, 0.0, 1.0, 1.0);
 
 			RB_EndTessSurface();
-
 			R_SetRenderTarget(game::GfxRenderTargetId::R_RENDERTARGET_FRAME_BUFFER);
 		}
 
@@ -539,11 +558,23 @@ __declspec(naked) void game::hookedRB_DrawDebugPostEffects()
 	}
 }
 
+__declspec(naked) void game::hookedRB_DebugShaderDrawCommandsCommon()
+{
+	const static uint32_t retn_addr = 0x649DDD;
+	const static uint32_t call_addr = 0x64AD20;
+
+	__asm
+	{
+		pushad;
+		call call_addr;
+		popad;
+		mov ebp, [ebp + 0x5688];
+		jmp		retn_addr;
+	}
+}
+
 char game::hookedR_GenerateSortedDrawSurfs(GfxSceneParms* sceneParams, int a2, int a3)
 {
-	if(commands::r_fullbright->current.enabled)
-		return game::pR_GenerateSortedDrawSurfs(sceneParams, a2, a3);
-
 	float renderscale = commands::qol_renderscale->current.value;
 
 	sceneParams->sceneViewport.width *= renderscale;
@@ -686,8 +717,6 @@ void game::hookedCG_DrawCrosshair(int a1)
 
 void game::CG_SetClientDvarFromServer_stub(const char* dvarname, const char* value, [[maybe_unused]] cg_s* _cgs)
 {
-	std::cout << "Received server dvar: " << dvarname << std::endl;
-
 	if (!strcmp(dvarname, "cg_fov") || !strcmp(dvarname, "cg_fovscale") || !strcmp(dvarname, "r_fullbright"))
 		return;
 

@@ -87,6 +87,10 @@ void hooks::InitializeHooks()
 	game::pRB_DrawDebugPostEffects = (game::RB_DrawDebugPostEffects)(0x64AD70);
 	hooks::install(&(PVOID&)game::pRB_DrawDebugPostEffects, (PBYTE)game::hookedRB_DrawDebugPostEffects);
 
+	//RB_DebugShaderDrawCommandsCommon
+	game::pRB_DebugShaderDrawCommandsCommon = (game::RB_DebugShaderDrawCommandsCommon)(0x649DD7);
+	hooks::install(&(PVOID&)game::pRB_DebugShaderDrawCommandsCommon, (PBYTE)game::hookedRB_DebugShaderDrawCommandsCommon);
+
 	//R_GenerateSortedDrawSurfs
 	game::pR_GenerateSortedDrawSurfs = (game::R_GenerateSortedDrawSurfs)(0x5F98E0);
 	hooks::install(&(PVOID&)game::pR_GenerateSortedDrawSurfs, (PBYTE)game::hookedR_GenerateSortedDrawSurfs);
