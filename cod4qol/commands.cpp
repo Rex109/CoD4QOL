@@ -71,6 +71,9 @@ void commands::InitializeCommands()
     r_lodBiasSkinned = game::Find("r_lodBiasSkinned");
     r_lodBiasSkinned->domain.value.min = -1000000;
 
+	bg_bobmax = game::Find("bg_bobmax");
+    cg_gun_x->flags = game::none;
+
     qol_version = game::Cvar_RegisterString("qol_version", COD4QOL_VERSION, game::dvar_flags::read_only, "CoD4QOL version.");
 
     qol_show_mainmenuinfo = game::Cvar_RegisterBool("qol_show_mainmenuinfo", 1, game::dvar_flags::saved, "Show the CoD4QOL version and social media links in the main menu.");

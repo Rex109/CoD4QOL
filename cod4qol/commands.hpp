@@ -52,6 +52,7 @@ namespace commands
 	inline game::dvar_s* qol_customcrosshairoutlinethickness;
 	inline game::dvar_s* qol_chatfontsize;
 	inline game::dvar_s* qol_disableshellshockloop;
+	inline game::dvar_s* bg_bobmax;
 
 	void InitializeCommands();
 
