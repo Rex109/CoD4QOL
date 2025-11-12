@@ -21,30 +21,49 @@ jobs:
   build:
     runs-on: windows-latest
     strategy:
-        matrix:
-          configuration:
-            - Debug
-            - Release
+      matrix:
+        configuration:
+          - Debug
+          - Release
+    outputs:
+      symbols-path: D:\a\CoD4QOL\CoD4QOL\symbols
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Add MSBuild to PATH
-      uses: microsoft/setup-msbuild@v2
+      - name: Add MSBuild to PATH
+        uses: microsoft/setup-msbuild@v2
 
-    - name: Build
-      working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: msbuild /m /p:Configuration=${{matrix.configuration}} ${{env.SOLUTION_FILE_PATH}}
+      - name: Build
+        working-directory: ${{ env.GITHUB_WORKSPACE }}
+        run: msbuild /m /p:Configuration=${{ matrix.configuration }} ${{ env.SOLUTION_FILE_PATH }}
 
-    - name: Rename FastFile 
-      run: |
-        mkdir D:\a\CoD4QOL\CoD4QOL\miles
-        mv D:\a\CoD4QOL\CoD4QOL\mod\cod4qol\mod.ff D:\a\CoD4QOL\CoD4QOL\qol.ff
-        mv D:\a\CoD4QOL\CoD4QOL\${{matrix.configuration}}\cod4qol.asi D:\a\CoD4QOL\CoD4QOL\miles\cod4qol.asi
-      
-    - name: Upload binaries
-      uses: actions/upload-artifact@v4
-      with:
-          name: ${{matrix.configuration}} binaries
+      - name: Rename FastFile 
+        run: |
+          mkdir D:\a\CoD4QOL\CoD4QOL\miles
+          mv D:\a\CoD4QOL\CoD4QOL\mod\cod4qol\mod.ff D:\a\CoD4QOL\CoD4QOL\qol.ff
+          mv D:\a\CoD4QOL\CoD4QOL\${{ matrix.configuration }}\cod4qol.asi D:\a\CoD4QOL\CoD4QOL\miles\cod4qol.asi
+
+      - name: Upload binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.configuration }} binaries
           path: |
             D:\a\CoD4QOL\CoD4QOL\miles\
             D:\a\CoD4QOL\CoD4QOL\qol.ff
+
+      - name: Copy PDBs for unified artifact
+        run: |
+          mkdir -p D:\a\CoD4QOL\CoD4QOL\symbols\${{ matrix.configuration }}
+          copy D:\a\CoD4QOL\CoD4QOL\${{ matrix.configuration }}\*.pdb D:\a\CoD4QOL\CoD4QOL\symbols\${{ matrix.configuration }}\
+
+  upload-symbols:
+    runs-on: windows-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Upload Debug symbols
+        uses: actions/upload-artifact@v4
+        with:
+          name: Debug symbols
+          path: D:\a\CoD4QOL\CoD4QOL\symbols
