@@ -72,7 +72,7 @@ void commands::InitializeCommands()
     r_lodBiasSkinned->domain.value.min = -1000000;
 
 	bg_bobmax = game::Find("bg_bobmax");
-    cg_gun_x->flags = game::none;
+    bg_bobmax->flags = game::none;
 
     qol_version = game::Cvar_RegisterString("qol_version", COD4QOL_VERSION, game::dvar_flags::read_only, "CoD4QOL version.");
 
