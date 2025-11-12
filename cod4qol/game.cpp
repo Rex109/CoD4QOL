@@ -717,7 +717,7 @@ void game::hookedCG_DrawCrosshair(int a1)
 
 void game::CG_SetClientDvarFromServer_stub(const char* dvarname, const char* value, [[maybe_unused]] cg_s* _cgs)
 {
-	if (!strcmp(dvarname, "cg_fov") || !strcmp(dvarname, "cg_fovscale") || !strcmp(dvarname, "r_fullbright"))
+	if (!strcmp(dvarname, "cg_fov") || !strcmp(dvarname, "cg_fovscale") || !strcmp(dvarname, "r_fullbright") || !strcmp(dvarname, "bg_bobmax"))
 		return;
 
 	__asm
