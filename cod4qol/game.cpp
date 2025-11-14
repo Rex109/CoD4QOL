@@ -6,8 +6,10 @@
 #include "offsets.hpp"
 #include <crc32/crc32.h>
 #include <thread>
+#include <mutex>
 
 std::vector<std::pair<int, IDirect3DCubeTexture9*>> oldReflectionProbes;
+std::mutex reflectionProbeMutex;
 
 __declspec(naked) const char* game::hookedCon_LinePrefix()
 {
@@ -131,6 +133,8 @@ void game::WriteBytesToFile(const byte* data, DWORD size, const char* filename)
 
 void game::cleanUpReflections()
 {
+	std::lock_guard<std::mutex> lock(reflectionProbeMutex);
+
 	if (commands::qol_debugreflections->current.enabled)
 		return;
 
@@ -162,6 +166,8 @@ void game::cleanUpReflections()
 
 void game::restoreReflections()
 {
+	std::lock_guard<std::mutex> lock(reflectionProbeMutex);
+
 	if (oldReflectionProbes.empty())
 		return;
 
