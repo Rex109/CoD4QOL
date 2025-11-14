@@ -2223,6 +2223,11 @@ namespace game
 
 	void hookedCG_SetClientDvarFromServer();
 
+	typedef void(*CG_AddViewWeapon)();
+	inline CG_AddViewWeapon pCG_AddViewWeapon;
+
+	void hookedCG_AddViewWeapon();
+
 	int	Cmd_Argc();
 	const char* Cmd_Argv(int arg);
 	HMODULE GetCurrentModule();

@@ -863,6 +863,90 @@ __declspec(naked) void game::hookedUpdateShellShockSound()
 	}
 }
 
+float* VectorMA_impl(float* result, const float* dir, const float* start, float scale)
+{
+	if (commands::qol_adsgunposinterpolation->current.integer == 1) // Linear
+	{
+		scale *= (1.0f - game::cg->predictedPlayerState.fWeaponPosFrac);
+	}
+	else if (commands::qol_adsgunposinterpolation->current.integer == 2) // Exponential
+	{
+		float frac = game::cg->predictedPlayerState.fWeaponPosFrac;
+		scale *= (1.0f - (frac * frac));
+	}
+	else if (commands::qol_adsgunposinterpolation->current.integer == 3) // Snap
+	{
+		if (game::cg->predictedPlayerState.fWeaponPosFrac == 1.0f)
+			scale = 0.0f;
+	}
+
+	result[0] = dir[0] * scale + start[0];
+	result[1] = dir[1] * scale + start[1];
+	result[2] = dir[2] * scale + start[2];
+	return result;
+}
+
+__declspec(naked) float* VectorMA()
+{
+	__asm
+	{
+		push    ebx
+
+		mov     edx, dword ptr[esp + 8]
+		mov     ebx, dword ptr[esp + 12]
+
+		push    ebx
+		push    edx
+		push    ecx
+		push    eax
+		call    VectorMA_impl
+		add     esp, 16
+
+		pop     ebx
+		ret
+	}
+}
+
+__declspec(naked) void game::hookedCG_AddViewWeapon()
+{
+    static const uint32_t retn_addr = 0x457144;
+    __asm
+    {
+        push    ecx
+
+        mov     ecx, dword ptr ds:[0x74A8C0]
+        fld     dword ptr [ecx + 0xC]
+        lea     edx, [esp + 0x8C]
+        fstp    dword ptr [esp]
+        push    edx
+        mov     eax, edx
+        mov     ecx, 0x79E798
+        call    VectorMA
+
+        mov     eax, dword ptr ds:[0x746FA0]
+        fld     dword ptr [eax + 0xC]
+        add     esp, 4
+        lea     ecx, [esp + 0x8C]
+        fstp    dword ptr [esp]
+        push    ecx
+        mov     eax, ecx
+        mov     ecx, 0x79E7A4
+        call    VectorMA
+
+        mov     edx, dword ptr ds:[0x74A86C]
+        fld     dword ptr [edx + 0xC]
+        add     esp, 4
+        lea     eax, [esp + 0x8C]
+        fstp    dword ptr [esp]
+        push    eax
+        mov     ecx, 0x79E7B0
+        call    VectorMA
+
+        jmp     retn_addr
+    }
+}
+
+
 void game::SetCoD4xFunctionOffsets()
 {
 	Cmd_AddCommand_fnc = (void*)(offsets::GetOffset("Cmd_AddCommand_fnc"));

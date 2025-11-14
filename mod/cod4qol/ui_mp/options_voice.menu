@@ -101,7 +101,8 @@ itemDef { \
         CHOICE_DVARSLIDER_VIS_EXTR( 35, "Gun Y Position", cg_gun_y, 0, -100, 100, setLocalVarBool ui_showApply 1, ;, when( localVarInt ( ui_qol ) == 1 );)
         CHOICE_DVARSLIDER_VIS_EXTR( 36, "Gun Z Position", cg_gun_z, 0, -100, 100, setLocalVarBool ui_showApply 1, ;, when( localVarInt ( ui_qol ) == 1 );)
         CHOICE_BUTTON_VIS( 37, "Restore Gun Position", exec "set cg_gun_x 0; set cg_gun_y 0; set cg_gun_z 0"; setLocalVarBool ui_showApply 1, when( localVarInt ( ui_qol ) == 1 ) )
-        CHOICE_DVARFLOATLIST_VIS( 38, "Gun handedness", qol_mirrorgun, { "Left" 1 "Right" 0 }, ;, when( localVarInt ( ui_qol ) == 1 );)
+        CHOICE_DVARSTRINGLIST_VIS( 38, "ADS Position Interpolation", qol_adsgunposinterpolation, { "@MENU_OFF"; "Off"; "Linear"; "Linear"; "Exponential"; "Exponential"; "Snap"; "Snap" }, ;, when( localVarInt ( ui_qol ) == 1 );)
+        CHOICE_DVARFLOATLIST_VIS( 39, "Gun handedness", qol_mirrorgun, { "Left" 1 "Right" 0 }, ;, when( localVarInt ( ui_qol ) == 1 );)
 
         itemDef 
 		{

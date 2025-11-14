@@ -134,6 +134,9 @@ void commands::InitializeCommands()
 
 	qol_disableshellshockloop = game::Cvar_RegisterBool("qol_disableshellshockloop", 0, game::dvar_flags::saved, "Disable the shellshock sound loop.");
 
+    static const char* qol_adsgunposinterpolation_names[] = { "Off", "Linear", "Exponential", "Snap", NULL };
+	qol_adsgunposinterpolation = game::Cvar_RegisterEnum("qol_adsgunposinterpolation", qol_adsgunposinterpolation_names, 0, game::dvar_flags::saved, "ADS gun position interpolation.");
+
     std::cout << "Commands initialized!" << std::endl;
 }
 

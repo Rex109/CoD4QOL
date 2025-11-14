@@ -18,6 +18,7 @@ namespace commands
 	inline game::dvar_s* cg_fov;
 	inline game::dvar_s* r_lodBiasRigid;
 	inline game::dvar_s* r_lodBiasSkinned;
+	inline game::dvar_s* bg_bobmax;
 
 	inline game::dvar_s* qol_rename_text;
 	
@@ -52,7 +53,7 @@ namespace commands
 	inline game::dvar_s* qol_customcrosshairoutlinethickness;
 	inline game::dvar_s* qol_chatfontsize;
 	inline game::dvar_s* qol_disableshellshockloop;
-	inline game::dvar_s* bg_bobmax;
+	inline game::dvar_s* qol_adsgunposinterpolation;
 
 	void InitializeCommands();
 

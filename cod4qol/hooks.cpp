@@ -127,6 +127,10 @@ void hooks::InitializeHooks()
 	game::pCG_SetClientDvarFromServer = (game::CG_SetClientDvarFromServer)(0x44BD90);
 	hooks::install(&(PVOID&)game::pCG_SetClientDvarFromServer, (PBYTE)game::hookedCG_SetClientDvarFromServer);
 
+	//CG_AddViewWeapon
+	game::pCG_AddViewWeapon = (game::CG_AddViewWeapon)(0x4570E0);
+	hooks::install(&(PVOID&)game::pCG_AddViewWeapon, (PBYTE)game::hookedCG_AddViewWeapon);
+
 	std::cout << "Hooks installed!" << std::endl;
 }
 

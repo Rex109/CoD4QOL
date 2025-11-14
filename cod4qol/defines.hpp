@@ -5,7 +5,7 @@
 #include <vector>
 
 #define COD4QOL_NAME "CoD4QOL"
-#define COD4QOL_BASE_VERSION "1.9.4"
+#define COD4QOL_BASE_VERSION "1.10.0"
 #ifndef _DEBUG
 #define COD4QOL_VERSION COD4QOL_BASE_VERSION " (" GIT_COMMIT_HASH ")"
 #else
