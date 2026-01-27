@@ -47,6 +47,7 @@ A Call of Duty 4 X plugin that adds new settings, unlocks essential dvars and ad
   - Rigid model detail distance selector
   - Skinned model detail distance selector
   - Gun X, Y, Z sliders
+  - ADS Position Interpolation selector
   - Gun handedness switch
 - Adds "Privacy options" menu:
   - Screenshot protection selector
