@@ -69,7 +69,10 @@ A Call of Duty 4 X plugin that adds new settings, unlocks essential dvars and ad
   - Customize crosshair
   - Unlock All
 
-## Download and installation 
+## Download and installation
+### Automated Install/Uninstall
+Download the automatic [CoD4QOL Installer](https://github.com/Rex109/CoD4QOLInstaller)
+### Manual Install
 To download the pre-compiled binaries you can grab the latest version in the [Releases Page](https://github.com/Rex109/Cod4QOL/releases)
 
 To install it simply download and extract the files from the .zip, then drag n drop the "miles" folder in your Call of Duty 4 root folder and the "qol.ff" file inside zone/\<your game language\>, and simply run the game, no extra tools needed!
@@ -86,7 +89,7 @@ The final folder structure should look like this:
 |          └── 📜 qol.ff
 └── ...
 ```
-## Uninstall
+### Manual Uninstall
 To uninstall CoD4QOL completely remove the following files from your game directory:
 - miles/cod4qol.asi
 - zone/\<your game language\>/qol.ff
