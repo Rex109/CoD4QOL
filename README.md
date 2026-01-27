@@ -73,6 +73,7 @@ A Call of Duty 4 X plugin that adds new settings, unlocks essential dvars and ad
 ## Download and installation
 ### Automated Install/Uninstall
 Download the automatic [CoD4QOL Installer](https://github.com/Rex109/CoD4QOLInstaller/releases/download/1.0.0/CoD4QOLInstaller.exe)
+Requires .NET 9 Runtime
 ### Manual Install
 To download the pre-compiled binaries you can grab the latest version in the [Releases Page](https://github.com/Rex109/Cod4QOL/releases)
 
