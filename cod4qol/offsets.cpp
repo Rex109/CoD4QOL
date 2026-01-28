@@ -18,6 +18,7 @@ void offsets::InitOffsets()
 	AddOffset("DB_LoadXZoneFromGfxConfig", { {COD4QOL_COD4X_CRC32_213_INSTALLER, (game::cod4x_entry + 0x35560)}, {COD4QOL_COD4X_CRC32_213, (game::cod4x_entry + 0x33920)}, {COD4QOL_COD4X_CRC32_212, (game::cod4x_entry + 0x3C180)}, {COD4QOL_COD4X_CRC32_211, (game::cod4x_entry + 0x8327E)} });
 	AddOffset("CG_Respawn", { {COD4QOL_COD4X_CRC32_213_INSTALLER, (game::cod4x_entry + 0x372E0)}, {COD4QOL_COD4X_CRC32_213, (game::cod4x_entry + 0x35670)}, {COD4QOL_COD4X_CRC32_212, (game::cod4x_entry + 0x3DF00)}, {COD4QOL_COD4X_CRC32_211, (game::cod4x_entry + 0x3B45)} });
 	AddOffset("ScreenshotRequest", { {COD4QOL_COD4X_CRC32_213_INSTALLER, (game::cod4x_entry + 0xA9DB0)}, {COD4QOL_COD4X_CRC32_213, (game::cod4x_entry + 0xA7B50)}, {COD4QOL_COD4X_CRC32_212, (game::cod4x_entry + 0xB21E0)}, {COD4QOL_COD4X_CRC32_211, (game::cod4x_entry + 0xEA610)} });
+	AddOffset("mousefix", { {COD4QOL_COD4X_CRC32_213_INSTALLER, (game::cod4x_entry + 0x7651A)}, {COD4QOL_COD4X_CRC32_213, (game::cod4x_entry + 0x744AA)}, {COD4QOL_COD4X_CRC32_212, (game::cod4x_entry + 0x7E14A)}, {COD4QOL_COD4X_CRC32_211, (game::cod4x_entry + 0x801EC)} });
 
 	//General
 	AddOffset("hwnd", { {COD4QOL_COD4X_CRC32_213_INSTALLER, (game::cod4x_entry + 0x4410880)}, {COD4QOL_COD4X_CRC32_213, (game::cod4x_entry + 0x4342880)}, {COD4QOL_COD4X_CRC32_212, (game::cod4x_entry + 0x443BA00)}, {COD4QOL_COD4X_CRC32_211, (game::cod4x_entry + 0x43FE9A0)} });

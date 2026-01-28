@@ -946,7 +946,6 @@ __declspec(naked) void game::hookedCG_AddViewWeapon()
     }
 }
 
-
 void game::SetCoD4xFunctionOffsets()
 {
 	Cmd_AddCommand_fnc = (void*)(offsets::GetOffset("Cmd_AddCommand_fnc"));
