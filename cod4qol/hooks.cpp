@@ -14,6 +14,9 @@ void hooks::InitializeHooks()
 	//Fast startup
 	hooks::write_addr(offsets::GetOffset("faststartup"), "\xC3", 1);
 
+	//Unlock menu fps
+	hooks::write_addr(offsets::GetOffset("menufps"), "\x90\x90", 2);
+
 	//MouseFix
 	if (offsets::GetCRC32() == COD4QOL_COD4X_CRC32_211)
 		hooks::write_addr(offsets::GetOffset("mousefix"), "\x90\x90\x90\x90\x90", 5);
