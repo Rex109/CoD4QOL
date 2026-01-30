@@ -669,7 +669,8 @@ void game::HSVtoRGB(float h, float s, float v, float* r, float* g, float* b)
 
 void game::drawCustomCrosshair()
 {
-	static int hue = 0;
+	static float hue = 0;
+	static auto lastTime = std::chrono::high_resolution_clock::now();
 
 	float color[4];
 
@@ -681,8 +682,12 @@ void game::drawCustomCrosshair()
 	}
 	else
 	{
-		hue += 1;
-		if (hue >= 360) hue = 0;
+		auto currentTime = std::chrono::high_resolution_clock::now();
+		float deltaTime = std::chrono::duration<float>(currentTime - lastTime).count();
+		lastTime = currentTime;
+
+		hue += 120.0f * deltaTime;
+		if (hue >= 360.0f) hue -= 360.0f;
 
 		game::HSVtoRGB(hue, 1.0f, 1.0f, &color[0], &color[1], &color[2]);
 	}
