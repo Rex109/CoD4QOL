@@ -23,11 +23,19 @@ __declspec(naked) const char* game::hookedCon_LinePrefix()
 
 HMODULE game::GetCurrentModule()
 {
-	HMODULE hModule = NULL;
-	GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, (LPCTSTR)GetCurrentModule, &hModule);
+    static HMODULE hModule = [] {
+        HMODULE mod = nullptr;
+        GetModuleHandleEx(
+            GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS,
+            (LPCTSTR)&GetCurrentModule,
+            &mod
+        );
+        return mod;
+    }();
 
-	return hModule;
+    return hModule;
 }
+
 
 bool game::LoadLocalizedIWD(const char* pakfile, const char* basename, const char* gamename)
 {
