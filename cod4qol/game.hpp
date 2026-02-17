@@ -2333,6 +2333,8 @@ namespace game
 	inline game::dvar_s* fs_homepath = game::Find("fs_homepath");
 	inline game::dvar_s* sv_cheats = game::Find("sv_cheats");
 	inline game::dvar_s* cl_ingame = game::Find("cl_ingame");
+	inline game::dvar_s* fs_savepath = game::Find("fs_savepath");
+	inline game::dvar_s* com_playerProfile = game::Find("com_playerProfile");
 
 	inline game::Material* flashMaterial;
 	inline game::Material* blackMaterial;

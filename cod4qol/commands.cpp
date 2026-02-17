@@ -501,15 +501,31 @@ void commands::iPrintLnBold(const char* text)
 
 void commands::ReadProtectedConfig()
 {
-    game::Cbuf_AddText("exec protected.cfg\n", 0);
+    //Migration
+	TCHAR old_path[MAX_PATH];
+	GetCurrentDirectory(MAX_PATH, old_path);
+	strcat_s(old_path, "\\main\\protected.cfg");
+
+	TCHAR new_path[MAX_PATH];
+    sprintf_s(new_path, sizeof(new_path), "%s\\players\\profiles\\%s\\protected.cfg", game::fs_savepath->current.string, game::com_playerProfile->current.string);
+
+    if (std::filesystem::exists(old_path))
+    {
+        game::Com_PrintMessage(0, "Old protected config found, migrating...\n", 0);
+		std::filesystem::copy_file(old_path, new_path, std::filesystem::copy_options::overwrite_existing);
+		std::filesystem::remove(old_path);
+	}
+
+	TCHAR command[256];
+	sprintf_s(command, sizeof(command), "exec profiles\\%s\\protected.cfg", game::com_playerProfile->current.string);
+
+    game::Cbuf_AddText(command, 0);
 }
 
 void commands::WriteProtectedConfig()
 {
     TCHAR path[MAX_PATH];
-    GetCurrentDirectory(MAX_PATH, path);
-
-    strcat_s(path, "\\main\\protected.cfg");
+    sprintf_s(path, sizeof(path), "%s\\players\\profiles\\%s\\protected.cfg", game::fs_savepath->current.string, game::com_playerProfile->current.string);
 
     std::ofstream protectedconf;
 

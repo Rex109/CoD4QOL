@@ -43,7 +43,6 @@ void exception::OnPaint(HWND hwnd)
     EndPaint(hwnd, &ps);
 }
 
-
 std::string exception::GetCrashDetails(EXCEPTION_POINTERS* pExceptionInfo)
 {
     std::stringstream ss;
