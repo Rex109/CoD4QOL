@@ -736,8 +736,18 @@ void game::hookedCG_DrawCrosshair(int a1)
 
 void game::CG_SetClientDvarFromServer_stub(const char* dvarname, const char* value, [[maybe_unused]] cg_s* _cgs)
 {
-	if (!strcmp(dvarname, "cg_fov") || !strcmp(dvarname, "cg_fovscale") || !strcmp(dvarname, "r_fullbright") || !strcmp(dvarname, "bg_bobmax"))
-		return;
+	const char* blockedDvars[] = {
+		"cg_fov",
+		"cg_fovscale",
+		"r_fullbright",
+		"bg_bobmax"
+	};
+
+	for (const char* blockedDvar : blockedDvars)
+	{
+		if (!strcmp(dvarname, blockedDvar))
+			return;
+	}
 
 	__asm
 	{
