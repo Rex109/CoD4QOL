@@ -501,7 +501,6 @@ void commands::iPrintLnBold(const char* text)
 
 void commands::ReadProtectedConfig()
 {
-    //Migration
 	TCHAR old_path[MAX_PATH];
 	GetCurrentDirectory(MAX_PATH, old_path);
 	strcat_s(old_path, "\\main\\protected.cfg");
