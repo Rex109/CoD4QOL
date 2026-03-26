@@ -447,6 +447,12 @@ void commands::LoadIWD()
         return;
     }
 
+    if (game::sv_running->current.enabled)
+    {
+		game::Com_PrintMessage(0, "You must not be running a server to use loadiwd\n", 0);
+        return;
+	}
+
     if (game::Cmd_Argc() < 2)
     {
         game::Com_PrintMessage(0, "Usage: loadiwd <iwdName>\n", 0);
@@ -458,8 +464,15 @@ void commands::LoadIWD()
     std::string relative_dir = game::fs_homepath->current.string;
     relative_dir.append("\\main\\");
     relative_dir.append(iwd_name);
+    relative_dir.append(".iwd");
 
-    game::FS_AddSingleIwdFileForGameDirectory(relative_dir.c_str(), iwd_name.c_str(), "main");;
+    if (!game::FS_AddSingleIwdFileForGameDirectory(relative_dir.c_str(), iwd_name.c_str(), "main"))
+    {
+        game::Com_PrintMessage(0, "IWD file not found\n", 0);
+        return;
+    }
+    
+    game::Cbuf_AddText("vid_restart\n", 0);
 }
 
 void commands::VmAnim()
