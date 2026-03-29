@@ -114,6 +114,37 @@ void game::LoadModFiles()
 
 	LoadLocalizedIWD(relative_dir.c_str(), "xcommon_cod4qol.iwd", "main");
 	game::Cbuf_AddText("loadzone qol\n", 0);
+
+	std::string clientmods_dir = getClientModsFolder();
+
+	if (std::filesystem::exists(clientmods_dir))
+	{
+		for (const auto& entry : std::filesystem::directory_iterator(clientmods_dir))
+		{
+			if (!entry.is_directory())
+				continue;
+
+			std::filesystem::path disabled_marker = entry.path() / ".disabled";
+			if (std::filesystem::exists(disabled_marker))
+				continue;
+
+			for (const auto& mod_entry : std::filesystem::directory_iterator(entry.path()))
+			{
+				if (mod_entry.is_directory() || mod_entry.path().extension() != ".ff")
+					continue;
+
+				std::filesystem::path relative_path = std::filesystem::relative(mod_entry.path(), game::fs_homepath->current.string);
+				std::string mod_ff_path = relative_path.string();
+				// Remove the .ff extension for the zone name
+				mod_ff_path = mod_ff_path.substr(0, mod_ff_path.length() - 3);
+				// Replace backslashes with forward slashes
+				std::replace(mod_ff_path.begin(), mod_ff_path.end(), '\\', '/');
+
+				std::string cmd = "loadzone \"" + mod_ff_path + "\"\n";
+				game::Cbuf_AddText(cmd.c_str(), 0);
+			}
+		}
+	}
 }
 
 void game::LoadCustomLocalizedResources()
@@ -246,6 +277,34 @@ void game::hookedCL_InitCGame()
 void game::hookedCL_RegisterDvars()
 {
 	std::cout << "Calling CL_RegisterDvars();" << std::endl;
+
+	//Load clientmods iwds
+
+	std::string clientmods_dir = getClientModsFolder();
+
+	if (std::filesystem::exists(clientmods_dir))
+	{
+		for (const auto& entry : std::filesystem::directory_iterator(clientmods_dir))
+		{
+			if (!entry.is_directory())
+				continue;
+
+			std::filesystem::path disabled_marker = entry.path() / ".disabled";
+			if (std::filesystem::exists(disabled_marker))
+				continue;
+
+			for (const auto& mod_entry : std::filesystem::directory_iterator(entry.path()))
+			{
+				if (mod_entry.is_directory() || mod_entry.path().extension() != ".iwd")
+					continue;
+
+				std::string mod_iwd_path = mod_entry.path().string();
+				std::string mod_iwd_name = mod_entry.path().filename().string();
+
+				LoadLocalizedIWD(mod_iwd_path.c_str(), mod_iwd_name.c_str(), "main");
+			}
+		}
+	}
 
 	if (startup)
 		return game::pCL_RegisterDvars();
@@ -967,6 +1026,48 @@ __declspec(naked) void game::hookedCG_AddViewWeapon()
 
         jmp     retn_addr
     }
+}
+
+void game::hookedDB_BuildOSPath(const char* filename, int ff_dir, int pathlen, char* path)
+{
+	std::string result;
+
+	switch (ff_dir)
+	{
+		case 1:
+		{
+			result = (std::filesystem::path(game::fs_homepath->current.string) / std::filesystem::path(game::fs_game->current.string) / (std::string(filename) + ".ff")).string();
+			break;
+		}
+		case 2:
+		{
+			std::string mapname(filename);
+			auto pos = mapname.find("_load");
+			if (pos != std::string::npos)
+			{
+				mapname = mapname.substr(0, pos);
+			}
+
+			result = (std::filesystem::path(game::fs_homepath->current.string) / "usermaps" / mapname / (std::string(filename) + ".ff")).string();
+			break;
+		}
+		default:
+		{
+			auto zone_path = (std::filesystem::path(game::fs_homepath->current.string) / "zone" / reinterpret_cast<const char**>(0xCC147D4)[0] / (std::string(filename) + ".ff")).string();
+
+			if (std::filesystem::exists(zone_path))
+			{
+				result = zone_path;
+			}
+			else
+			{
+				result = (std::filesystem::path(game::fs_homepath->current.string) / (std::string(filename) + ".ff")).string();
+			}
+			break;
+		}
+	}
+
+	strncpy_s(path, pathlen, result.c_str(), _TRUNCATE);
 }
 
 void game::SetCoD4xFunctionOffsets()

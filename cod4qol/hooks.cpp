@@ -140,6 +140,10 @@ void hooks::InitializeHooks()
 	game::pCG_AddViewWeapon = (game::CG_AddViewWeapon)(0x4570E0);
 	hooks::install(&(PVOID&)game::pCG_AddViewWeapon, (PBYTE)game::hookedCG_AddViewWeapon);
 
+	//DB_BuildOSPath
+	game::pDB_BuildOSPath = (game::DB_BuildOSPath)(offsets::GetOffset("DB_BuildOSPath"));
+	hooks::install(&(PVOID&)game::pDB_BuildOSPath, (PBYTE)game::hookedDB_BuildOSPath);
+
 	std::cout << "Hooks installed!" << std::endl;
 }
 

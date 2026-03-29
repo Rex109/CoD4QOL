@@ -2228,6 +2228,11 @@ namespace game
 
 	void hookedCG_AddViewWeapon();
 
+	typedef void(*DB_BuildOSPath)(const char* filename, int ff_dir, int pathlen, char* path);
+	inline DB_BuildOSPath pDB_BuildOSPath;
+
+	void hookedDB_BuildOSPath(const char* filename, int ff_dir, int pathlen, char* path);
+
 	int	Cmd_Argc();
 	const char* Cmd_Argv(int arg);
 	HMODULE GetCurrentModule();

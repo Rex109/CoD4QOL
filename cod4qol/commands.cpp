@@ -5,6 +5,8 @@
 #include "base64/base64.h"
 #include <sstream>
 
+static std::vector<ClientModInfo> modInfos;
+
 void commands::InitializeCommands()
 {
     std::cout << "Initializing commands..." << std::endl;
@@ -22,10 +24,12 @@ void commands::InitializeCommands()
     game::Cmd_AddCommand("openlink", OpenLink);
 
     game::Cmd_AddCommand("loaddemos", LoadDemos);
+    game::Cmd_AddCommand("loadclientmods", LoadClientMods);
     game::Cmd_AddCommand("playselecteddemo", PlaySelectedDemo);
     game::Cmd_AddCommand("getdemoname", GetDemoName);
     game::Cmd_AddCommand("deleteselecteddemo", DeleteSelectedDemo);
     game::Cmd_AddCommand("renameselecteddemo", RenameSelectedDemo);
+    game::Cmd_AddCommand("toggleselectedclientmod", ToggleSelectedClientMod);
 
     game::Cmd_AddCommand("updatecod4qol", updater::Update);
 
@@ -136,6 +140,8 @@ void commands::InitializeCommands()
 
     static const char* qol_adsgunposinterpolation_names[] = { "Off", "Linear", "Exponential", "Snap", NULL };
 	qol_adsgunposinterpolation = game::Cvar_RegisterEnum("qol_adsgunposinterpolation", qol_adsgunposinterpolation_names, 0, game::dvar_flags::saved, "ADS gun position interpolation.");
+
+	qol_clientmodswarning = game::Cvar_RegisterBool("qol_clientmodswarning", 0, game::dvar_flags::saved, "Is disclaimer has been shown for client mods.");
 
     std::cout << "Commands initialized!" << std::endl;
 }
@@ -410,43 +416,38 @@ void commands::LoadZone()
         return;
     }
 
-    std::string relative_dir = game::fs_homepath->current.string;
-    relative_dir.append("\\zone\\");
-    relative_dir.append(game::localization);
-    relative_dir.append("\\");
-    relative_dir.append(game::Cmd_Argv(1));
-    relative_dir.append(".ff");
+    std::string zone_name = game::Cmd_Argv(1);
+    std::filesystem::path base_path = game::fs_homepath->current.string;
+    std::filesystem::path zone_path = base_path / "zone" / game::localization / (zone_name + ".ff");
 
-    std::cout << relative_dir << std::endl;
-
-    if (!std::filesystem::exists(relative_dir))
+    if (!std::filesystem::exists(zone_path))
     {
-		game::Com_PrintMessage(0, "Zone file not found\n", 0);
-		return;
-	}
+        zone_path = base_path / (zone_name + ".ff");
+
+        if (!std::filesystem::exists(zone_path))
+        {
+            game::Com_PrintMessage(0, "Zone file not found\n", 0);
+            return;
+        }
+    }
 
     game::XZoneInfo info[2];
-    std::string zone = game::Cmd_Argv(1);
 
     info[0].name = 0;
     info[0].allocFlags = 0x0;
-    info[0].freeFlags = 0x40;
+    info[0].freeFlags = 0x0;
 
-    info[1].name = zone.data();
+    info[1].name = zone_name.c_str();
     info[1].allocFlags = 0x40;
     info[1].freeFlags = 0x0;
 
     game::DB_LoadXAssets(info, 2, 1);
+
+    std::cout << "Loaded zone: " << zone_path << std::endl;
 }
 
 void commands::LoadIWD()
 {
-    if (!game::sv_cheats->current.enabled)
-    {
-        game::Com_PrintMessage(0, "You must be playing with cheats enabled to use loadiwd\n", 0);
-        return;
-    }
-
     if (game::sv_running->current.enabled)
     {
 		game::Com_PrintMessage(0, "You must not be running a server to use loadiwd\n", 0);
@@ -460,19 +461,24 @@ void commands::LoadIWD()
     }
 
     std::string iwd_name = game::Cmd_Argv(1);
-
     std::string relative_dir = game::fs_homepath->current.string;
-    relative_dir.append("\\main\\");
-    relative_dir.append(iwd_name);
-    relative_dir.append(".iwd");
 
-    if (!game::FS_AddSingleIwdFileForGameDirectory(relative_dir.c_str(), iwd_name.c_str(), "main"))
+    if (!game::LoadLocalizedIWD(relative_dir.c_str(), iwd_name.c_str(), "main"))
     {
-        game::Com_PrintMessage(0, "IWD file not found\n", 0);
-        return;
+        relative_dir.append("\\main\\");
+        relative_dir.append(iwd_name);
+        relative_dir.append(".iwd");
+
+        if (!game::LoadLocalizedIWD(relative_dir.c_str(), iwd_name.c_str(), "main"))
+        {
+            game::Com_PrintMessage(0, "IWD file not found\n", 0);
+            return;
+        }
     }
     
     game::Cbuf_AddText("vid_restart\n", 0);
+
+    std::cout << "Loaded IWD: " << relative_dir << std::endl;
 }
 
 void commands::VmAnim()
@@ -742,6 +748,15 @@ std::string getDemosFolder()
     return relative_dir;
 }
 
+std::string getClientModsFolder()
+{
+
+    std::string relative_dir = game::fs_homepath->current.string;
+    relative_dir.append("\\clientmods");
+
+    return relative_dir;
+}
+
 bool isValidDestinationName(const std::string destination)
 {
     const std::string disallowedChars = "<>:\"/\\|?*";
@@ -754,6 +769,78 @@ bool isValidDestinationName(const std::string destination)
         }
 
     return true;
+}
+
+void commands::LoadClientMods()
+{
+    if (!qol_clientmodswarning->current.enabled)
+        game::Cmd_ExecuteSingleCommand(0, 0, "set qol_dialog 6\n");
+
+    std::string relative_dir = getClientModsFolder();
+
+    *game::modCount = 0;
+    *game::modIndex = 0;
+    modInfos.clear(); // Clear previous mod infos
+
+    if (std::filesystem::exists(relative_dir))
+    {
+        for (const auto& entry : std::filesystem::directory_iterator(relative_dir))
+        {
+            if (!entry.is_directory())
+                continue;
+
+            std::filesystem::path disabled_marker = entry.path() / ".disabled";
+            bool is_disabled = std::filesystem::exists(disabled_marker);
+
+            std::string mod_name = entry.path().filename().string();
+            std::string status = is_disabled ? " ^7[^1Disabled^7]" : " ^7[^2Enabled^7]";
+
+            const char* string = game::String_Alloc((mod_name + status).c_str());
+
+            game::modName[2 * (*game::modCount)] = string;
+            game::modDesc[2 * (*game::modCount)] = string;
+
+            // Store both path and name for later use
+            modInfos.push_back({ entry.path(), mod_name });
+
+            (*game::modCount)++;
+        }
+    }
+
+    if ((*game::modCount) < 1)
+        game::Cmd_ExecuteSingleCommand(0, 0, "set qol_show_clientmods_buttons 0\n");
+    else
+        game::Cmd_ExecuteSingleCommand(0, 0, "set qol_show_clientmods_buttons 1\n");
+}
+
+void commands::ToggleSelectedClientMod()
+{
+    if (*game::modCount < 1)
+        return;
+
+    ClientModInfo& mod_info = modInfos[*game::modIndex];
+    std::filesystem::path disabled_marker = mod_info.path / ".disabled";
+
+    bool is_now_disabled;
+    if (std::filesystem::exists(disabled_marker))
+    {
+        std::filesystem::remove(disabled_marker);
+        is_now_disabled = false;
+    }
+    else
+    {
+        std::ofstream marker_file(disabled_marker);
+        marker_file.close();
+        SetFileAttributes(disabled_marker.string().c_str(), FILE_ATTRIBUTE_HIDDEN);
+
+        is_now_disabled = true;
+    }
+
+    std::string status = is_now_disabled ? " ^7[^1Disabled^7]" : " ^7[^2Enabled^7]";
+    const char* updated_string = game::String_Alloc((mod_info.name + status).c_str());
+
+    game::modName[2 * (*game::modIndex)] = updated_string;
+    game::modDesc[2 * (*game::modIndex)] = updated_string;
 }
 
 void commands::CrosshairConfig()

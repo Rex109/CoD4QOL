@@ -54,6 +54,7 @@ namespace commands
 	inline game::dvar_s* qol_chatfontsize;
 	inline game::dvar_s* qol_disableshellshockloop;
 	inline game::dvar_s* qol_adsgunposinterpolation;
+	inline game::dvar_s* qol_clientmodswarning;
 
 	void InitializeCommands();
 
@@ -77,8 +78,17 @@ namespace commands
 	void RenameSelectedDemo();
 	void GetDemoName();
 
+	void LoadClientMods();
+	void ToggleSelectedClientMod();
+
 	void CrosshairConfig();
 }
 
+struct ClientModInfo {
+	std::filesystem::path path;
+	std::string name;
+};
+
+std::string getClientModsFolder();
 std::string getDemosFolder();
 bool isValidDestinationName(const std::string destination);

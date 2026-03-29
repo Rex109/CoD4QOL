@@ -34,6 +34,18 @@
 			decoration \
 		}
 
+#define PREPROC_TEXT_DRAW_ALIGNED_EXTR( prect, porigin, ptext, psize, palignx, paligny, palign, pcolor, visArg ) \
+itemDef { \
+	rect			prect \
+	origin 			porigin \
+	textalignx		palignx textaligny paligny \
+	textstyle		ITEM_TEXTSTYLE_SHADOWED \
+	textalign		palign \
+	textscale		psize \
+	forecolor		pcolor \
+	ptext \
+	visible			visArg decoration autowrapped }
+
 {
 	menuDef {
 		name 			mods_menu
@@ -59,6 +71,7 @@
 
 		CHOICE_MENU_TITLE_VIS2( "@MENU_MODS", localVarInt ( ui_qol ) == 0 )
         CHOICE_MENU_TITLE_VIS2( "Demos", localVarInt ( ui_qol ) == 1 )
+        CHOICE_MENU_TITLE_VIS2( "Client Mods", localVarInt ( ui_qol ) == 2 )
 
 		itemDef 
 		{
@@ -108,11 +121,38 @@
 			doubleClick			{ play "mouse_click"; exec "playselecteddemo"; }
 		}
 
+        itemDef 
+		{
+			name				clientmodslist
+			rect				-170 64 340 280 HORIZONTAL_ALIGN_CENTER CHOICE_VERTICAL_ALIGN
+			type				ITEM_TYPE_LISTBOX
+			style				WINDOW_STYLE_FILLED
+			textstyle 			ITEM_TEXTSTYLE_SHADOWED
+			elementwidth		120
+			elementheight		22
+			textscale 			CHOICE_TEXTSIZE
+			elementtype			LISTBOX_TEXT
+			feeder				FEEDER_MODS
+			textalignx			6
+			textaligny			0
+			forecolor 			1 1 1 0.9
+			backcolor 			0 0 0 0
+			border				1
+			bordercolor			1 1 1 0.15
+			outlinecolor 		BUTTON_BG_COLOR
+			visible 			when( localVarInt ( ui_qol ) == 2 );
+			action				{ }
+			doubleClick			{ play "mouse_click"; exec "toggleselectedclientmod"; }
+		}
+
 		CHOICE_BUTTON_VIS( 1, "@MENU_LAUNCH", uiScript RunMod;, when( localVarInt ( ui_qol ) == 0 ); )
 		CHOICE_BUTTON_VIS( 2, "@MENU_LAUNCH_WITHOUT_MODS", uiScript ClearMods;, when( dvarString( fs_game ) != "" && localVarInt ( ui_qol ) == 0 ); )
 
         CHOICE_BUTTON_VIS( 1, "Play", exec "playselecteddemo";, when( localVarInt ( ui_qol ) == 1 && dvarbool( qol_show_demos_buttons ) ); )
 		CHOICE_BUTTON_VIS( 2, "Delete", setdvar qol_dialog 2; open quit_popmenu;, when( localVarInt ( ui_qol ) == 1 && dvarbool( qol_show_demos_buttons )); )
         CHOICE_BUTTON_VIS( 3, "Rename", setdvar qol_dialog 3; exec "getdemoname"; open quit_popmenu;, when( localVarInt ( ui_qol ) == 1 && dvarbool( qol_show_demos_buttons )); )
+
+        CHOICE_BUTTON_VIS( 1, "Toggle Client Mod", exec "toggleselectedclientmod"; setLocalVarInt ui_qol_clientmod_restart 1;, when( localVarInt ( ui_qol ) == 2 && dvarbool( qol_show_clientmods_buttons ) ); )
+        PREPROC_TEXT_DRAW_ALIGNED_EXTR( 0 -20 500 80 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_BOTTOM, -250 -40, text "^3Game restart is required to fully load/unload all assets", TEXTSIZE_SMALL, 0, 0, ITEM_ALIGN_CENTER, CHOICE_TEXTCOLOR autowrapped, when( localVarInt( ui_qol ) == 2 && localVarBool( ui_qol_clientmod_restart ) );)
 	}
 }
