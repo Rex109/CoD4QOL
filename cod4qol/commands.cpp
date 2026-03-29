@@ -113,8 +113,6 @@ void commands::InitializeCommands()
 
     qol_invertflashbang = game::Cvar_RegisterBool("qol_invertflashbang", 0, game::dvar_flags::saved, "Invert the flashbang effect. In order to update it you need to execute \"toggleflashbangupdate\".");
 
-    qol_loadcustomlocalizedresources = game::Cvar_RegisterBool("qol_loadcustomlocalizedresources", 0, game::dvar_flags::saved, "Load custom localized resources from \\main\\custom_localized_resources.iwd.");
-
     qol_enablecustomcrosshair = game::Cvar_RegisterBool("qol_enablecustomcrosshair", 0, game::dvar_flags::saved, "Enable custom crosshair.");
 
     qol_customcrosshairsize = game::Cvar_RegisterInt("qol_customcrosshairsize", 5, 0, 5000, game::dvar_flags::saved, "Custom crosshair size.");
