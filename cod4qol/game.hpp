@@ -2352,4 +2352,6 @@ namespace game
 	inline game::WeaponDef** BG_WeaponNames;
 
 	inline int* dvar_modifiedFlags = reinterpret_cast<int*>(0x0CBA73F4);
+
+	inline bool isLoadingZone = false;
 }

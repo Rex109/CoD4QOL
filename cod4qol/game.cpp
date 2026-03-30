@@ -1044,18 +1044,19 @@ void game::hookedDB_BuildOSPath(const char* filename, int ff_dir, int pathlen, c
 		{
 			auto zone_path = (std::filesystem::path(game::fs_homepath->current.string) / "zone" / reinterpret_cast<const char**>(0xCC147D4)[0] / (std::string(filename) + ".ff")).string();
 
-			if (std::filesystem::exists(zone_path))
+			if (isLoadingZone && !std::filesystem::exists(zone_path))
 			{
-				result = zone_path;
+				result = (std::filesystem::path(game::fs_homepath->current.string) / (std::string(filename) + ".ff")).string();
 			}
 			else
 			{
-				result = (std::filesystem::path(game::fs_homepath->current.string) / (std::string(filename) + ".ff")).string();
+				result = zone_path;
 			}
 			break;
 		}
 	}
 
+	std::replace(result.begin(), result.end(), '/', '\\');
 	strncpy_s(path, pathlen, result.c_str(), _TRUNCATE);
 }
 

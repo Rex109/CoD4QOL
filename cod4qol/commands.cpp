@@ -439,7 +439,9 @@ void commands::LoadZone()
     info[1].allocFlags = 0x40;
     info[1].freeFlags = 0x0;
 
+	game::isLoadingZone = true;
     game::DB_LoadXAssets(info, 2, 1);
+    game::isLoadingZone = false;
 
     std::cout << "Loaded zone: " << zone_path << std::endl;
 }
