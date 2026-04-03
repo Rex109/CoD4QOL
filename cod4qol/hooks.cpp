@@ -26,25 +26,21 @@ void hooks::InitializeHooks()
 		hooks::write_addr(offsets::GetOffset("mousefix"), "\x90\x90\x90\x90\x90\x90\x90\x90\x90", 9);
 
 	//Remove localized IWD restrictions
-	switch (cod4x_crc32)
+	if (cod4x_crc32 == COD4QOL_COD4X_CRC32_213_INSTALLER)
 	{
-	case COD4QOL_COD4X_CRC32_213_INSTALLER:
 		hooks::write_addr(game::cod4x_entry + 0x3061D, "\xEB", 1);
-		break;
-
-	case COD4QOL_COD4X_CRC32_213:
+	}
+	else if (cod4x_crc32 == COD4QOL_COD4X_CRC32_213)
+	{
 		hooks::write_addr(game::cod4x_entry + 0x2E9CD, "\xEB", 1);
-		break;
-
-	case COD4QOL_COD4X_CRC32_212:
+	}
+	else if (cod4x_crc32 == COD4QOL_COD4X_CRC32_212)
+	{
 		hooks::write_addr(game::cod4x_entry + 0x30E10, "\x90\x90\x90\x90\x90\x90", 6);
 		hooks::write_addr(game::cod4x_entry + 0x30E1D, "\xEB", 1);
-		break;
-
-	case COD4QOL_COD4X_CRC32_211:
-		hooks::write_addr(game::cod4x_entry + 0x3A953, "\xE9\x88\x00\x00\x00\x90", 6);
-		break;
 	}
+	else if (cod4x_crc32 == COD4QOL_COD4X_CRC32_211)
+		hooks::write_addr(game::cod4x_entry + 0x3A953, "\xE9\x88\x00\x00\x00\x90", 6);
 
 	//Console name
 	game::pCon_LinePrefix = (game::Con_LinePrefix)(0x460613);
