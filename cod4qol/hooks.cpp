@@ -17,20 +17,34 @@ void hooks::InitializeHooks()
 	//Unlock menu fps
 	hooks::write_addr(offsets::GetOffset("menufps"), "\x90\x90", 2);
 
+	std::string cod4x_crc32 = offsets::GetCRC32();
+
 	//MouseFix
-	if (offsets::GetCRC32() == COD4QOL_COD4X_CRC32_211)
+	if (cod4x_crc32 == COD4QOL_COD4X_CRC32_211)
 		hooks::write_addr(offsets::GetOffset("mousefix"), "\x90\x90\x90\x90\x90", 5);
 	else
 		hooks::write_addr(offsets::GetOffset("mousefix"), "\x90\x90\x90\x90\x90\x90\x90\x90\x90", 9);
 
 	//Remove localized IWD restrictions
-	if (offsets::GetCRC32() == COD4QOL_COD4X_CRC32_212)
+	switch (cod4x_crc32)
 	{
+	case COD4QOL_COD4X_CRC32_213_INSTALLER:
+		hooks::write_addr(game::cod4x_entry + 0x3061D, "\xEB", 1);
+		break;
+
+	case COD4QOL_COD4X_CRC32_213:
+		hooks::write_addr(game::cod4x_entry + 0x2E9CD, "\xEB", 1);
+		break;
+
+	case COD4QOL_COD4X_CRC32_212:
 		hooks::write_addr(game::cod4x_entry + 0x30E10, "\x90\x90\x90\x90\x90\x90", 6);
 		hooks::write_addr(game::cod4x_entry + 0x30E1D, "\xEB", 1);
-	}
-	else if (offsets::GetCRC32() == COD4QOL_COD4X_CRC32_211)
+		break;
+
+	case COD4QOL_COD4X_CRC32_211:
 		hooks::write_addr(game::cod4x_entry + 0x3A953, "\xE9\x88\x00\x00\x00\x90", 6);
+		break;
+	}
 
 	//Console name
 	game::pCon_LinePrefix = (game::Con_LinePrefix)(0x460613);

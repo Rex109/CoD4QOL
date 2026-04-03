@@ -237,6 +237,8 @@ void game::hookedDB_LoadXZoneFromGfxConfig()
 
 	commands::InitializeCommands();
 
+	LoadClientModFiles(CLIENTMOD_LOAD_IWDS);
+
 	if (!strcmp(fs_game->current.string, "") || commands::qol_stockmenu->current.enabled)
 		LoadModFiles();
 
