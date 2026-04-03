@@ -2085,6 +2085,13 @@ namespace game
 		weapOverlayReticle_t overlayReticle;
 	}WeaponDef;
 
+	enum ClientModLoadType
+	{
+		CLIENTMOD_LOAD_ALL,
+		CLIENTMOD_LOAD_IWDS,
+		CLIENTMOD_LOAD_FFS
+	};
+
 	inline bool startup = true;
 
 	const static DWORD cod4x_entry = (DWORD)GetModuleHandleA(COD4QOL_COD4X_MODULE);
@@ -2238,6 +2245,7 @@ namespace game
 	HMODULE GetCurrentModule();
 	bool LoadLocalizedIWD(const char* pakfile, const char* basename, const char* gamename);
 	void LoadModFiles();
+	void LoadClientModFiles(ClientModLoadType loadtype);
 	void WriteBytesToFile(const byte* data, DWORD size, const char* filename);
 	void cleanUpReflections();
 	void restoreReflections();
@@ -2352,6 +2360,4 @@ namespace game
 	inline game::WeaponDef** BG_WeaponNames;
 
 	inline int* dvar_modifiedFlags = reinterpret_cast<int*>(0x0CBA73F4);
-
-	inline bool isLoadingZone = false;
 }

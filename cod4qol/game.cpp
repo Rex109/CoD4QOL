@@ -114,7 +114,11 @@ void game::LoadModFiles()
 
 	LoadLocalizedIWD(relative_dir.c_str(), "xcommon_cod4qol.iwd", "main");
 	game::Cbuf_AddText("loadzone qol\n", 0);
+	LoadClientModFiles(CLIENTMOD_LOAD_FFS);
+}
 
+void game::LoadClientModFiles(ClientModLoadType loadtype)
+{
 	std::string clientmods_dir = getClientModsFolder();
 
 	if (std::filesystem::exists(clientmods_dir))
@@ -128,20 +132,35 @@ void game::LoadModFiles()
 			if (std::filesystem::exists(disabled_marker))
 				continue;
 
-			for (const auto& mod_entry : std::filesystem::directory_iterator(entry.path()))
+			if (loadtype != CLIENTMOD_LOAD_FFS)
 			{
-				if (mod_entry.is_directory() || mod_entry.path().extension() != ".ff")
-					continue;
+				for (const auto& mod_entry : std::filesystem::directory_iterator(entry.path()))
+				{
+					if (mod_entry.is_directory() || mod_entry.path().extension() != ".iwd")
+						continue;
 
-				std::filesystem::path relative_path = std::filesystem::relative(mod_entry.path(), game::fs_homepath->current.string);
-				std::string mod_ff_path = relative_path.string();
-				// Remove the .ff extension for the zone name
-				mod_ff_path = mod_ff_path.substr(0, mod_ff_path.length() - 3);
-				// Replace backslashes with forward slashes
-				std::replace(mod_ff_path.begin(), mod_ff_path.end(), '\\', '/');
+					std::string mod_iwd_path = mod_entry.path().string();
+					std::string mod_iwd_name = mod_entry.path().filename().string();
 
-				std::string cmd = "loadzone \"" + mod_ff_path + "\"\n";
-				game::Cbuf_AddText(cmd.c_str(), 0);
+					LoadLocalizedIWD(mod_iwd_path.c_str(), mod_iwd_name.c_str(), "main");
+				}
+			}
+
+			if (loadtype != CLIENTMOD_LOAD_IWDS)
+			{
+				for (const auto& mod_entry : std::filesystem::directory_iterator(entry.path()))
+				{
+					if (mod_entry.is_directory() || mod_entry.path().extension() != ".ff")
+						continue;
+
+					std::filesystem::path relative_path = std::filesystem::relative(mod_entry.path(), game::fs_homepath->current.string);
+					std::string mod_ff_path = relative_path.string();
+					// Remove the .ff extension for the zone name
+					mod_ff_path = mod_ff_path.substr(0, mod_ff_path.length() - 3);
+
+					std::string cmd = "loadzone \"" + mod_ff_path + "\"\n";
+					game::Cbuf_AddText(cmd.c_str(), 0);
+				}
 			}
 		}
 	}
@@ -267,33 +286,7 @@ void game::hookedCL_RegisterDvars()
 {
 	std::cout << "Calling CL_RegisterDvars();" << std::endl;
 
-	//Load clientmods iwds
-
-	std::string clientmods_dir = getClientModsFolder();
-
-	if (std::filesystem::exists(clientmods_dir))
-	{
-		for (const auto& entry : std::filesystem::directory_iterator(clientmods_dir))
-		{
-			if (!entry.is_directory())
-				continue;
-
-			std::filesystem::path disabled_marker = entry.path() / ".disabled";
-			if (std::filesystem::exists(disabled_marker))
-				continue;
-
-			for (const auto& mod_entry : std::filesystem::directory_iterator(entry.path()))
-			{
-				if (mod_entry.is_directory() || mod_entry.path().extension() != ".iwd")
-					continue;
-
-				std::string mod_iwd_path = mod_entry.path().string();
-				std::string mod_iwd_name = mod_entry.path().filename().string();
-
-				LoadLocalizedIWD(mod_iwd_path.c_str(), mod_iwd_name.c_str(), "main");
-			}
-		}
-	}
+	LoadClientModFiles(CLIENTMOD_LOAD_IWDS);
 
 	if (startup)
 		return game::pCL_RegisterDvars();
@@ -1042,16 +1035,11 @@ void game::hookedDB_BuildOSPath(const char* filename, int ff_dir, int pathlen, c
 		}
 		default:
 		{
-			auto zone_path = (std::filesystem::path(game::fs_homepath->current.string) / "zone" / reinterpret_cast<const char**>(0xCC147D4)[0] / (std::string(filename) + ".ff")).string();
-
-			if (isLoadingZone && !std::filesystem::exists(zone_path))
-			{
+			if (std::string(filename).find("\\") != std::string::npos)
 				result = (std::filesystem::path(game::fs_homepath->current.string) / (std::string(filename) + ".ff")).string();
-			}
 			else
-			{
-				result = zone_path;
-			}
+				result = (std::filesystem::path(game::fs_homepath->current.string) / "zone" / localization / (std::string(filename) + ".ff")).string();
+
 			break;
 		}
 	}

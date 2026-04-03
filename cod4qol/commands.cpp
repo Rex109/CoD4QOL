@@ -415,35 +415,38 @@ void commands::LoadZone()
     }
 
     std::string zone_name = game::Cmd_Argv(1);
-    std::filesystem::path base_path = game::fs_homepath->current.string;
-    std::filesystem::path zone_path = base_path / "zone" / game::localization / (zone_name + ".ff");
+    std::string relative_dir = game::fs_homepath->current.string;
 
-    if (!std::filesystem::exists(zone_path))
+    if (std::string(zone_name).find("\\") != std::string::npos)
     {
-        zone_path = base_path / (zone_name + ".ff");
-
-        if (!std::filesystem::exists(zone_path))
-        {
-            game::Com_PrintMessage(0, "Zone file not found\n", 0);
-            return;
-        }
+        relative_dir.append("\\");
+        relative_dir.append(zone_name);
+        relative_dir.append(".ff");
+    }
+    else
+    {
+        relative_dir.append("\\zone\\");
+        relative_dir.append(game::localization);
+        relative_dir.append("\\");
+        relative_dir.append(zone_name);
+        relative_dir.append(".ff");
     }
 
-    game::XZoneInfo info[2];
+    if (!std::filesystem::exists(relative_dir))
+    {
+        game::Com_PrintMessage(0, "Zone file not found\n", 0);
+        return;
+    }
 
-    info[0].name = 0;
-    info[0].allocFlags = 0x0;
-    info[0].freeFlags = 0x0;
+    game::XZoneInfo info;
 
-    info[1].name = zone_name.c_str();
-    info[1].allocFlags = 0x40;
-    info[1].freeFlags = 0x0;
+    info.name = zone_name.c_str();
+    info.allocFlags = 0x40;
+    info.freeFlags = 0x0;
 
-	game::isLoadingZone = true;
-    game::DB_LoadXAssets(info, 2, 1);
-    game::isLoadingZone = false;
+    game::DB_LoadXAssets(&info, 1, 1);
 
-    std::cout << "Loaded zone: " << zone_path << std::endl;
+    std::cout << "Loaded zone: " << relative_dir << std::endl;
 }
 
 void commands::LoadIWD()
