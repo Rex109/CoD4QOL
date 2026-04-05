@@ -786,10 +786,10 @@ void game::CG_SetClientDvarFromServer_stub(const char* dvarname, const char* val
 		"bg_bobmax"
 	};
 
-	for (const char* blockedDvar : blockedDvars)
+	for (const auto& blockedDvar : blockedDvars)
 	{
-		if (!strcmp(dvarname, blockedDvar))
-			return;
+		if (!_stricmp(dvarname, blockedDvar))
+			return;	
 	}
 
 	__asm
