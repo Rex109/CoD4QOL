@@ -26,6 +26,7 @@ A Call of Duty 4 X plugin that adds new settings, unlocks essential dvars and ad
 - Customizable crosshair
 - Increase LOD distance for better visuals
 - Unlock all button + console command
+- Load customized assets with Client Mods
 
 ### Complete patches list
 - Adds "vm_anim" command
@@ -65,7 +66,6 @@ A Call of Duty 4 X plugin that adds new settings, unlocks essential dvars and ad
   - Show red reflection probes
   - Invert flashbangs
   - Disable flashbang sound
-  - Load custom localized resources
   - Chat font size slider
   - Customize crosshair
   - Unlock All
