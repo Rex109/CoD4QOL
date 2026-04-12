@@ -105,7 +105,6 @@ The folder structure looks like this:
 ├── ...
 ├── 📁 Call of Duty 4
 │   ├── 📁 main
-|   |  ├── 📜 protected.cfg ❌
 |   |  └── 📜 xcommon_cod4qol.iwd ❌
 │   ├── 📁 miles
 |   |  └── 📜 cod4qol.asi ❌
