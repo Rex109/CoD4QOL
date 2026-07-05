@@ -97,7 +97,6 @@ To uninstall CoD4QOL completely remove the following files from your game direct
 - miles/cod4qol.asi
 - zone/\<your game language\>/qol.ff
 - main/xcommon_cod4qol.iwd
-- main/protected.cfg
 
 The folder structure looks like this:
 ```
