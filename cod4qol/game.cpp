@@ -395,30 +395,6 @@ unsigned int game::hookedCG_StartAmbient(int a1)
 	return game::pCG_StartAmbient(a1);
 }
 
-__declspec(naked) void game::hookedCL_CmdButtons()
-{
-	static bool jump_pressed = false;
-	const static uint32_t retn_addr = 0x4639CF;
-	__asm pushad;
-
-	if (!jump_pressed || !commands::qol_enableautobhop->current.enabled)
-	{
-		jump_pressed = true;
-		__asm
-		{
-			popad;
-			jmp game::pCL_CmdButtons;
-		}
-	}
-
-	jump_pressed = false;
-	__asm
-	{
-		popad;
-		jmp retn_addr;
-	}
-}
-
 void game::hookedCL_Disconnect(int localClientNum)
 {
 	game::restoreReflections();
@@ -1071,6 +1047,28 @@ void game::hookedDB_BuildOSPath(const char* filename, int ff_dir, int pathlen, c
 	strncpy_s(path, pathlen, result.c_str(), _TRUNCATE);
 }
 
+void ApplyAutoBhop(game::usercmd_s& out)
+{
+	static bool jump_pressed = false;
+
+	if (!commands::qol_enableautobhop->current.enabled)
+		return;
+
+	const bool wantsJump = (out.buttons & 0x400) != 0;
+
+	if (!wantsJump)
+	{
+		jump_pressed = false;   // key released -> next press starts clean
+		return;
+	}
+
+	if (jump_pressed)
+		out.buttons &= ~0x400;   // force a fake release this tick
+	// else: real press goes through untouched
+
+	jump_pressed = !jump_pressed;
+}
+
 game::usercmd_s* game::GetUserCommand(int cmdNumber)
 {
 	return &clients->cmds[cmdNumber & 0x7F];
@@ -1142,6 +1140,7 @@ void game::Split(int slot, const game::usercmd_s& previous)
 		Time = cmd.serverTime - step;
 		std::copy_n(cmd.angles, 3, Angles);
 	}
+
 	int steps = (cmd.serverTime - Time) / step;
 
 	if (steps > MaxSteps)
@@ -1149,18 +1148,21 @@ void game::Split(int slot, const game::usercmd_s& previous)
 		steps = MaxSteps;
 		Time = cmd.serverTime - steps * step;
 	}
+
 	if (steps <= 0)
 	{
-		// Frames are outrunning the movement rate, so this one owes no command at all.
 		*GetUserCommand(slot) = previous;
 		clients->cmdNumber = slot - 1;
 		return;
 	}
+
 	for (int i = 1; i <= steps; i++)
 	{
 		usercmd_s& out = *GetUserCommand(slot + i - 1);
 		out = cmd;
 		out.serverTime = Time + i * step;
+
+		ApplyAutoBhop(out);
 
 		for (int axis = 0; axis < 3; axis++)
 		{
@@ -1187,6 +1189,7 @@ void __fastcall game::hookedCL_CreateNewCommands(void* thisptr, void*)
 
 	if (!commands::qol_independentphysics->current.enabled || !game::cl_ingame->current.enabled || cl_demoplaying->current.enabled)
 	{
+		ApplyAutoBhop(*GetUserCommand(slot));
 		Time = 0;
 		return;
 	}

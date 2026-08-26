@@ -2287,11 +2287,6 @@ namespace game
 
 	unsigned int hookedCG_StartAmbient(int a1);
 
-	typedef void(*CL_CmdButtons)();
-	inline CL_CmdButtons pCL_CmdButtons;
-
-	void hookedCL_CmdButtons();
-
 	typedef void(*CL_Disconnect)(int localClientNum);
 	inline CL_Disconnect pCL_Disconnect;
 
