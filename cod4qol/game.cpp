@@ -9,6 +9,8 @@
 #include <mutex>
 
 std::vector<std::pair<int, IDirect3DCubeTexture9*>> oldReflectionProbes;
+static int gameTime = 0;
+static int16_t g_smoothViewangles[3] = { 0, 0, 0 };
 
 __declspec(naked) const char* game::hookedCon_LinePrefix()
 {
@@ -1123,8 +1125,6 @@ void game::hookedCG_DrawUpperRightDebugInfo()
 	pCG_DrawUpperRightDebugInfo();
 }
 
-static int Time = 0;
-
 void game::Split(int slot, const game::usercmd_s& previous)
 {
 	constexpr int MaxDrift = 500;
@@ -1133,25 +1133,27 @@ void game::Split(int slot, const game::usercmd_s& previous)
 
 	const int step = 1000 / commands::qol_physfps->current.integer;
 	const usercmd_s cmd = *GetUserCommand(slot);
-	const int elapsed = cmd.serverTime - Time;
+	const int elapsed = cmd.serverTime - gameTime;
 
-	if (!Time || elapsed < 0 || elapsed > MaxDrift)
+	if (!gameTime || elapsed < 0 || elapsed > MaxDrift)
 	{
-		Time = cmd.serverTime - step;
+		gameTime = cmd.serverTime - step;
 		std::copy_n(cmd.angles, 3, Angles);
 	}
 
-	int steps = (cmd.serverTime - Time) / step;
+	int steps = (cmd.serverTime - gameTime) / step;
 
 	if (steps > MaxSteps)
 	{
 		steps = MaxSteps;
-		Time = cmd.serverTime - steps * step;
+		gameTime = cmd.serverTime - steps * step;
 	}
 
 	if (steps <= 0)
 	{
-		*GetUserCommand(slot) = previous;
+		usercmd_s fallback = previous;
+		std::copy_n(cmd.angles, 3, fallback.angles);
+		*GetUserCommand(slot) = fallback;
 		clients->cmdNumber = slot - 1;
 		return;
 	}
@@ -1160,7 +1162,7 @@ void game::Split(int slot, const game::usercmd_s& previous)
 	{
 		usercmd_s& out = *GetUserCommand(slot + i - 1);
 		out = cmd;
-		out.serverTime = Time + i * step;
+		out.serverTime = gameTime + i * step;
 
 		ApplyAutoBhop(out);
 
@@ -1171,7 +1173,8 @@ void game::Split(int slot, const game::usercmd_s& previous)
 			out.angles[axis] = static_cast<uint16_t>(from + delta * i / steps);
 		}
 	}
-	Time += steps * step;
+
+	gameTime += steps * step;
 	std::copy_n(cmd.angles, 3, Angles);
 	clients->cmdNumber = slot + steps - 1;
 }
@@ -1184,17 +1187,153 @@ void __fastcall game::hookedCL_CreateNewCommands(void* thisptr, void*)
 
 	pCL_CreateNewCommands(thisptr);
 
+	const usercmd_s* currentCmd = GetUserCommand(slot);
+	g_smoothViewangles[0] = static_cast<int16_t>(currentCmd->angles[0]);
+	g_smoothViewangles[1] = static_cast<int16_t>(currentCmd->angles[1]);
+	g_smoothViewangles[2] = static_cast<int16_t>(currentCmd->angles[2]);
+
 	if (clients->cmdNumber != slot)
 		return;
 
 	if (!commands::qol_independentphysics->current.enabled || !game::cl_ingame->current.enabled || cl_demoplaying->current.enabled)
 	{
 		ApplyAutoBhop(*GetUserCommand(slot));
-		Time = 0;
+		gameTime = 0;
 		return;
 	}
 
 	Split(slot, previous);
+}
+
+void game::hookedCG_PredictPlayerState_Internal(int localClientNum)
+{
+	pCG_PredictPlayerState_Internal(localClientNum);
+
+	cg_s* cgameGlob = reinterpret_cast<cg_s*>(0x74E338);
+	playerState_s* ps = &cgameGlob->predictedPlayerState;
+
+	if (!commands::qol_independentphysics->current.enabled || !commands::qol_interpolatephysics->current.enabled || ps->clientNum != cgameGlob->clientNum)
+		return;
+
+	struct HistoryEntry {
+		int time;
+		float origin[3];
+	};
+
+	static HistoryEntry g_history[8];
+	static int g_historyCount = 0;
+	static int g_historyHead = 0;
+	static int g_lastRecordedTime = 0;
+
+	static float g_lastDisplayedOrigin[3] = {};
+	static bool g_hasLastDisplayed = false;
+
+	bool teleported = false;
+	if (g_hasLastDisplayed)
+	{
+		float distSq = 0.0f;
+		for (int i = 0; i < 3; ++i)
+		{
+			float d = ps->origin[i] - g_lastDisplayedOrigin[i];
+			distSq += d * d;
+		}
+
+		const float kTeleportThresholdSq = 8.0f * 8.0f;
+		if (distSq > kTeleportThresholdSq)
+			teleported = true;
+	}
+
+	if (teleported)
+	{
+		g_historyCount = 0;
+		g_historyHead = 0;
+		g_lastRecordedTime = ps->commandTime - 1;
+	}
+
+	if (ps->commandTime > g_lastRecordedTime || (g_lastRecordedTime > 100000 && ps->commandTime < g_lastRecordedTime))
+	{
+		g_lastRecordedTime = ps->commandTime;
+		g_history[g_historyHead].time = ps->commandTime;
+		std::copy_n(ps->origin, 3, g_history[g_historyHead].origin);
+
+		g_historyHead = (g_historyHead + 1) % 8;
+		if (g_historyCount < 8) g_historyCount++;
+	}
+
+	if(!teleported)
+	{
+		int physFps = commands::qol_physfps->current.integer;
+		int step = (physFps > 0) ? (1000 / physFps) : 50;
+		int renderTime = cgameGlob->time - step;
+
+		HistoryEntry* e1 = nullptr;
+		HistoryEntry* e2 = nullptr;
+
+		for (int i = 0; i < g_historyCount; i++)
+		{
+			int idx = (g_historyHead - g_historyCount + i + 8) % 8;
+
+			if (g_history[idx].time <= renderTime)
+			{
+				e1 = &g_history[idx];
+			}
+			else
+			{
+				e2 = &g_history[idx];
+				break;
+			}
+		}
+
+		if (e1 && e2)
+		{
+			float dt = (float)(e2->time - e1->time);
+			if (dt <= 0.0f) dt = 1.0f;
+
+			float alpha = (float)(renderTime - e1->time) / dt;
+
+			if (alpha < 0.0f) alpha = 0.0f;
+			if (alpha > 1.0f) alpha = 1.0f;
+
+			ps->origin[0] = e1->origin[0] + (e2->origin[0] - e1->origin[0]) * alpha;
+			ps->origin[1] = e1->origin[1] + (e2->origin[1] - e1->origin[1]) * alpha;
+			ps->origin[2] = e1->origin[2] + (e2->origin[2] - e1->origin[2]) * alpha;
+		}
+		else if (e1 && !e2)
+		{
+			std::copy_n(e1->origin, 3, ps->origin);
+		}
+	}
+
+	g_hasLastDisplayed = true;
+	std::copy_n(ps->origin, 3, g_lastDisplayedOrigin);
+
+	const float ANGLE_MULTIPLIER = 360.0f / 65536.0f;
+
+	float smooth_pitch = g_smoothViewangles[0] * ANGLE_MULTIPLIER;
+	float smooth_yaw = g_smoothViewangles[1] * ANGLE_MULTIPLIER;
+	float smooth_roll = g_smoothViewangles[2] * ANGLE_MULTIPLIER;
+
+	float delta_pitch = ps->delta_angles[0];
+	float delta_yaw = ps->delta_angles[1];
+	float delta_roll = ps->delta_angles[2];
+
+	static dvar_s* player_view_pitch_up = game::Find("player_view_pitch_up");
+	static dvar_s* player_view_pitch_down = game::Find("player_view_pitch_down");
+
+	float minPitch = -player_view_pitch_up->current.value;
+	float maxPitch = player_view_pitch_down->current.value;
+
+	static auto AngleNormalize180 = [](float angle) -> float
+		{
+			angle = fmodf(angle, 360.0f);
+			if (angle < -180.0f) angle += 360.0f;
+			if (angle >= 180.0f) angle -= 360.0f;
+			return angle;
+		};
+
+	ps->viewangles[0] = std::clamp(AngleNormalize180(smooth_pitch + delta_pitch), minPitch, maxPitch);
+	ps->viewangles[1] = smooth_yaw + delta_yaw;
+	ps->viewangles[2] = smooth_roll + delta_roll;
 }
 
 void game::SetCoD4xFunctionOffsets()

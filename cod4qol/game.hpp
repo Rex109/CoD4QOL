@@ -2367,6 +2367,11 @@ namespace game
 
 	void __fastcall hookedCL_CreateNewCommands(void* thisptr, void*);
 
+	typedef void(*CG_PredictPlayerState_Internal)(int localClientNum);
+	inline CG_PredictPlayerState_Internal pCG_PredictPlayerState_Internal;
+
+	void hookedCG_PredictPlayerState_Internal(int localClientNum);
+
 	int	Cmd_Argc();
 	const char* Cmd_Argv(int arg);
 	HMODULE GetCurrentModule();

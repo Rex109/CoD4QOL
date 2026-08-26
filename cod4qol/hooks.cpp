@@ -158,6 +158,10 @@ void hooks::InitializeHooks()
 	game::pCL_CreateNewCommands = (game::CL_CreateNewCommands)(0x463E00);
 	hooks::install(&(PVOID&)game::pCL_CreateNewCommands, (PBYTE)game::hookedCL_CreateNewCommands);
 
+	//CG_PredictPlayerState_Internal
+	game::pCG_PredictPlayerState_Internal = (game::CG_PredictPlayerState_Internal)(0x447260);
+	hooks::install(&(PVOID&)game::pCG_PredictPlayerState_Internal, (PBYTE)game::hookedCG_PredictPlayerState_Internal);
+
 	std::cout << "Hooks installed!" << std::endl;
 }
 

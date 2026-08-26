@@ -148,6 +148,8 @@ void commands::InitializeCommands()
     static const char* qol_showphysfps_names[] = { "Off", "Normal", "Colored", NULL };
 	qol_showphysfps = game::Cvar_RegisterEnum("qol_showphysfps", qol_showphysfps_names, 0, game::dvar_flags::saved, "Show the physics simulation FPS on the screen.");
 
+    qol_interpolatephysics = game::Cvar_RegisterBool("qol_interpolatephysics", 0, game::dvar_flags::saved, "Enable physics interpolation, qol_independentphysics needs to be enabled.");
+
     std::cout << "Commands initialized!" << std::endl;
 }
 
