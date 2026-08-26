@@ -910,6 +910,27 @@ __declspec(naked) const char* game::String_Alloc(const char* string)
 	}
 }
 
+double game::CG_CornerDebugPrint(float* color, const char* text, ScreenPlacement* scrPlace, float x, float y, float labelWidth, const char* label)
+{
+	__asm
+	{
+		push ebx;
+		push edi;
+		push label;
+		push labelWidth;
+		push y;
+		push x;
+		mov edi, scrPlace;
+		mov eax, color;
+		mov ecx, text;
+		mov ebx, 0x42B710;
+		call ebx;
+		add esp, 16;
+		pop edi;
+		pop ebx;
+	}
+}
+
 __declspec(naked) void game::hookedUpdateShellShockSound()
 {
 	static const uint32_t retn_addr = 0x44CD4E;
@@ -1048,6 +1069,129 @@ void game::hookedDB_BuildOSPath(const char* filename, int ff_dir, int pathlen, c
 
 	std::replace(result.begin(), result.end(), '/', '\\');
 	strncpy_s(path, pathlen, result.c_str(), _TRUNCATE);
+}
+
+game::usercmd_s* game::GetUserCommand(int cmdNumber)
+{
+	return &clients->cmds[cmdNumber & 0x7F];
+}
+
+void game::hookedCG_DrawUpperRightDebugInfo()
+{
+	static ScreenPlacement* scrPlacement = reinterpret_cast<ScreenPlacement*>(0xE34420);
+	static dvar_s* cg_debugInfoCornerOffset = game::Find("cg_debugInfoCornerOffset");
+
+	int showPhysFps = commands::qol_showphysfps->current.integer;
+
+	if (showPhysFps != 0 && commands::qol_independentphysics->current.enabled)
+	{
+		double farRight = cg_debugInfoCornerOffset->current.value + scrPlace->virtualViewableMax[0] - scrPlace->virtualViewableMin[0];
+
+		char buffer[64];
+		int color = 7;
+
+		int currentPhysFps = commands::qol_physfps->current.integer;
+		
+		if(showPhysFps == 2)
+		{
+			switch (currentPhysFps)
+			{
+				case 125:
+					color = 2; 
+					break;
+				case 142:
+					color = 5;
+					break;
+				case 250:
+					color = 3;
+					break;
+				case 333:
+					color = 1;
+					break;
+				case 500:
+					color = 4;
+					break;
+				case 1000:
+					color = 6;
+					break;
+			}
+		}
+
+		sprintf_s(buffer, sizeof(buffer), "^%d%d", color, currentPhysFps);
+		
+		CG_CornerDebugPrint(reinterpret_cast<float*>(0x6B4518), buffer, scrPlacement, farRight - 5.0, 0.0, 0.0, "");
+	}
+
+	pCG_DrawUpperRightDebugInfo();
+}
+
+static int Time = 0;
+
+void game::Split(int slot, const game::usercmd_s& previous)
+{
+	constexpr int MaxDrift = 500;
+	constexpr int MaxSteps = 32;
+	static int Angles[3] = {};
+
+	const int step = 1000 / commands::qol_physfps->current.integer;
+	const usercmd_s cmd = *GetUserCommand(slot);
+	const int elapsed = cmd.serverTime - Time;
+
+	if (!Time || elapsed < 0 || elapsed > MaxDrift)
+	{
+		Time = cmd.serverTime - step;
+		std::copy_n(cmd.angles, 3, Angles);
+	}
+	int steps = (cmd.serverTime - Time) / step;
+
+	if (steps > MaxSteps)
+	{
+		steps = MaxSteps;
+		Time = cmd.serverTime - steps * step;
+	}
+	if (steps <= 0)
+	{
+		// Frames are outrunning the movement rate, so this one owes no command at all.
+		*GetUserCommand(slot) = previous;
+		clients->cmdNumber = slot - 1;
+		return;
+	}
+	for (int i = 1; i <= steps; i++)
+	{
+		usercmd_s& out = *GetUserCommand(slot + i - 1);
+		out = cmd;
+		out.serverTime = Time + i * step;
+
+		for (int axis = 0; axis < 3; axis++)
+		{
+			const auto from = static_cast<int16_t>(Angles[axis]);
+			const auto delta = static_cast<int16_t>(cmd.angles[axis] - Angles[axis]);
+			out.angles[axis] = static_cast<uint16_t>(from + delta * i / steps);
+		}
+	}
+	Time += steps * step;
+	std::copy_n(cmd.angles, 3, Angles);
+	clients->cmdNumber = slot + steps - 1;
+}
+
+void __fastcall game::hookedCL_CreateNewCommands(void* thisptr, void*)
+{
+	const int slot = clients->cmdNumber + 1;
+	const usercmd_s previous = *GetUserCommand(slot);
+	static dvar_s* cl_demoplaying = game::Find("cl_demoplaying");
+
+	pCL_CreateNewCommands(thisptr);
+
+	if (clients->cmdNumber != slot)
+		return;
+
+	if (!commands::qol_independentphysics->current.enabled || !game::cl_ingame->current.enabled || cl_demoplaying->current.enabled)
+	{
+		Time = 0;
+		return;
+	}
+
+	Split(slot, previous);
 }
 
 void game::SetCoD4xFunctionOffsets()

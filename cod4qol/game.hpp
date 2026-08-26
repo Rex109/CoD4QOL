@@ -2085,6 +2085,128 @@ namespace game
 		weapOverlayReticle_t overlayReticle;
 	}WeaponDef;
 
+	struct gameState_t
+	{
+		int stringOffsets[2442];
+		char stringData[131072];
+		int dataCount;
+	};
+
+	struct clSnapshot_t
+	{
+		int valid;
+		int snapFlags;
+		int serverTime;
+		int messageNum;
+		int deltaNum;
+		int ping;
+		int cmdNum;
+		playerState_s ps;
+		int numEntities;
+		int numClients;
+		int parseEntitiesNum;
+		int parseClientsNum;
+		int serverCommandNum;
+	};
+
+	enum StanceState
+	{
+		CL_STANCE_STAND = 0x0,
+		CL_STANCE_CROUCH = 0x1,
+		CL_STANCE_PRONE = 0x2,
+	};
+
+	struct usercmd_s
+	{
+		int serverTime;
+		int buttons;
+		int angles[3];
+		char weapon;
+		char offHandIndex;
+		char forwardmove;
+		char rightmove;
+		float meleeChargeYaw;
+		char meleeChargeDist;
+		char selectedLocation[2];
+	};
+
+	struct ClientArchiveData
+	{
+		int serverTime;
+		float origin[3];
+		float velocity[3];
+		int bobCycle;
+		int movementDir;
+		float viewangles[3];
+	};
+
+	struct outPacket_t
+	{
+		int p_cmdNumber;
+		int p_serverTime;
+		int p_realtime;
+	};
+
+
+	struct clientActive_t
+	{
+		bool usingAds;
+		int timeoutcount;
+		clSnapshot_t snap;
+		bool alwaysFalse;
+		int serverTime;
+		int oldServerTime;
+		int oldFrameServerTime;
+		int serverTimeDelta;
+		int oldSnapServerTime;
+		int extrapolatedSnapshot;
+		int newSnapshots;
+		gameState_t gameState;
+		char mapname[64];
+		int parseEntitiesNum;
+		int parseClientsNum;
+		int mouseDx[2];
+		int mouseDy[2];
+		int mouseIndex;
+		bool stanceHeld;
+		StanceState stance;
+		StanceState stancePosition;
+		int stanceTime;
+		int cgameUserCmdWeapon;
+		int cgameUserCmdOffHandIndex;
+		float cgameFOVSensitivityScale;
+		float cgameMaxPitchSpeed;
+		float cgameMaxYawSpeed;
+		float cgameKickAngles[3];
+		float cgameOrigin[3];
+		float cgameVelocity[3];
+		float cgameViewangles[3];
+		int cgameBobCycle;
+		int cgameMovementDir;
+		int cgameExtraButtons;
+		int cgamePredictedDataServerTime;
+		float viewangles[3];
+		int serverId;
+		int skelTimeStamp;
+		volatile int skelMemPos;
+		char skelMemory[262144];
+		char* skelMemoryStart;
+		bool allowedAllocSkel;
+		alignas(4) usercmd_s cmds[128];
+		int cmdNumber;
+		ClientArchiveData clientArchive[256];
+		int clientArchiveIndex;
+		outPacket_t outPackets[32];
+		clSnapshot_t snapshots[32];
+		entityState_s entityBaselines[1024];
+		entityState_s parseEntities[2048];
+		clientState_s parseClients[2048];
+		int corruptedTranslationFile;
+		char translationVersion[256];
+		float vehicleViewYaw;
+		float vehicleViewPitch;
+	};
+
 	enum ClientModLoadType
 	{
 		CLIENTMOD_LOAD_ALL,
@@ -2240,6 +2362,16 @@ namespace game
 
 	void hookedDB_BuildOSPath(const char* filename, int ff_dir, int pathlen, char* path);
 
+	typedef void(*CG_DrawUpperRightDebugInfo)();
+	inline CG_DrawUpperRightDebugInfo pCG_DrawUpperRightDebugInfo;
+
+	void hookedCG_DrawUpperRightDebugInfo();
+
+	typedef void(__thiscall *CL_CreateNewCommands)(void* thisptr);
+	inline CL_CreateNewCommands pCL_CreateNewCommands;
+
+	void __fastcall hookedCL_CreateNewCommands(void* thisptr, void*);
+
 	int	Cmd_Argc();
 	const char* Cmd_Argv(int arg);
 	HMODULE GetCurrentModule();
@@ -2260,11 +2392,14 @@ namespace game
 	void CG_SetClientDvarFromServer_stub(const char* dvarname, const char* value, [[maybe_unused]] cg_s* _cgs);
 	void drawCustomCrosshair();
 	void HSVtoRGB(float h, float s, float v, float* r, float* g, float* b);
+	void Split(int slot, const game::usercmd_s& previous);
 
 	dvar_s* Find(const char*);
 	cmd_function_s* Cmd_AddCommand(const char* cmdname, void(__cdecl* function)());
 	void Cbuf_AddText(const char* text, int localClientNum);
 	const char* String_Alloc(const char* string);
+	double CG_CornerDebugPrint(float* color, const char* text, ScreenPlacement* scrPlace, float x, float y, float labelWidth, const char* label);
+	usercmd_s* GetUserCommand(int cmdNumber);
 	void SetCoD4xFunctionOffsets();
 
 	typedef void(*Cmd_ExecuteSingleCommand_t)(int controller, int a2, const char* cmd);
@@ -2357,6 +2492,7 @@ namespace game
 	inline int* modIndex = reinterpret_cast<int*>(0xCAF7558);
 	inline const char** modName = reinterpret_cast<const char**>(0xCAF7354);
 	inline const char** modDesc = reinterpret_cast<const char**>(0xCAF7358);
+	inline game::clientActive_t* clients = reinterpret_cast<game::clientActive_t*>(0xC5F930);
 	inline game::WeaponDef** BG_WeaponNames;
 
 	inline int* dvar_modifiedFlags = reinterpret_cast<int*>(0x0CBA73F4);

@@ -54,6 +54,9 @@ namespace commands
 	inline game::dvar_s* qol_disableshellshockloop;
 	inline game::dvar_s* qol_adsgunposinterpolation;
 	inline game::dvar_s* qol_clientmodswarning;
+	inline game::dvar_s* qol_independentphysics;
+	inline game::dvar_s* qol_physfps;
+	inline game::dvar_s* qol_showphysfps;
 
 	void InitializeCommands();
 

@@ -154,6 +154,14 @@ void hooks::InitializeHooks()
 	game::pDB_BuildOSPath = (game::DB_BuildOSPath)(offsets::GetOffset("DB_BuildOSPath"));
 	hooks::install(&(PVOID&)game::pDB_BuildOSPath, (PBYTE)game::hookedDB_BuildOSPath);
 
+	//CG_DrawUpperRightDebugInfo
+	game::pCG_DrawUpperRightDebugInfo = (game::CG_DrawUpperRightDebugInfo)(offsets::GetOffset("CG_DrawUpperRightDebugInfo"));
+	hooks::install(&(PVOID&)game::pCG_DrawUpperRightDebugInfo, (PBYTE)game::hookedCG_DrawUpperRightDebugInfo);
+
+	//CL_CreateNewCommands
+	game::pCL_CreateNewCommands = (game::CL_CreateNewCommands)(0x463E00);
+	hooks::install(&(PVOID&)game::pCL_CreateNewCommands, (PBYTE)game::hookedCL_CreateNewCommands);
+
 	std::cout << "Hooks installed!" << std::endl;
 }
 
