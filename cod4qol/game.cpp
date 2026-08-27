@@ -1076,6 +1076,19 @@ game::usercmd_s* game::GetUserCommand(int cmdNumber)
 	return &clients->cmds[cmdNumber & 0x7F];
 }
 
+bool game::IsOnMover (const playerState_s* ps)
+{
+	static centity_t* cgEntities = reinterpret_cast<centity_t*>(0x84F2D8);
+
+	int moverNum = ps->groundEntityNum;
+	if (moverNum <= 0 || moverNum >= ENTITYNUM_WORLD)
+		return false;
+
+	centity_s* cent = &cgEntities[moverNum];
+	return cent->nextState.eType == ET_SCRIPTMOVER
+		|| cent->nextState.eType == ET_PLANE;
+}
+
 void game::hookedCG_DrawUpperRightDebugInfo()
 {
 	static ScreenPlacement* scrPlacement = reinterpret_cast<ScreenPlacement*>(0xE34420);
@@ -1183,7 +1196,6 @@ void __fastcall game::hookedCL_CreateNewCommands(void* thisptr, void*)
 {
 	const int slot = clients->cmdNumber + 1;
 	const usercmd_s previous = *GetUserCommand(slot);
-	static dvar_s* cl_demoplaying = game::Find("cl_demoplaying");
 
 	pCL_CreateNewCommands(thisptr);
 
@@ -1195,7 +1207,7 @@ void __fastcall game::hookedCL_CreateNewCommands(void* thisptr, void*)
 	if (clients->cmdNumber != slot)
 		return;
 
-	if (!commands::qol_independentphysics->current.enabled || !game::cl_ingame->current.enabled || cl_demoplaying->current.enabled)
+	if (!commands::qol_independentphysics->current.enabled || !game::cl_ingame->current.enabled || cg->demoType)
 	{
 		ApplyAutoBhop(*GetUserCommand(slot));
 		gameTime = 0;
@@ -1209,10 +1221,40 @@ void game::hookedCG_PredictPlayerState_Internal(int localClientNum)
 {
 	pCG_PredictPlayerState_Internal(localClientNum);
 
-	cg_s* cgameGlob = reinterpret_cast<cg_s*>(0x74E338);
-	playerState_s* ps = &cgameGlob->predictedPlayerState;
+	playerState_s* ps = &cg->predictedPlayerState;
 
-	if (!commands::qol_independentphysics->current.enabled || !commands::qol_interpolatephysics->current.enabled || ps->clientNum != cgameGlob->clientNum)
+	if (!commands::qol_independentphysics->current.enabled || !commands::qol_interpolatephysics->current.enabled || cg->demoType || (ps->otherFlags & 2) != 0 || ps->clientNum != cg->clientNum)
+		return;
+
+	const float ANGLE_MULTIPLIER = 360.0f / 65536.0f;
+
+	float smooth_pitch = g_smoothViewangles[0] * ANGLE_MULTIPLIER;
+	float smooth_yaw = g_smoothViewangles[1] * ANGLE_MULTIPLIER;
+	float smooth_roll = g_smoothViewangles[2] * ANGLE_MULTIPLIER;
+
+	float delta_pitch = ps->delta_angles[0];
+	float delta_yaw = ps->delta_angles[1];
+	float delta_roll = ps->delta_angles[2];
+
+	static dvar_s* player_view_pitch_up = game::Find("player_view_pitch_up");
+	static dvar_s* player_view_pitch_down = game::Find("player_view_pitch_down");
+
+	float minPitch = -player_view_pitch_up->current.value;
+	float maxPitch = player_view_pitch_down->current.value;
+
+	static auto AngleNormalize180 = [](float angle) -> float
+		{
+			angle = fmodf(angle, 360.0f);
+			if (angle < -180.0f) angle += 360.0f;
+			if (angle >= 180.0f) angle -= 360.0f;
+			return angle;
+		};
+
+	ps->viewangles[0] = std::clamp(AngleNormalize180(smooth_pitch + delta_pitch), minPitch, maxPitch);
+	ps->viewangles[1] = smooth_yaw + delta_yaw;
+	ps->viewangles[2] = smooth_roll + delta_roll;
+
+	if (IsOnMover(ps))
 		return;
 
 	struct HistoryEntry {
@@ -1264,7 +1306,7 @@ void game::hookedCG_PredictPlayerState_Internal(int localClientNum)
 	{
 		int physFps = commands::qol_physfps->current.integer;
 		int step = (physFps > 0) ? (1000 / physFps) : 50;
-		int renderTime = cgameGlob->time - step;
+		int renderTime = cg->time - step;
 
 		HistoryEntry* e1 = nullptr;
 		HistoryEntry* e2 = nullptr;
@@ -1306,34 +1348,6 @@ void game::hookedCG_PredictPlayerState_Internal(int localClientNum)
 
 	g_hasLastDisplayed = true;
 	std::copy_n(ps->origin, 3, g_lastDisplayedOrigin);
-
-	const float ANGLE_MULTIPLIER = 360.0f / 65536.0f;
-
-	float smooth_pitch = g_smoothViewangles[0] * ANGLE_MULTIPLIER;
-	float smooth_yaw = g_smoothViewangles[1] * ANGLE_MULTIPLIER;
-	float smooth_roll = g_smoothViewangles[2] * ANGLE_MULTIPLIER;
-
-	float delta_pitch = ps->delta_angles[0];
-	float delta_yaw = ps->delta_angles[1];
-	float delta_roll = ps->delta_angles[2];
-
-	static dvar_s* player_view_pitch_up = game::Find("player_view_pitch_up");
-	static dvar_s* player_view_pitch_down = game::Find("player_view_pitch_down");
-
-	float minPitch = -player_view_pitch_up->current.value;
-	float maxPitch = player_view_pitch_down->current.value;
-
-	static auto AngleNormalize180 = [](float angle) -> float
-		{
-			angle = fmodf(angle, 360.0f);
-			if (angle < -180.0f) angle += 360.0f;
-			if (angle >= 180.0f) angle -= 360.0f;
-			return angle;
-		};
-
-	ps->viewangles[0] = std::clamp(AngleNormalize180(smooth_pitch + delta_pitch), minPitch, maxPitch);
-	ps->viewangles[1] = smooth_yaw + delta_yaw;
-	ps->viewangles[2] = smooth_roll + delta_roll;
 }
 
 void game::SetCoD4xFunctionOffsets()

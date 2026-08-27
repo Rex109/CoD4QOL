@@ -8,6 +8,11 @@
 #include "hooks.hpp"
 #include "offsets.hpp"
 
+#define	GENTITYNUM_BITS		10
+#define	MAX_GENTITIES		(1<<GENTITYNUM_BITS)
+
+#define	ENTITYNUM_WORLD		(MAX_GENTITIES-2)
+
 namespace game
 {
 	enum dvar_flags : std::uint16_t
@@ -2214,6 +2219,250 @@ namespace game
 		CLIENTMOD_LOAD_FFS
 	};
 
+	typedef struct clientControllers_t
+	{
+		float angles[6][3];
+		float tag_origin_angles[3];
+		float tag_origin_offset[3];
+	};
+
+
+	typedef struct CEntPlayerInfo_t
+	{
+		clientControllers_t* control;
+		byte tag[6];
+	};
+
+
+	typedef struct CEntTurretAngles_t
+	{
+		float pitch;
+		float yaw;
+	};
+
+
+	typedef struct CEntTurretInfo_t
+	{
+		union
+		{
+			CEntTurretAngles_t angles;
+			const float* viewAngles;
+		};
+
+		float barrelPitch;
+		byte playerUsing;
+		byte tag_aim;
+		byte tag_aim_animated;
+		byte tag_flash;
+	};
+
+	typedef struct CEntVehicleInfo_t
+	{
+		short pitch;
+		short yaw;
+		short roll;
+		short barrelPitch;
+		float barrelRoll;
+		short steerYaw;
+		byte pad[2];
+		float time;
+		unsigned short wheelFraction[4];
+		byte wheelBoneIndex[4];
+		byte tag_body;
+		byte tag_turret;
+		byte tag_barrel;
+		byte pad2;
+	};
+
+	typedef struct CEntFx_t
+	{
+		int triggerTime;
+		void* effect;
+	};
+
+	typedef union
+	{
+		CEntPlayerInfo_t player;
+		CEntTurretInfo_t turret;
+		CEntVehicleInfo_t vehicle;
+		CEntFx_t fx;
+		byte badsizepad[0x30];
+	}CEntInfo_t;
+
+	struct XAnimTree_s;
+
+	typedef entityState_s entityState_t;
+
+	typedef struct LerpEntityStateTurret_s
+	{
+		float gunAngles[3];
+	}LerpEntityStateTurret_t;
+
+	typedef struct LerpEntityStateLoopFx_s
+	{
+		float cullDist;
+		int period;
+	}LerpEntityStateLoopFx_t;
+
+	typedef struct LerpEntityStatePrimaryLight_s
+	{
+		char colorAndExp[4];
+		float intensity;
+		float radius;
+		float cosHalfFovOuter;
+		float cosHalfFovInner;
+	}LerpEntityStatePrimaryLight_t;
+
+	typedef struct LerpEntityStatePlayer_s
+	{
+		float leanf;
+		int movementDir;
+	}LerpEntityStatePlayer_t;
+
+	typedef struct LerpEntityStateVehicle_s
+	{
+		float bodyPitch;
+		float bodyRoll;
+		float steerYaw;
+		int materialTime;
+		float gunPitch;
+		float gunYaw;
+		int team;
+	}LerpEntityStateVehicle_t;
+
+	typedef struct LerpEntityStateMissile_s
+	{
+		int launchTime;
+	}LerpEntityStateMissile_t;
+
+	typedef struct LerpEntityStateSoundBlend_s
+	{
+		float lerp;
+	}LerpEntityStateSoundBlend_t;
+
+	typedef struct LerpEntityStateBulletHit_s
+	{
+		float start[3];
+	}LerpEntityStateBulletHit_t;
+
+	typedef struct LerpEntityStateEarthquake_s
+	{
+		float scale;
+		float radius;
+		int duration;
+	}LerpEntityStateEarthquake_t;
+
+	typedef struct LerpEntityStateCustomExplode_s
+	{
+		int startTime;
+	}LerpEntityStateCustomExplode_t;
+
+	typedef struct LerpEntityStateExplosion_s
+	{
+		float innerRadius;
+		float magnitude;
+	}LerpEntityStateExplosion_t;
+
+	typedef struct LerpEntityStateExplosionJolt_s
+	{
+		float innerRadius;
+		float impulse[3];
+	}LerpEntityStateExplosionJolt_t;
+
+	typedef struct LerpEntityStatePhysicsJitter_s
+	{
+		float innerRadius;
+		float minDisplacement;
+		float maxDisplacement;
+	}LerpEntityStatePhysicsJitter_t;
+
+	typedef struct LerpEntityStateAnonymous_s
+	{
+		int data[7];
+	}LerpEntityStateAnonymous_t;
+
+	typedef union
+	{
+		LerpEntityStateTurret_t turret;
+		LerpEntityStateLoopFx_t loopFx;
+		LerpEntityStatePrimaryLight_t primaryLight;
+		LerpEntityStatePlayer_t player;
+		LerpEntityStateVehicle_t vehicle;
+		LerpEntityStateMissile_t missile;
+		LerpEntityStateSoundBlend_t soundBlend;
+		LerpEntityStateBulletHit_t bulletHit;
+		LerpEntityStateEarthquake_t earthquake;
+		LerpEntityStateCustomExplode_t customExplode;
+		LerpEntityStateExplosion_t explosion;
+		LerpEntityStateExplosionJolt_t explosionJolt;
+		LerpEntityStatePhysicsJitter_t physicsJitter;
+		LerpEntityStateAnonymous_t anonymous;
+	}LerpEntityStateTypeUnion_t;
+
+	typedef struct LerpEntityState_s
+	{
+		int eFlags;
+		trajectory_t pos;
+		trajectory_t apos;
+		LerpEntityStateTypeUnion_t u;
+	}LerpEntityState_t;
+
+	typedef struct cpose_s
+	{
+		unsigned short lightingHandle;
+		byte eType;
+		byte eTypeUnion;
+		byte localClientNum;
+		byte pad[3];
+		int cullIn;
+		byte isRagdoll;
+		byte pad2[3];
+		int ragdollHandle;
+		int killcamRagdollHandle;
+		int physObjId;
+		float origin[3];
+		float angles[3];
+		CEntInfo_t centInfo;
+	}cpose_t;
+
+	typedef struct centity_s
+	{
+		cpose_t pose;
+		LerpEntityState_t currentState;
+		entityState_t nextState;
+		byte nextValid;
+		byte bMuzzleFlash;
+		byte bTrailMade;
+		byte pad;
+		int previousEventSequence;
+		int miscTime;
+		float lightingOrigin[3];
+		XAnimTree_s* tree;
+	}centity_t;
+
+	enum entityType_t
+	{
+		ET_GENERAL = 0x0,
+		ET_PLAYER = 0x1,
+		ET_PLAYER_CORPSE = 0x2,
+		ET_ITEM = 0x3,
+		ET_MISSILE = 0x4,
+		ET_INVISIBLE = 0x5,
+		ET_SCRIPTMOVER = 0x6,
+		ET_SOUND_BLEND = 0x7,
+		ET_FX = 0x8,
+		ET_LOOP_FX = 0x9,
+		ET_PRIMARY_LIGHT = 0xA,
+		ET_MG42 = 0xB,
+		ET_HELICOPTER = 0xC,
+		ET_PLANE = 0xD,
+		ET_VEHICLE = 0xE,
+		ET_VEHICLE_COLLMAP = 0xF,
+		ET_VEHICLE_CORPSE = 0x10,
+		ET_EVENTS = 0x11,
+	};
+
+
 	inline bool startup = true;
 
 	const static DWORD cod4x_entry = (DWORD)GetModuleHandleA(COD4QOL_COD4X_MODULE);
@@ -2400,6 +2649,7 @@ namespace game
 	const char* String_Alloc(const char* string);
 	double CG_CornerDebugPrint(float* color, const char* text, ScreenPlacement* scrPlace, float x, float y, float labelWidth, const char* label);
 	usercmd_s* GetUserCommand(int cmdNumber);
+	bool IsOnMover(const playerState_s* ps);
 	void SetCoD4xFunctionOffsets();
 
 	typedef void(*Cmd_ExecuteSingleCommand_t)(int controller, int a2, const char* cmd);
