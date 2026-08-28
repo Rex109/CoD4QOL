@@ -544,8 +544,6 @@ void game::R_CopyRenderTarget(IDirect3DDevice9* device, game::GfxRenderTargetId 
 
 void game::applyFsr1()
 {
-	static const dvar_s* r_filmusetweaks = game::Find("r_filmusetweaks");
-
 	float renderscale = commands::qol_renderscale->current.value;
 
 	if (renderscale != 1.0 )
