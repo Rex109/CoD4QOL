@@ -544,24 +544,13 @@ void game::R_CopyRenderTarget(IDirect3DDevice9* device, game::GfxRenderTargetId 
 
 void game::applyFsr1()
 {
+	static const dvar_s* r_filmusetweaks = game::Find("r_filmusetweaks");
+
 	float renderscale = commands::qol_renderscale->current.value;
-	const static int* visionApplied = reinterpret_cast<int*>(0xCEFBA08);
 
 	if (renderscale != 1.0 )
 	{
-		if(commands::r_fullbright->current.enabled)
-			R_CopyRenderTarget(*game::dx9_device_ptr, game::GfxRenderTargetId::R_RENDERTARGET_RESOLVED_POST_SUN, game::GfxRenderTargetId::R_RENDERTARGET_SCENE);
-		else if (*visionApplied)
-		{
-			R_Set2D();
-			R_SetRenderTarget(game::GfxRenderTargetId::R_RENDERTARGET_RESOLVED_POST_SUN);
-
-			if (const auto material = game::rgp->postFxColorMaterial; material)
-				RB_DrawStretchPic(material, 0.0f, 0.0f, game::scrPlace->realViewableMax[0], game::scrPlace->realViewableMax[1], 0.0, 0.0, 1.0, 1.0);
-
-			RB_EndTessSurface();
-			R_SetRenderTarget(game::GfxRenderTargetId::R_RENDERTARGET_FRAME_BUFFER);
-		}
+		R_CopyRenderTarget(*game::dx9_device_ptr, game::GfxRenderTargetId::R_RENDERTARGET_RESOLVED_POST_SUN, game::GfxRenderTargetId::R_RENDERTARGET_SCENE);
 
 		float centerX = 0.5f;
 		float centerY = 0.5f;
@@ -1060,13 +1049,12 @@ void ApplyAutoBhop(game::usercmd_s& out)
 
 	if (!wantsJump)
 	{
-		jump_pressed = false;   // key released -> next press starts clean
+		jump_pressed = false;
 		return;
 	}
 
 	if (jump_pressed)
-		out.buttons &= ~0x400;   // force a fake release this tick
-	// else: real press goes through untouched
+		out.buttons &= ~0x400;
 
 	jump_pressed = !jump_pressed;
 }
