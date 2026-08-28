@@ -10,6 +10,10 @@
 
 std::vector<std::pair<int, IDirect3DCubeTexture9*>> oldReflectionProbes;
 static int gameTime = 0;
+static int pendingButtons = 0;
+static bool jumpHeld = false;
+static bool jumpPending = false;
+static bool jumpEmitted = false;
 static int16_t g_smoothViewangles[3] = { 0, 0, 0 };
 
 __declspec(naked) const char* game::hookedCon_LinePrefix()
@@ -1036,25 +1040,40 @@ void game::hookedDB_BuildOSPath(const char* filename, int ff_dir, int pathlen, c
 	strncpy_s(path, pathlen, result.c_str(), _TRUNCATE);
 }
 
+void NoteJumpInput(const game::usercmd_s& cmd)
+{
+	const bool wantsJump = (cmd.buttons & 0x400) != 0;
+
+	if (wantsJump && !jumpHeld)
+		jumpPending = true;
+
+	jumpHeld = wantsJump;
+}
+
 void ApplyAutoBhop(game::usercmd_s& out)
 {
-	static bool jump_pressed = false;
-
 	if (!commands::qol_enableautobhop->current.enabled)
-		return;
-
-	const bool wantsJump = (out.buttons & 0x400) != 0;
-
-	if (!wantsJump)
 	{
-		jump_pressed = false;
+		jumpPending = false;
 		return;
 	}
 
-	if (jump_pressed)
-		out.buttons &= ~0x400;
+	if ((out.buttons & 0x400) == 0 && !jumpPending)
+	{
+		jumpEmitted = false;
+		return;
+	}
 
-	jump_pressed = !jump_pressed;
+	if (jumpEmitted)
+	{
+		out.buttons &= ~0x400;	// forced release so the next command counts as a fresh press
+		jumpEmitted = false;
+		return;
+	}
+
+	out.buttons |= 0x400;
+	jumpEmitted = true;
+	jumpPending = false;
 }
 
 game::usercmd_s* game::GetUserCommand(int cmdNumber)
@@ -1131,7 +1150,8 @@ void game::Split(int slot, const game::usercmd_s& previous)
 	static int Angles[3] = {};
 
 	const int step = 1000 / commands::qol_physfps->current.integer;
-	const usercmd_s cmd = *GetUserCommand(slot);
+	usercmd_s cmd = *GetUserCommand(slot);
+	cmd.buttons |= pendingButtons;
 	const int elapsed = cmd.serverTime - gameTime;
 
 	if (!gameTime || elapsed < 0 || elapsed > MaxDrift)
@@ -1150,12 +1170,16 @@ void game::Split(int slot, const game::usercmd_s& previous)
 
 	if (steps <= 0)
 	{
+		pendingButtons = cmd.buttons;
+
 		usercmd_s fallback = previous;
 		std::copy_n(cmd.angles, 3, fallback.angles);
 		*GetUserCommand(slot) = fallback;
 		clients->cmdNumber = slot - 1;
 		return;
 	}
+
+	pendingButtons = 0;
 
 	for (int i = 1; i <= steps; i++)
 	{
@@ -1193,10 +1217,13 @@ void __fastcall game::hookedCL_CreateNewCommands(void* thisptr, void*)
 	if (clients->cmdNumber != slot)
 		return;
 
+	NoteJumpInput(*currentCmd);
+
 	if (!commands::qol_independentphysics->current.enabled || !game::cl_ingame->current.enabled || cg->demoType)
 	{
 		ApplyAutoBhop(*GetUserCommand(slot));
 		gameTime = 0;
+		pendingButtons = 0;
 		return;
 	}
 
