@@ -1147,7 +1147,9 @@ void game::Split(int slot, const game::usercmd_s& previous)
 {
 	constexpr int MaxDrift = 500;
 	constexpr int MaxSteps = 32;
+	constexpr int MaxThrottledSteps = 4;
 	static int Angles[3] = {};
+	static int lastSampledButtons = 0;
 
 	const int step = 1000 / commands::qol_physfps->current.integer;
 	usercmd_s cmd = *GetUserCommand(slot);
@@ -1180,6 +1182,11 @@ void game::Split(int slot, const game::usercmd_s& previous)
 	}
 
 	pendingButtons = 0;
+
+	if (steps > 1 && steps <= MaxThrottledSteps && cmd.buttons != lastSampledButtons)
+		steps = 1;
+
+	lastSampledButtons = cmd.buttons;
 
 	for (int i = 1; i <= steps; i++)
 	{
