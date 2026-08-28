@@ -881,23 +881,27 @@ __declspec(naked) const char* game::String_Alloc(const char* string)
 
 double game::CG_CornerDebugPrint(float* color, const char* text, ScreenPlacement* scrPlace, float x, float y, float labelWidth, const char* label)
 {
+	double result;
+
 	__asm
 	{
-		push ebx;
-		push edi;
 		push label;
 		push labelWidth;
 		push y;
 		push x;
-		mov edi, scrPlace;
-		mov eax, color;
-		mov ecx, text;
-		mov ebx, 0x42B710;
+
+		mov  edi, scrPlace;
+		mov  ecx, text;
+		mov  eax, color;
+
+		mov  ebx, 0x42B710;
 		call ebx;
-		add esp, 16;
-		pop edi;
-		pop ebx;
+		add  esp, 16;
+
+		fstp result;
 	}
+
+	return result;
 }
 
 __declspec(naked) void game::hookedUpdateShellShockSound()
@@ -1101,6 +1105,8 @@ void game::hookedCG_DrawUpperRightDebugInfo()
 
 	int showPhysFps = commands::qol_showphysfps->current.integer;
 
+	static float whitecolor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+
 	if (showPhysFps != 0 && commands::qol_independentphysics->current.enabled)
 	{
 		double farRight = cg_debugInfoCornerOffset->current.value + scrPlace->virtualViewableMax[0] - scrPlace->virtualViewableMin[0];
@@ -1136,8 +1142,8 @@ void game::hookedCG_DrawUpperRightDebugInfo()
 		}
 
 		sprintf_s(buffer, sizeof(buffer), "^%d%d", color, currentPhysFps);
-		
-		CG_CornerDebugPrint(reinterpret_cast<float*>(0x6B4518), buffer, scrPlacement, farRight - 5.0, 0.0, 0.0, "");
+
+		CG_CornerDebugPrint(whitecolor, buffer, scrPlacement, farRight - 5.0, 0.0, 0.0, "");
 	}
 
 	pCG_DrawUpperRightDebugInfo();

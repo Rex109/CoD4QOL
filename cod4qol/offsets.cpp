@@ -41,7 +41,7 @@ void offsets::InitOffsets()
 	AddOffset("Cvar_RegisterInt", { {COD4QOL_COD4X_CRC32_213_INSTALLER, (game::cod4x_entry + 0x59530)}, {COD4QOL_COD4X_CRC32_213, (game::cod4x_entry + 0x576E0)}, {COD4QOL_COD4X_CRC32_212, (game::cod4x_entry + 0x61110)}, {COD4QOL_COD4X_CRC32_211, (game::cod4x_entry + 0x2D967)} });
 	AddOffset("FS_AddSingleIwdFileForGameDirectory", { {COD4QOL_COD4X_CRC32_213_INSTALLER, (game::cod4x_entry + 0x2DB10)}, {COD4QOL_COD4X_CRC32_213, (game::cod4x_entry + 0x2BFC0)}, {COD4QOL_COD4X_CRC32_212, (game::cod4x_entry + 0x2E310)}, {COD4QOL_COD4X_CRC32_211, (game::cod4x_entry + 0x3867C)} });
 	AddOffset("DB_BuildOSPath", { {COD4QOL_COD4X_CRC32_213_INSTALLER, (game::cod4x_entry + 0x2CAD0)}, {COD4QOL_COD4X_CRC32_213, (game::cod4x_entry + 0x2AFE0)}, {COD4QOL_COD4X_CRC32_212, (game::cod4x_entry + 0x2D2D0)}, {COD4QOL_COD4X_CRC32_211, (game::cod4x_entry + 0x37FDF)} });
-	AddOffset("CG_DrawUpperRightDebugInfo", { {COD4QOL_COD4X_CRC32_213_INSTALLER, (game::cod4x_entry + 0x0)}, {COD4QOL_COD4X_CRC32_213, (game::cod4x_entry + 0x37150)}, {COD4QOL_COD4X_CRC32_212, (game::cod4x_entry + 0x0)}, {COD4QOL_COD4X_CRC32_211, (game::cod4x_entry + 0x0)} });
+	AddOffset("CG_DrawUpperRightDebugInfo", { {COD4QOL_COD4X_CRC32_213_INSTALLER, (game::cod4x_entry + 0x38E60)}, {COD4QOL_COD4X_CRC32_213, (game::cod4x_entry + 0x37150)}, {COD4QOL_COD4X_CRC32_212, (game::cod4x_entry + 0x3FA80)}, {COD4QOL_COD4X_CRC32_211, (game::cod4x_entry + 0x2CAB)} });
 
 	//Strings
 	AddData("steam_auth_a", { {COD4QOL_COD4X_CRC32_213_INSTALLER, {"\x90\x90", 2}}, {COD4QOL_COD4X_CRC32_213, {"\x90\x90", 2}}, {COD4QOL_COD4X_CRC32_212, {"\x90\x90", 2}}, {COD4QOL_COD4X_CRC32_211, {"\x90\x90\x90\x90\x90\x90", 6}} });
