@@ -15,7 +15,7 @@ env:
   SOLUTION_FILE_PATH: ./cod4qol.sln
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -52,7 +52,7 @@ jobs:
             D:\a\CoD4QOL\CoD4QOL\cod4qol.pdb
             
     - name: Publish nightly
-      if: matrix.configuration == 'Release' && github.event_name == 'push'
+      if: matrix.configuration == 'Release'
       shell: pwsh
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
