@@ -50,3 +50,40 @@ jobs:
             D:\a\CoD4QOL\CoD4QOL\miles\
             D:\a\CoD4QOL\CoD4QOL\qol.ff
             D:\a\CoD4QOL\CoD4QOL\cod4qol.pdb
+            
+    - name: Publish nightly
+      if: matrix.configuration == 'Release' && github.event_name == 'push'
+      shell: pwsh
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        $sha = "${{ github.sha }}".Substring(0,7)
+
+        $last = git describe --tags --abbrev=0 --exclude=nightly 2>$null
+        if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($last)) {
+          $commits = git log --no-merges --pretty=format:"- %s (%h)"
+          $header  = "### Commits"
+        } else {
+          $commits = git log --no-merges --pretty=format:"- %s (%h)" "$last..HEAD"
+          $header  = "### Changes since $last"
+        }
+        $LASTEXITCODE = 0
+        if ([string]::IsNullOrWhiteSpace($commits)) { $commits = "- No new commits." }
+        $notes = "$header`n`n$commits`n`nBuilt from commit ${{ github.sha }}"
+        Set-Content -Path notes.md -Value $notes -Encoding utf8
+
+        # move the nightly tag to this commit
+        git tag -f nightly ${{ github.sha }}
+        git push -f origin nightly
+
+        $zip = "D:\a\CoD4QOL\CoD4QOL\CoD4QOL-nightly.zip"
+
+        gh release view nightly 2>$null
+        if ($LASTEXITCODE -ne 0) {
+          $LASTEXITCODE = 0
+          gh release create nightly $zip --title "Nightly ($sha)" --notes-file notes.md --prerelease
+        } else {
+          $LASTEXITCODE = 0
+          gh release edit nightly --title "Nightly ($sha)" --notes-file notes.md --prerelease
+          gh release upload nightly $zip --clobber
+        }
