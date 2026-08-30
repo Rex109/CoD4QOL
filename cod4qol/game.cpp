@@ -251,8 +251,15 @@ void game::hookedDB_LoadXZoneFromGfxConfig()
 	if (startup)
 	{
 		#ifndef _DEBUG
-			if (commands::qol_check_updates->current.enabled)
-				updater::CheckForUpdates();
+		switch (commands::qol_check_updates->current.integer)
+		{
+		case 1:
+			updater::CheckForUpdates(COD4QOL_GITHUB_STABLE);
+			break;
+		case 2:
+			updater::CheckForUpdates(COD4QOL_GITHUB_NIGHTLY);
+			break;
+		}
 		#endif
 
 		startup = false;

@@ -8,14 +8,14 @@
 
 std::string download_url;
 
-bool updater::CheckForUpdates()
+bool updater::CheckForUpdates(const char* update_url)
 {
     curl_global_init(CURL_GLOBAL_ALL);
 
     CURL* curl = curl_easy_init();
     std::string readBuffer;
 
-    curl_easy_setopt(curl, CURLOPT_URL, COD4QOL_GITHUB_URL);
+    curl_easy_setopt(curl, CURLOPT_URL, update_url);
     curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, updater::WriteCallback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
@@ -31,17 +31,48 @@ bool updater::CheckForUpdates()
         return false;
     }
 
-    nlohmann::json parsed = nlohmann::json::parse(readBuffer);
+    nlohmann::json parsed = nlohmann::json::parse(readBuffer, nullptr, false);
 
-    if (parsed["tag_name"] == COD4QOL_BASE_VERSION)
+    if (parsed.is_discarded() || !parsed.is_object())
+    {
+        std::cout << "Failed to check new version: malformed response" << std::endl;
+        return false;
+    }
+
+    auto tag_name = parsed.find("tag_name");
+
+    if (tag_name == parsed.end() || !tag_name->is_string())
+    {
+        std::cout << "Failed to check new version: response has no tag_name" << std::endl;
+        return false;
+    }
+
+    if (tag_name->get<std::string>() == COD4QOL_BASE_VERSION)
     {
         std::cout << "You are using the latest version of " << COD4QOL_NAME << std::endl;
         return false;
     }
 
-    download_url = parsed["assets"][0]["browser_download_url"];
+    auto assets = parsed.find("assets");
 
-    std::cout << "A new version of " << COD4QOL_NAME << " is available: " << parsed["tag_name"] << std::endl;
+    if (assets == parsed.end() || !assets->is_array() || assets->empty())
+    {
+        std::cout << "Failed to check new version: release has no assets" << std::endl;
+        return false;
+    }
+
+    auto& asset = assets->at(0);
+    auto url = asset.find("browser_download_url");
+
+    if (url == asset.end() || !url->is_string())
+    {
+        std::cout << "Failed to check new version: asset has no download url" << std::endl;
+        return false;
+    }
+
+    download_url = url->get<std::string>();
+
+    std::cout << "A new version of " << COD4QOL_NAME << " is available: " << tag_name->get<std::string>() << std::endl;
     game::Cmd_ExecuteSingleCommand(0, 0, "set qol_dialog 1\n");
     return true;
 }

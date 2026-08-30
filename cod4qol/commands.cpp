@@ -82,7 +82,8 @@ void commands::InitializeCommands()
 
     qol_show_mainmenuinfo = game::Cvar_RegisterBool("qol_show_mainmenuinfo", 1, game::dvar_flags::saved, "Show the CoD4QOL version and social media links in the main menu.");
 
-    qol_check_updates = game::Cvar_RegisterBool("qol_check_updates", 1, game::dvar_flags::saved, "Enable cod4qol to check for updates at every startup.");
+    static const char* qol_check_updates_names[] = { "Off", "Stable", "Nightly", NULL };
+    qol_check_updates = game::Cvar_RegisterEnum("qol_check_updates", qol_check_updates_names, 1, game::dvar_flags::saved, "Choose which update channel will be checked at startup.");
 
     qol_forceiwdextract = game::Cvar_RegisterBool("qol_forceiwdextract", 0, game::dvar_flags::saved, "Force the extraction of the iwd files at the next startup.");
 

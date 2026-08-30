@@ -13,7 +13,10 @@
 #endif
 #define COD4QOL_CONSOLE_PREFIX COD4QOL_NAME " " COD4QOL_VERSION ">"
 
-#define COD4QOL_GITHUB_URL "https://api.github.com/repos/Rex109/CoD4QOL/releases/latest"
+#define COD4QOL_GITHUB_BASEURL "https://api.github.com/repos/Rex109/CoD4QOL"
+#define COD4QOL_GITHUB_STABLE COD4QOL_GITHUB_BASEURL "/releases/latest"
+#define COD4QOL_GITHUB_NIGHTLY COD4QOL_GITHUB_BASEURL "/releases/tags/nightly"
+
 #define COD4QOL_FILE_NAME "download/cod4qol.zip"
 
 #define COD4QOL_IWD_CRC32 "fb921b14"
