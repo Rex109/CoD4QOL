@@ -78,15 +78,11 @@ jobs:
         if ([string]::IsNullOrWhiteSpace($commits)) { $commits = "- No new commits." }
         Set-Content -Path notes.md -Value "$header`n`n$commits`n`nBuilt from commit ${{ github.sha }}" -Encoding utf8
 
-        git tag -f nightly ${{ github.sha }}
-        git push -f origin nightly
+        gh release delete nightly --yes --cleanup-tag 2>$null
+        $LASTEXITCODE = 0
 
-        gh release view nightly 2>$null
-        if ($LASTEXITCODE -ne 0) {
-          $LASTEXITCODE = 0
-          gh release create nightly cod4qol.zip --title "Nightly ($sha)" --notes-file notes.md --prerelease
-        } else {
-          $LASTEXITCODE = 0
-          gh release edit nightly --title "Nightly ($sha)" --notes-file notes.md --prerelease
-          gh release upload nightly cod4qol.zip --clobber
-        }
+        gh release create nightly cod4qol.zip `
+          --title "Nightly ($sha)" `
+          --notes-file notes.md `
+          --prerelease `
+          --target ${{ github.sha }}
