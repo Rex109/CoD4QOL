@@ -8,6 +8,18 @@
 
 std::string download_url;
 
+// Reads obj[key] into out, returns false if it is missing or not a string.
+static bool GetString(const nlohmann::json& obj, const char* key, std::string& out)
+{
+    auto it = obj.find(key);
+
+    if (it == obj.end() || !it->is_string())
+        return false;
+
+    out = it->get<std::string>();
+    return true;
+}
+
 bool updater::CheckForUpdates(const char* update_url)
 {
     curl_global_init(CURL_GLOBAL_ALL);
@@ -33,46 +45,30 @@ bool updater::CheckForUpdates(const char* update_url)
 
     nlohmann::json parsed = nlohmann::json::parse(readBuffer, nullptr, false);
 
-    if (parsed.is_discarded() || !parsed.is_object())
+    bool nightly = std::string(update_url) == COD4QOL_GITHUB_NIGHTLY;
+    std::string tag_name, name;
+
+    if (parsed.is_discarded() || !GetString(parsed, "tag_name", tag_name) || (nightly && !GetString(parsed, "name", name)))
     {
         std::cout << "Failed to check new version: malformed response" << std::endl;
         return false;
     }
 
-    auto tag_name = parsed.find("tag_name");
-
-    if (tag_name == parsed.end() || !tag_name->is_string())
+    if (nightly ? name == "Nightly (" GIT_COMMIT_HASH ")" : tag_name == COD4QOL_BASE_VERSION)
     {
-        std::cout << "Failed to check new version: response has no tag_name" << std::endl;
-        return false;
-    }
-
-    if (tag_name->get<std::string>() == COD4QOL_BASE_VERSION)
-    {
-        std::cout << "You are using the latest version of " << COD4QOL_NAME << std::endl;
+        std::cout << "You are using the latest " << (nightly ? "nightly " : "") << "version of " << COD4QOL_NAME << std::endl;
         return false;
     }
 
     auto assets = parsed.find("assets");
 
-    if (assets == parsed.end() || !assets->is_array() || assets->empty())
+    if (assets == parsed.end() || !assets->is_array() || assets->empty() || !GetString(assets->at(0), "browser_download_url", download_url))
     {
-        std::cout << "Failed to check new version: release has no assets" << std::endl;
+        std::cout << "Failed to check new version: release has no downloadable asset" << std::endl;
         return false;
     }
 
-    auto& asset = assets->at(0);
-    auto url = asset.find("browser_download_url");
-
-    if (url == asset.end() || !url->is_string())
-    {
-        std::cout << "Failed to check new version: asset has no download url" << std::endl;
-        return false;
-    }
-
-    download_url = url->get<std::string>();
-
-    std::cout << "A new version of " << COD4QOL_NAME << " is available: " << tag_name->get<std::string>() << std::endl;
+    std::cout << "A new version of " << COD4QOL_NAME << " is available: " << tag_name << std::endl;
     game::Cmd_ExecuteSingleCommand(0, 0, "set qol_dialog 1\n");
     return true;
 }
