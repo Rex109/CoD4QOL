@@ -50,6 +50,17 @@ jobs:
             D:\a\CoD4QOL\CoD4QOL\miles\
             D:\a\CoD4QOL\CoD4QOL\qol.ff
             D:\a\CoD4QOL\CoD4QOL\cod4qol.pdb
+
+    - name: Package for release
+      if: matrix.configuration == 'Release' && github.event_name == 'push'
+      shell: pwsh
+      run: |
+        $ws = $env:GITHUB_WORKSPACE
+        New-Item -ItemType Directory -Force -Path "$ws\package\miles" | Out-Null
+        Copy-Item "$ws\miles\cod4qol.asi" "$ws\package\miles\"
+        Copy-Item "$ws\qol.ff" "$ws\package\"
+        Compress-Archive -Path "$ws\package\*" -DestinationPath "$ws\CoD4QOL-nightly.zip" -Force
+        Get-ChildItem "$ws\CoD4QOL-nightly.zip"
             
     - name: Publish nightly
       if: matrix.configuration == 'Release'
