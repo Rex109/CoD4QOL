@@ -61,7 +61,6 @@ jobs:
 
     - name: Publish nightly
       if: matrix.configuration == 'Release'
-      shell: pwsh
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
@@ -69,10 +68,10 @@ jobs:
 
         $last = git describe --tags --abbrev=0 --exclude=nightly 2>$null
         if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($last)) {
-          $commits = git log --no-merges --pretty=format:"- %s (%h)"
+          $commits = (git log --no-merges --pretty=format:"- %s (%h)") -join "`n"
           $header  = "### Commits"
         } else {
-          $commits = git log --no-merges --pretty=format:"- %s (%h)" "$last..HEAD"
+          $commits = (git log --no-merges --pretty=format:"- %s (%h)" "$last..HEAD") -join "`n"
           $header  = "### Changes since $last"
         }
         $LASTEXITCODE = 0
