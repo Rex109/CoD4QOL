@@ -8,8 +8,7 @@ name: Build
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+  workflow_dispatch:
 
 env:
   SOLUTION_FILE_PATH: ./cod4qol.sln
@@ -27,41 +26,39 @@ jobs:
             - Release
     steps:
     - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
 
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v2
 
     - name: Build
-      working-directory: ${{env.GITHUB_WORKSPACE}}
       run: msbuild /m /p:Configuration=${{matrix.configuration}} ${{env.SOLUTION_FILE_PATH}}
 
-    - name: Rename FastFile 
+    - name: Rename FastFile
       run: |
-        mkdir D:\a\CoD4QOL\CoD4QOL\miles
-        mv D:\a\CoD4QOL\CoD4QOL\mod\cod4qol\mod.ff D:\a\CoD4QOL\CoD4QOL\qol.ff
-        mv D:\a\CoD4QOL\CoD4QOL\${{matrix.configuration}}\cod4qol.asi D:\a\CoD4QOL\CoD4QOL\miles\cod4qol.asi
-        mv D:\a\CoD4QOL\CoD4QOL\${{matrix.configuration}}\cod4qol.pdb D:\a\CoD4QOL\CoD4QOL\cod4qol.pdb
-      
+        mkdir miles
+        mv mod\cod4qol\mod.ff qol.ff
+        mv ${{matrix.configuration}}\cod4qol.asi miles\cod4qol.asi
+        mv ${{matrix.configuration}}\cod4qol.pdb cod4qol.pdb
+
     - name: Upload binaries
       uses: actions/upload-artifact@v4
       with:
           name: ${{matrix.configuration}} binaries
           path: |
-            D:\a\CoD4QOL\CoD4QOL\miles\
-            D:\a\CoD4QOL\CoD4QOL\qol.ff
-            D:\a\CoD4QOL\CoD4QOL\cod4qol.pdb
+            miles/
+            qol.ff
+            cod4qol.pdb
 
     - name: Package for release
-      if: matrix.configuration == 'Release' && github.event_name == 'push'
-      shell: pwsh
+      if: matrix.configuration == 'Release'
       run: |
-        $ws = $env:GITHUB_WORKSPACE
-        New-Item -ItemType Directory -Force -Path "$ws\package\miles" | Out-Null
-        Copy-Item "$ws\miles\cod4qol.asi" "$ws\package\miles\"
-        Copy-Item "$ws\qol.ff" "$ws\package\"
-        Compress-Archive -Path "$ws\package\*" -DestinationPath "$ws\CoD4QOL-nightly.zip" -Force
-        Get-ChildItem "$ws\CoD4QOL-nightly.zip"
-            
+        mkdir package
+        mv miles package\miles
+        mv qol.ff package\qol.ff
+        Compress-Archive -Path package\* -DestinationPath cod4qol.zip
+
     - name: Publish nightly
       if: matrix.configuration == 'Release'
       shell: pwsh
@@ -80,21 +77,17 @@ jobs:
         }
         $LASTEXITCODE = 0
         if ([string]::IsNullOrWhiteSpace($commits)) { $commits = "- No new commits." }
-        $notes = "$header`n`n$commits`n`nBuilt from commit ${{ github.sha }}"
-        Set-Content -Path notes.md -Value $notes -Encoding utf8
+        Set-Content -Path notes.md -Value "$header`n`n$commits`n`nBuilt from commit ${{ github.sha }}" -Encoding utf8
 
-        # move the nightly tag to this commit
         git tag -f nightly ${{ github.sha }}
         git push -f origin nightly
-
-        $zip = "D:\a\CoD4QOL\CoD4QOL\CoD4QOL-nightly.zip"
 
         gh release view nightly 2>$null
         if ($LASTEXITCODE -ne 0) {
           $LASTEXITCODE = 0
-          gh release create nightly $zip --title "Nightly ($sha)" --notes-file notes.md --prerelease
+          gh release create nightly cod4qol.zip --title "Nightly ($sha)" --notes-file notes.md --prerelease
         } else {
           $LASTEXITCODE = 0
           gh release edit nightly --title "Nightly ($sha)" --notes-file notes.md --prerelease
-          gh release upload nightly $zip --clobber
+          gh release upload nightly cod4qol.zip --clobber
         }
