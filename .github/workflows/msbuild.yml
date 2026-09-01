@@ -65,31 +65,34 @@ jobs:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         $sha  = "${{ github.sha }}".Substring(0,7)
+        $base = "${{ github.server_url }}/${{ github.repository }}"
+
         $last = git describe --tags --abbrev=0 --exclude=nightly 2>$null
         if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($last)) { $last = $null }
         $LASTEXITCODE = 0
 
+        $fmt = "* %s ([%h]($base/commit/%H))"
         if ($last) {
           $header = "### Changes since $last"
-          $recent = @(git log --no-merges --pretty=format:"- %s (%h)" "$last..HEAD")
-          $older  = @(git log --no-merges --pretty=format:"- %s (%h)" "$last")
+          $commits = @(git log --no-merges "--pretty=format:$fmt" "$last..HEAD")
         } else {
-          $header = "### Latest commits"
-          $all    = @(git log --no-merges --pretty=format:"- %s (%h)")
-          $recent = $all | Select-Object -First 10
-          $older  = $all | Select-Object -Skip 10
+          $header = "### Commits"
+          $commits = @(git log --no-merges "--pretty=format:$fmt")
         }
         $LASTEXITCODE = 0
 
-        $recentText = ($recent -join "`n")
-        if ([string]::IsNullOrWhiteSpace($recentText)) { $recentText = "- No new commits." }
-
-        $notes = "$header`n`n$recentText`n"
-        if ($older.Count -gt 0) {
-          $notes += "`n<details>`n<summary>Previous changes ($($older.Count))</summary>`n`n" +
-                    ($older -join "`n") + "`n`n</details>`n"
+        if ($commits.Count -eq 0) {
+          $notes = "$header`n`n* No new commits.`n"
+        } else {
+          $shown  = @($commits | Select-Object -First 5)
+          $hidden = @($commits | Select-Object -Skip 5)
+          $notes  = "$header`n`n" + ($shown -join "`n") + "`n"
+          if ($hidden.Count -gt 0) {
+            $notes += "`n<details>`n<summary>Show $($hidden.Count) more commits</summary>`n`n" +
+                      ($hidden -join "`n") + "`n`n</details>`n"
+          }
         }
-        $notes += "`nBuilt from commit ${{ github.sha }}"
+        $notes += "`nBuilt from commit [$sha]($base/commit/${{ github.sha }})"
 
         Set-Content -Path notes.md -Value $notes -Encoding utf8
 
