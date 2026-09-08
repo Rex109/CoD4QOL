@@ -2621,6 +2621,16 @@ namespace game
 
 	void hookedCG_PredictPlayerState_Internal(int localClientNum);
 
+	typedef void(*R_SetLodOrigin)();
+	inline R_SetLodOrigin pR_SetLodOrigin;
+
+	void hookedR_SetLodOrigin();
+
+	typedef void(*R_LoadWorld)();
+	inline R_LoadWorld pR_LoadWorld;
+
+	void hookedR_LoadWorld();
+
 	int	Cmd_Argc();
 	const char* Cmd_Argv(int arg);
 	HMODULE GetCurrentModule();
@@ -2642,6 +2652,7 @@ namespace game
 	void drawCustomCrosshair();
 	void HSVtoRGB(float h, float s, float v, float* r, float* g, float* b);
 	void Split(int slot, const game::usercmd_s& previous);
+	void WriteGameTime();
 
 	dvar_s* Find(const char*);
 	cmd_function_s* Cmd_AddCommand(const char* cmdname, void(__cdecl* function)());

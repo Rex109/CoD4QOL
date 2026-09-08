@@ -16,6 +16,9 @@ static bool jumpPending = false;
 static bool jumpEmitted = false;
 static int16_t g_smoothViewangles[3] = { 0, 0, 0 };
 
+static int  s_gfxTimeBase = 0;
+static bool s_gfxTimeBaseValid = false;
+
 __declspec(naked) const char* game::hookedCon_LinePrefix()
 {
 	const static uint32_t retn_addr = 0x460618;
@@ -664,6 +667,52 @@ __declspec(naked) void game::hookedR_RecoverLostDevice_End()
 		popad;
 
 		jmp game::pR_RecoverLostDevice_End;
+	}
+}
+
+void game::WriteGameTime()
+{
+	float* gameTime = reinterpret_cast<float*>(0xD02449C);
+	int* serverGameTime = reinterpret_cast<int*>(0xD024498);
+
+	int rel = *serverGameTime - s_gfxTimeBase;
+	if (!s_gfxTimeBaseValid || rel < 0 || rel >= (1 << 24))
+	{
+		s_gfxTimeBase = *serverGameTime;
+		s_gfxTimeBaseValid = true;
+		rel = 0;
+	}
+
+	*gameTime = (double)rel * 0.001000000047497451;
+}
+
+__declspec(naked) void game::hookedR_SetLodOrigin()
+{
+	const static uint32_t retn_addr = 0x5FAEED;
+
+	__asm
+	{
+		pushad;
+		call game::WriteGameTime;
+		popad;
+
+		jmp retn_addr;
+	}
+}
+
+__declspec(naked) void game::hookedR_LoadWorld()
+{
+	__asm pushad;
+
+	s_gfxTimeBaseValid = false;
+
+	std::cout << "Resetting internal game time base..." << std::endl;
+
+	__asm
+	{
+		popad;
+
+		jmp game::pR_LoadWorld;
 	}
 }
 

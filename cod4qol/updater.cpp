@@ -1,6 +1,5 @@
 #include "updater.hpp"
 #include "defines.hpp"
-#include "json.hpp"
 #define CURL_STATICLIB
 #include "curl/curl.h"
 #include "game.hpp"
@@ -8,8 +7,7 @@
 
 std::string download_url;
 
-// Reads obj[key] into out, returns false if it is missing or not a string.
-static bool GetString(const nlohmann::json& obj, const char* key, std::string& out)
+bool updater::GetString(const nlohmann::json& obj, const char* key, std::string& out)
 {
     auto it = obj.find(key);
 

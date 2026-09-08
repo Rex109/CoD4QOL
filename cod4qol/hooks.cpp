@@ -162,6 +162,14 @@ void hooks::InitializeHooks()
 	game::pCG_PredictPlayerState_Internal = (game::CG_PredictPlayerState_Internal)(0x447260);
 	hooks::install(&(PVOID&)game::pCG_PredictPlayerState_Internal, (PBYTE)game::hookedCG_PredictPlayerState_Internal);
 
+	//R_SetLodOrigin
+	game::pR_SetLodOrigin = (game::R_SetLodOrigin)(0x5FAEE7);
+	hooks::install(&(PVOID&)game::pR_SetLodOrigin, (PBYTE)game::hookedR_SetLodOrigin);
+
+	//R_LoadWorld
+	game::pR_LoadWorld = (game::R_LoadWorld)(0x60BF60);
+	hooks::install(&(PVOID&)game::pR_LoadWorld, (PBYTE)game::hookedR_LoadWorld);
+
 	std::cout << "Hooks installed!" << std::endl;
 }
 
