@@ -1245,8 +1245,13 @@ void game::Split(int slot, const game::usercmd_s& previous)
 
 	pendingButtons = 0;
 
+	int span = cmd.serverTime - gameTime;
+
 	if (steps > 1 && steps <= MaxThrottledSteps && cmd.buttons != lastSampledButtons)
+	{
 		steps = 1;
+		span = step;
+	}
 
 	lastSampledButtons = cmd.buttons;
 
@@ -1254,7 +1259,8 @@ void game::Split(int slot, const game::usercmd_s& previous)
 	{
 		usercmd_s& out = *GetUserCommand(slot + i - 1);
 		out = cmd;
-		out.serverTime = gameTime + i * step;
+
+		out.serverTime = gameTime + span * i / steps;
 
 		ApplyAutoBhop(out);
 
@@ -1266,7 +1272,7 @@ void game::Split(int slot, const game::usercmd_s& previous)
 		}
 	}
 
-	gameTime += steps * step;
+	gameTime += span;
 	std::copy_n(cmd.angles, 3, Angles);
 	clients->cmdNumber = slot + steps - 1;
 }
