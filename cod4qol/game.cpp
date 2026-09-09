@@ -9,7 +9,7 @@
 #include <mutex>
 
 std::vector<std::pair<int, IDirect3DCubeTexture9*>> oldReflectionProbes;
-static int gameTime = 0;
+static int gameTimeTracker = 0;
 static int pendingButtons = 0;
 static bool jumpHeld = false;
 static bool jumpPending = false;
@@ -1205,31 +1205,188 @@ void game::hookedCG_DrawUpperRightDebugInfo()
 	pCG_DrawUpperRightDebugInfo();
 }
 
-void game::Split(int slot, const game::usercmd_s& previous)
+static constexpr bool kLogPhysicsClock = false;
+static constexpr bool kLogPhysicsButtons = false;
+
+void game::LogPhysicsButtons(int serverTime, int buttons)
+{
+	constexpr int Mask = 0x2 | 0x100 | 0x200 | 0x400;
+
+	static int last = -1;
+
+	if (!kLogPhysicsButtons)
+		return;
+
+	const int now = buttons & Mask;
+
+	if (now == last)
+		return;
+
+	last = now;
+
+	std::cout << (commands::qol_independentphysics->current.enabled ? "qol   " : "native")
+		<< "  t " << serverTime
+		<< "  sprint " << ((now & 0x2) ? 1 : 0)
+		<< "  crouch " << ((now & 0x200) ? 1 : 0)
+		<< "  prone " << ((now & 0x100) ? 1 : 0)
+		<< "  jump " << ((now & 0x400) ? 1 : 0)
+		<< std::endl;
+}
+
+void game::LogPhysicsTick(int width)
+{
+	constexpr int MaxWidth = 32;
+
+	static int widths[MaxWidth] = {};
+	static int elapsed = 0;
+	static bool lastIndependent = false;
+
+	if (!kLogPhysicsClock)
+		return;
+
+	const bool independent = commands::qol_independentphysics->current.enabled;
+
+	if (independent != lastIndependent)
+	{
+		lastIndependent = independent;
+		elapsed = 0;
+		std::fill_n(widths, MaxWidth, 0);
+	}
+
+	if (width < 1 || width >= MaxWidth)
+		return;
+
+	widths[width]++;
+	elapsed += width;
+
+	if (elapsed < 1000)
+		return;
+
+	int ticks = 0;
+	int drop = 0;
+	int modal = 0;
+
+	for (int i = 1; i < MaxWidth; i++)
+	{
+		ticks += widths[i];
+		drop += widths[i] * ((8 * i + 5) / 10);
+
+		if (widths[i] > widths[modal])
+			modal = i;
+	}
+
+	const int gravity = (10000 * drop) / elapsed;
+
+	std::cout << (independent ? "qol   " : "native")
+		<< "  ticks " << ticks
+		<< "  widths";
+
+	for (int i = 1; i < MaxWidth; i++)
+	{
+		if (widths[i])
+			std::cout << ' ' << i << "ms:" << widths[i];
+	}
+
+	std::cout << "  offbeat " << (ticks - widths[modal])
+		<< "  g_eff " << (gravity / 10) << '.' << (gravity % 10)
+		<< std::endl;
+
+	elapsed = 0;
+	std::fill_n(widths, MaxWidth, 0);
+}
+
+void game::EmitPhysicsCommands(int slot, const game::usercmd_s& previous)
 {
 	constexpr int MaxDrift = 500;
 	constexpr int MaxSteps = 32;
-	constexpr int MaxThrottledSteps = 4;
-	static int Angles[3] = {};
-	static int lastSampledButtons = 0;
 
-	const int step = 1000 / commands::qol_physfps->current.integer;
+	constexpr int MaxLead = 100;
+	static int Angles[3] = {};
+	static int physRealtime = 0;
+	static int physDelta = 0;
+	static int lastSnap = 0;
+	static int pendingWalk = 0;
+
+	static int walkRealtime = 0;
+	static int walkBaseSnap = 0;
+	static int walkBaseRealtime = 0;
+
+	int rate = commands::qol_physfps->current.integer;
+	if (rate < 1)
+		rate = 1;
+
+	int period = 1000 / rate;
+	if (period < 1)
+		period = 1;
+
 	usercmd_s cmd = *GetUserCommand(slot);
 	cmd.buttons |= pendingButtons;
-	const int elapsed = cmd.serverTime - gameTime;
+	const int elapsed = cmd.serverTime - gameTimeTracker;
 
-	if (!gameTime || elapsed < 0 || elapsed > MaxDrift)
+	if (!gameTimeTracker || elapsed < -MaxLead || elapsed > MaxDrift)
 	{
-		gameTime = cmd.serverTime - step;
+		gameTimeTracker = cmd.serverTime;
+		pendingWalk = 0;
+		physDelta = clients->serverTimeDelta;
+		physRealtime = cmd.serverTime - physDelta;
+		lastSnap = clients->snap.serverTime;
+
+		walkRealtime = physRealtime;
+		walkBaseSnap = lastSnap;
+		walkBaseRealtime = physRealtime;
+
 		std::copy_n(cmd.angles, 3, Angles);
 	}
 
-	int steps = (cmd.serverTime - gameTime) / step;
+	const int clientRealtime = cmd.serverTime - clients->serverTimeDelta;
+	const int snapTime = clients->snap.serverTime;
 
-	if (steps > MaxSteps)
+	if (snapTime != lastSnap)
 	{
-		steps = MaxSteps;
-		gameTime = cmd.serverTime - steps * step;
+		const int interval = snapTime - lastSnap;
+		lastSnap = snapTime;
+
+		if (interval > 0 && interval <= 500)
+		{
+			const int target = walkBaseRealtime + (snapTime - walkBaseSnap);
+
+			while (walkRealtime + period <= target)
+				walkRealtime += period;
+
+			const int ideal = snapTime - walkRealtime - interval - 5;
+
+			if (ideal > physDelta)
+				pendingWalk = 1;
+			else if (ideal < physDelta)
+				pendingWalk = -1;
+		}
+	}
+
+	int widths[MaxSteps];
+	int steps = 0;
+	int span = 0;
+
+	while (steps < MaxSteps)
+	{
+		const bool walkDue = pendingWalk != 0;
+		const int adjust = (walkDue && period + pendingWalk >= 1) ? pendingWalk : 0;
+		const int width = period + adjust;
+
+		if (physRealtime + period > clientRealtime)
+			break;
+
+		physRealtime += period;
+
+		if (walkDue)
+		{
+			physDelta += adjust;
+			pendingWalk = 0;
+		}
+
+		LogPhysicsTick(width);
+
+		widths[steps++] = width;
+		span += width;
 	}
 
 	if (steps <= 0)
@@ -1245,34 +1402,34 @@ void game::Split(int slot, const game::usercmd_s& previous)
 
 	pendingButtons = 0;
 
-	int span = cmd.serverTime - gameTime;
+	int at = 0;
 
-	if (steps > 1 && steps <= MaxThrottledSteps && cmd.buttons != lastSampledButtons)
+	for (int i = 0; i < steps; i++)
 	{
-		steps = 1;
-		span = step;
-	}
+		at += widths[i];
 
-	lastSampledButtons = cmd.buttons;
-
-	for (int i = 1; i <= steps; i++)
-	{
-		usercmd_s& out = *GetUserCommand(slot + i - 1);
+		usercmd_s& out = *GetUserCommand(slot + i);
 		out = cmd;
+		out.serverTime = gameTimeTracker + at;
 
-		out.serverTime = gameTime + span * i / steps;
+		constexpr int Sprint = 0x2;
+		constexpr int Stance = 0x100 | 0x200;
+
+		if (i != steps - 1 && (out.buttons & Sprint) != 0 && (out.buttons & Stance) != 0)
+			out.buttons &= ~Sprint;
 
 		ApplyAutoBhop(out);
+		LogPhysicsButtons(out.serverTime, out.buttons);
 
 		for (int axis = 0; axis < 3; axis++)
 		{
 			const auto from = static_cast<int16_t>(Angles[axis]);
 			const auto delta = static_cast<int16_t>(cmd.angles[axis] - Angles[axis]);
-			out.angles[axis] = static_cast<uint16_t>(from + delta * i / steps);
+			out.angles[axis] = static_cast<uint16_t>(from + delta * at / span);
 		}
 	}
 
-	gameTime += span;
+	gameTimeTracker += span;
 	std::copy_n(cmd.angles, 3, Angles);
 	clients->cmdNumber = slot + steps - 1;
 }
@@ -1297,12 +1454,28 @@ void __fastcall game::hookedCL_CreateNewCommands(void* thisptr, void*)
 	if (!commands::qol_independentphysics->current.enabled || !game::cl_ingame->current.enabled || cg->demoType)
 	{
 		ApplyAutoBhop(*GetUserCommand(slot));
-		gameTime = 0;
+		gameTimeTracker = 0;
 		pendingButtons = 0;
+
+		// The native stream, for the reference lines.
+		static int lastNative = 0;
+		LogPhysicsTick(currentCmd->serverTime - lastNative);
+		LogPhysicsButtons(currentCmd->serverTime, currentCmd->buttons);
+		lastNative = currentCmd->serverTime;
 		return;
 	}
 
-	Split(slot, previous);
+	// The clocks below are all on the old tick grid and mean nothing on a new one.
+	static int lastRate = 0;
+	const int rate = commands::qol_physfps->current.integer;
+
+	if (rate != lastRate)
+	{
+		lastRate = rate;
+		gameTimeTracker = 0;
+	}
+
+	EmitPhysicsCommands(slot, previous);
 }
 
 void game::hookedCG_PredictPlayerState_Internal(int localClientNum)
