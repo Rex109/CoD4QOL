@@ -1465,16 +1465,6 @@ void __fastcall game::hookedCL_CreateNewCommands(void* thisptr, void*)
 		return;
 	}
 
-	// The clocks below are all on the old tick grid and mean nothing on a new one.
-	static int lastRate = 0;
-	const int rate = commands::qol_physfps->current.integer;
-
-	if (rate != lastRate)
-	{
-		lastRate = rate;
-		gameTimeTracker = 0;
-	}
-
 	EmitPhysicsCommands(slot, previous);
 }
 
