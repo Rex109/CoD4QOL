@@ -683,7 +683,7 @@ void game::WriteGameTime()
 		rel = 0;
 	}
 
-	*gameTime = (double)rel * 0.001000000047497451;
+	*gameTime = (double)rel * 0.001;
 }
 
 __declspec(naked) void game::hookedR_SetLodOrigin()

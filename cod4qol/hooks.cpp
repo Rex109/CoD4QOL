@@ -163,7 +163,7 @@ void hooks::InitializeHooks()
 	hooks::install(&(PVOID&)game::pCG_PredictPlayerState_Internal, (PBYTE)game::hookedCG_PredictPlayerState_Internal);
 
 	//R_SetLodOrigin
-	game::pR_SetLodOrigin = (game::R_SetLodOrigin)(0x5FAEE7);
+	game::pR_SetLodOrigin = (game::R_SetLodOrigin)(0x5FAEDB);
 	hooks::install(&(PVOID&)game::pR_SetLodOrigin, (PBYTE)game::hookedR_SetLodOrigin);
 
 	//R_LoadWorld
