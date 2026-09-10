@@ -2621,6 +2621,11 @@ namespace game
 
 	void hookedCG_PredictPlayerState_Internal(int localClientNum);
 
+	typedef void(*CL_SetUserCmdOrigin)();
+	inline CL_SetUserCmdOrigin pCL_SetUserCmdOrigin;
+
+	void hookedCL_SetUserCmdOrigin();
+
 	typedef void(*R_SetLodOrigin)();
 	inline R_SetLodOrigin pR_SetLodOrigin;
 
@@ -2648,6 +2653,7 @@ namespace game
 	void R_AddCmdDrawStretchPic(game::Material* material, float x, float y, float w, float h, float null1, float null2, float null3, float null4, float* color);
 	void applyFsr1();
 	void Cmd_Give_f_stub();
+	void SetUserCmdOrigin_stub(const float* origin, const float* velocity, const float* viewangles, int bobCycle, int movementDir);
 	void CG_SetClientDvarFromServer_stub(const char* dvarname, const char* value, [[maybe_unused]] cg_s* _cgs);
 	void drawCustomCrosshair();
 	void HSVtoRGB(float h, float s, float v, float* r, float* g, float* b);

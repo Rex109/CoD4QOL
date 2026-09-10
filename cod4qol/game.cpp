@@ -11,13 +11,19 @@
 std::vector<std::pair<int, IDirect3DCubeTexture9*>> oldReflectionProbes;
 static int gameTimeTracker = 0;
 static int pendingButtons = 0;
+
+static int s_physDelta = 0;
 static bool jumpHeld = false;
 static bool jumpPending = false;
 static bool jumpEmitted = false;
 static int16_t g_smoothViewangles[3] = { 0, 0, 0 };
 
-static int  s_gfxTimeBase = 0;
+static int s_gfxTimeBase = 0;
 static bool s_gfxTimeBaseValid = false;
+
+static float g_trueOrigin[3] = {};
+static float g_trueViewangles[3] = {};
+static bool g_hasTrueOrigin = false;
 
 __declspec(naked) const char* game::hookedCon_LinePrefix()
 {
@@ -1205,96 +1211,6 @@ void game::hookedCG_DrawUpperRightDebugInfo()
 	pCG_DrawUpperRightDebugInfo();
 }
 
-static constexpr bool kLogPhysicsClock = false;
-static constexpr bool kLogPhysicsButtons = false;
-
-void game::LogPhysicsButtons(int serverTime, int buttons)
-{
-	constexpr int Mask = 0x2 | 0x100 | 0x200 | 0x400;
-
-	static int last = -1;
-
-	if (!kLogPhysicsButtons)
-		return;
-
-	const int now = buttons & Mask;
-
-	if (now == last)
-		return;
-
-	last = now;
-
-	std::cout << (commands::qol_independentphysics->current.enabled ? "qol   " : "native")
-		<< "  t " << serverTime
-		<< "  sprint " << ((now & 0x2) ? 1 : 0)
-		<< "  crouch " << ((now & 0x200) ? 1 : 0)
-		<< "  prone " << ((now & 0x100) ? 1 : 0)
-		<< "  jump " << ((now & 0x400) ? 1 : 0)
-		<< std::endl;
-}
-
-void game::LogPhysicsTick(int width)
-{
-	constexpr int MaxWidth = 32;
-
-	static int widths[MaxWidth] = {};
-	static int elapsed = 0;
-	static bool lastIndependent = false;
-
-	if (!kLogPhysicsClock)
-		return;
-
-	const bool independent = commands::qol_independentphysics->current.enabled;
-
-	if (independent != lastIndependent)
-	{
-		lastIndependent = independent;
-		elapsed = 0;
-		std::fill_n(widths, MaxWidth, 0);
-	}
-
-	if (width < 1 || width >= MaxWidth)
-		return;
-
-	widths[width]++;
-	elapsed += width;
-
-	if (elapsed < 1000)
-		return;
-
-	int ticks = 0;
-	int drop = 0;
-	int modal = 0;
-
-	for (int i = 1; i < MaxWidth; i++)
-	{
-		ticks += widths[i];
-		drop += widths[i] * ((8 * i + 5) / 10);
-
-		if (widths[i] > widths[modal])
-			modal = i;
-	}
-
-	const int gravity = (10000 * drop) / elapsed;
-
-	std::cout << (independent ? "qol   " : "native")
-		<< "  ticks " << ticks
-		<< "  widths";
-
-	for (int i = 1; i < MaxWidth; i++)
-	{
-		if (widths[i])
-			std::cout << ' ' << i << "ms:" << widths[i];
-	}
-
-	std::cout << "  offbeat " << (ticks - widths[modal])
-		<< "  g_eff " << (gravity / 10) << '.' << (gravity % 10)
-		<< std::endl;
-
-	elapsed = 0;
-	std::fill_n(widths, MaxWidth, 0);
-}
-
 void game::EmitPhysicsCommands(int slot, const game::usercmd_s& previous)
 {
 	constexpr int MaxDrift = 500;
@@ -1303,7 +1219,7 @@ void game::EmitPhysicsCommands(int slot, const game::usercmd_s& previous)
 	constexpr int MaxLead = 100;
 	static int Angles[3] = {};
 	static int physRealtime = 0;
-	static int physDelta = 0;
+	int& physDelta = s_physDelta;
 	static int lastSnap = 0;
 	static int pendingWalk = 0;
 
@@ -1470,12 +1386,22 @@ void __fastcall game::hookedCL_CreateNewCommands(void* thisptr, void*)
 
 void game::hookedCG_PredictPlayerState_Internal(int localClientNum)
 {
+	if (g_hasTrueOrigin)
+		std::copy_n(g_trueOrigin, 3, cg->predictedPlayerState.origin);
+
 	pCG_PredictPlayerState_Internal(localClientNum);
 
 	playerState_s* ps = &cg->predictedPlayerState;
 
 	if (!commands::qol_independentphysics->current.enabled || !commands::qol_interpolatephysics->current.enabled || cg->demoType || (ps->otherFlags & 2) != 0 || ps->clientNum != cg->clientNum)
+	{
+		g_hasTrueOrigin = false;
 		return;
+	}
+
+	std::copy_n(ps->origin, 3, g_trueOrigin);
+	std::copy_n(ps->viewangles, 3, g_trueViewangles);
+	g_hasTrueOrigin = true;
 
 	const float ANGLE_MULTIPLIER = 360.0f / 65536.0f;
 
@@ -1505,9 +1431,6 @@ void game::hookedCG_PredictPlayerState_Internal(int localClientNum)
 	ps->viewangles[1] = smooth_yaw + delta_yaw;
 	ps->viewangles[2] = smooth_roll + delta_roll;
 
-	if (IsOnMover(ps))
-		return;
-
 	struct HistoryEntry {
 		int time;
 		float origin[3];
@@ -1521,8 +1444,9 @@ void game::hookedCG_PredictPlayerState_Internal(int localClientNum)
 	static float g_lastDisplayedOrigin[3] = {};
 	static bool g_hasLastDisplayed = false;
 
-	bool teleported = false;
-	if (g_hasLastDisplayed)
+	bool teleported = IsOnMover(ps);
+
+	if (!teleported && g_hasLastDisplayed)
 	{
 		float distSq = 0.0f;
 		for (int i = 0; i < 3; ++i)
@@ -1531,8 +1455,12 @@ void game::hookedCG_PredictPlayerState_Internal(int localClientNum)
 			distSq += d * d;
 		}
 
-		const float kTeleportThresholdSq = 8.0f * 8.0f;
-		if (distSq > kTeleportThresholdSq)
+		const int rate = commands::qol_physfps->current.integer;
+		const float period = (rate > 0 ? 1000.0f / rate : 50.0f) * 0.001f;
+		const float speed = sqrtf(ps->velocity[0] * ps->velocity[0] + ps->velocity[1] * ps->velocity[1] + ps->velocity[2] * ps->velocity[2]);
+		const float allowed = speed * period * 2.0f + 8.0f;
+
+		if (distSq > allowed * allowed)
 			teleported = true;
 	}
 
@@ -1553,11 +1481,14 @@ void game::hookedCG_PredictPlayerState_Internal(int localClientNum)
 		if (g_historyCount < 8) g_historyCount++;
 	}
 
+	int bracket = 0;
+	const int timeline = gameTimeTracker ? (s_physDelta - clients->serverTimeDelta) : 0;
+
 	if(!teleported)
 	{
 		int physFps = commands::qol_physfps->current.integer;
 		int step = (physFps > 0) ? (1000 / physFps) : 50;
-		int renderTime = cg->time - step;
+		int renderTime = cg->time + timeline - step;
 
 		HistoryEntry* e1 = nullptr;
 		HistoryEntry* e2 = nullptr;
@@ -1576,6 +1507,8 @@ void game::hookedCG_PredictPlayerState_Internal(int localClientNum)
 				break;
 			}
 		}
+
+		bracket = e1 ? (e2 ? 2 : 1) : 0;
 
 		if (e1 && e2)
 		{
@@ -1597,8 +1530,69 @@ void game::hookedCG_PredictPlayerState_Internal(int localClientNum)
 		}
 	}
 
+	float frameStep = 0.0f;
+
+	if (g_hasLastDisplayed)
+	{
+		float distSq = 0.0f;
+
+		for (int i = 0; i < 3; ++i)
+		{
+			const float d = ps->origin[i] - g_lastDisplayedOrigin[i];
+			distSq += d * d;
+		}
+
+		frameStep = sqrtf(distSq);
+	}
+
 	g_hasLastDisplayed = true;
 	std::copy_n(ps->origin, 3, g_lastDisplayedOrigin);
+}
+
+void game::SetUserCmdOrigin_stub(const float* origin, const float* velocity, const float* viewangles, int bobCycle, int movementDir)
+{
+	int stamp = clients->serverTime;
+
+	if (g_hasTrueOrigin)
+	{
+		origin = g_trueOrigin;
+		viewangles = g_trueViewangles;
+		stamp = cg->predictedPlayerState.commandTime;
+	}
+
+	clients->cgamePredictedDataServerTime = stamp;
+
+	std::copy_n(origin, 3, clients->cgameOrigin);
+	std::copy_n(velocity, 3, clients->cgameVelocity);
+	std::copy_n(viewangles, 3, clients->cgameViewangles);
+
+	clients->cgameBobCycle = bobCycle;
+	clients->cgameMovementDir = movementDir;
+}
+
+__declspec(naked) void game::hookedCL_SetUserCmdOrigin()
+{
+	__asm
+	{
+		push ebp
+		mov  ebp, esp
+
+		push eax
+
+		push [ebp + 0x10]
+		push [ebp + 0x0C]
+		push eax
+		push ecx
+		push [ebp + 0x08]
+		call game::SetUserCmdOrigin_stub
+		add  esp, 0x14
+
+		pop  eax
+
+		mov  esp, ebp
+		pop  ebp
+		retn
+	}
 }
 
 void game::SetCoD4xFunctionOffsets()
