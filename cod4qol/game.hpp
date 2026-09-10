@@ -2658,8 +2658,6 @@ namespace game
 	void drawCustomCrosshair();
 	void HSVtoRGB(float h, float s, float v, float* r, float* g, float* b);
 	void EmitPhysicsCommands(int slot, const game::usercmd_s& previous);
-	void LogPhysicsTick(int width);
-	void LogPhysicsButtons(int serverTime, int buttons);
 	void WriteGameTime();
 
 	dvar_s* Find(const char*);

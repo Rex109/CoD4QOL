@@ -1299,8 +1299,6 @@ void game::EmitPhysicsCommands(int slot, const game::usercmd_s& previous)
 			pendingWalk = 0;
 		}
 
-		LogPhysicsTick(width);
-
 		widths[steps++] = width;
 		span += width;
 	}
@@ -1335,7 +1333,6 @@ void game::EmitPhysicsCommands(int slot, const game::usercmd_s& previous)
 			out.buttons &= ~Sprint;
 
 		ApplyAutoBhop(out);
-		LogPhysicsButtons(out.serverTime, out.buttons);
 
 		for (int axis = 0; axis < 3; axis++)
 		{
@@ -1373,10 +1370,7 @@ void __fastcall game::hookedCL_CreateNewCommands(void* thisptr, void*)
 		gameTimeTracker = 0;
 		pendingButtons = 0;
 
-		// The native stream, for the reference lines.
 		static int lastNative = 0;
-		LogPhysicsTick(currentCmd->serverTime - lastNative);
-		LogPhysicsButtons(currentCmd->serverTime, currentCmd->buttons);
 		lastNative = currentCmd->serverTime;
 		return;
 	}
