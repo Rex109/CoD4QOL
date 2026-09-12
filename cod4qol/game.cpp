@@ -1147,7 +1147,7 @@ game::usercmd_s* game::GetUserCommand(int cmdNumber)
 	return &clients->cmds[cmdNumber & 0x7F];
 }
 
-bool game::IsOnMover (const playerState_s* ps)
+bool game::IsOnMover(const playerState_s* ps)
 {
 	static centity_t* cgEntities = reinterpret_cast<centity_t*>(0x84F2D8);
 
@@ -1176,7 +1176,7 @@ void game::hookedCG_DrawUpperRightDebugInfo()
 		char buffer[64];
 		int color = 7;
 
-		int currentPhysFps = commands::qol_physfps->current.integer;
+		int currentPhysFps = com_maxfps->current.integer;
 		
 		if(showPhysFps == 2)
 		{
@@ -1227,7 +1227,7 @@ void game::EmitPhysicsCommands(int slot, const game::usercmd_s& previous)
 	static int walkBaseSnap = 0;
 	static int walkBaseRealtime = 0;
 
-	int rate = commands::qol_physfps->current.integer;
+	int rate = com_maxfps->current.integer;
 	if (rate < 1)
 		rate = 1;
 
@@ -1349,6 +1349,10 @@ void game::EmitPhysicsCommands(int slot, const game::usercmd_s& previous)
 
 void __fastcall game::hookedCL_CreateNewCommands(void* thisptr, void*)
 {
+	// Redirect the frame limiter; the dvar table keeps the physics FPS value.
+	constexpr uintptr_t ComMaxFpsRef = 0x1476EF8;
+	*reinterpret_cast<dvar_s**>(ComMaxFpsRef) = commands::qol_independentphysics->current.enabled ? commands::qol_realfps : com_maxfps;
+
 	const int slot = clients->cmdNumber + 1;
 	const usercmd_s previous = *GetUserCommand(slot);
 
@@ -1449,7 +1453,7 @@ void game::hookedCG_PredictPlayerState_Internal(int localClientNum)
 			distSq += d * d;
 		}
 
-		const int rate = commands::qol_physfps->current.integer;
+		const int rate = com_maxfps->current.integer;
 		const float period = (rate > 0 ? 1000.0f / rate : 50.0f) * 0.001f;
 		const float speed = sqrtf(ps->velocity[0] * ps->velocity[0] + ps->velocity[1] * ps->velocity[1] + ps->velocity[2] * ps->velocity[2]);
 		const float allowed = speed * period * 2.0f + 8.0f;
@@ -1480,7 +1484,7 @@ void game::hookedCG_PredictPlayerState_Internal(int localClientNum)
 
 	if(!teleported)
 	{
-		int physFps = commands::qol_physfps->current.integer;
+		int physFps = com_maxfps->current.integer;
 		int step = (physFps > 0) ? (1000 / physFps) : 50;
 		int renderTime = cg->time + timeline - step;
 

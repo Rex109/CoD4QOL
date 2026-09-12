@@ -144,7 +144,7 @@ void commands::InitializeCommands()
 
 	qol_independentphysics = game::Cvar_RegisterBool("qol_independentphysics", 0, game::dvar_flags::saved, "Enable independent physics simulation.");
 
-	qol_physfps = game::Cvar_RegisterInt("qol_physfps", 250, 1, 1000, game::dvar_flags::saved, "Physics simulation FPS, qol_independentphysics needs to be enabled.");
+	qol_realfps = game::Cvar_RegisterInt("qol_realfps", 0, 0, 1000, game::dvar_flags::saved, "Rendering FPS cap, com_maxfps will control the physics simulation FPS. qol_independentphysics needs to be enabled.");
 
     static const char* qol_showphysfps_names[] = { "Off", "Normal", "Colored", NULL };
 	qol_showphysfps = game::Cvar_RegisterEnum("qol_showphysfps", qol_showphysfps_names, 0, game::dvar_flags::saved, "Show the physics simulation FPS on the screen.");

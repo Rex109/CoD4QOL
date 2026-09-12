@@ -55,7 +55,7 @@ namespace commands
 	inline game::dvar_s* qol_adsgunposinterpolation;
 	inline game::dvar_s* qol_clientmodswarning;
 	inline game::dvar_s* qol_independentphysics;
-	inline game::dvar_s* qol_physfps;
+	inline game::dvar_s* qol_realfps;
 	inline game::dvar_s* qol_showphysfps;
 	inline game::dvar_s* qol_interpolatephysics;
 
