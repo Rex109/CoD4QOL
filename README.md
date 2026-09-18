@@ -27,6 +27,7 @@ A Call of Duty 4 X plugin that adds new settings, unlocks essential dvars and ad
 - Increase LOD distance for better visuals
 - Unlock all button + console command
 - Load customized assets with Client Mods
+- FPS Independent movement physics 
 
 ### Complete patches list
 - Adds "vm_anim" command
@@ -55,7 +56,7 @@ A Call of Duty 4 X plugin that adds new settings, unlocks essential dvars and ad
   - Block vstr switch
   - Disable steam auth
 - Adds "CoD4QOL settings" menu:
-  - Check for updates on startup
+  - Update channel selector
   - Show external console
   - Display loading info
   - Play ambient music
@@ -66,6 +67,9 @@ A Call of Duty 4 X plugin that adds new settings, unlocks essential dvars and ad
   - Show red reflection probes
   - Invert flashbangs
   - Disable flashbang sound
+  - PFS-Independent physics toggle
+  - Interpolate physics
+  - Draw physics FPS
   - Chat font size slider
   - Customize crosshair
   - Unlock All
