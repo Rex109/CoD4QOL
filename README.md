@@ -67,7 +67,7 @@ A Call of Duty 4 X plugin that adds new settings, unlocks essential dvars and ad
   - Show red reflection probes
   - Invert flashbangs
   - Disable flashbang sound
-  - PFS-Independent physics toggle
+  - FPS-Independent physics toggle
   - Interpolate physics
   - Draw physics FPS
   - Chat font size slider
