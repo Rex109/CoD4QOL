@@ -294,30 +294,29 @@ bool offsets::Init(const std::string& crc32)
 	current_crc32 = crc32;
 
 	const std::string local_path = GetLocalPath();
-	std::string text;
+	std::string local, bundled;
+	bool has_local = ReadTextFile(local_path, local);
+	bool has_bundled = LoadEmbedded(bundled);
 
-	//First run or deleted file: start from the copy bundled at build time
-	if (!std::filesystem::exists(local_path) && LoadEmbedded(text))
-		WriteTextFile(local_path, text);
-
-	if (ReadTextFile(local_path, text) && LoadFromJson(text, crc32, "local file"))
+	//Normal boot: the file saved in fs_savepath supports this CoD4X version
+	if (has_local && LoadFromJson(local, crc32, "local file"))
 		return true;
 
-	//The bundled copy can be newer than the local one, e.g. after updating CoD4QOL while offline
-	if (LoadEmbedded(text) && LoadFromJson(text, crc32, "bundled file"))
+	//First run, or the copy bundled with this CoD4QOL build is newer than the saved one
+	if (has_bundled && LoadFromJson(bundled, crc32, "bundled file"))
 	{
-		WriteTextFile(local_path, text);
+		WriteTextFile(local_path, bundled);
 		return true;
 	}
 
 	std::cout << "Downloading latest offsets..." << std::endl;
 
-	text.clear();
+	std::string downloaded;
 
-	if (!Download(COD4QOL_OFFSETS_URL, text) || !LoadFromJson(text, crc32, "download"))
+	if (!Download(COD4QOL_OFFSETS_URL, downloaded) || !LoadFromJson(downloaded, crc32, "download"))
 		return false;
 
-	WriteTextFile(local_path, text);
+	WriteTextFile(local_path, downloaded);
 
 	return true;
 }
