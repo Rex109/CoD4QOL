@@ -21,14 +21,7 @@
 
 #define COD4QOL_IWD_CRC32 "fb921b14"
 
-#define COD4QOL_SUPPORTEDVERSIONS "21.1, 21.2, 21.3, 21.4"
-
 #define COD4QOL_COD4X_MODULE "cod4x_021.dll"
 
-#define COD4QOL_COD4X_CRC32_212 "5b855796"
-#define COD4QOL_COD4X_CRC32_211 "b1822ed5"
-#define COD4QOL_COD4X_CRC32_213 "ee0fba9d"
-#define COD4QOL_COD4X_CRC32_213_INSTALLER "91e9995d"
-#define COD4QOL_COD4X_CRC32_214 "57f93656"
-
-inline const std::vector<std::string> supported_cod4x_crc32 = { COD4QOL_COD4X_CRC32_214, COD4QOL_COD4X_CRC32_213_INSTALLER, COD4QOL_COD4X_CRC32_213, COD4QOL_COD4X_CRC32_212, COD4QOL_COD4X_CRC32_211 };
+#define COD4QOL_OFFSETS_URL "https://raw.githubusercontent.com/Rex109/CoD4QOL-Patches/main/offsets.json"
+#define COD4QOL_OFFSETS_FILE "cod4qol_offsets.json"

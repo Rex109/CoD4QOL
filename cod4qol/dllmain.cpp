@@ -10,7 +10,7 @@
 #include "exception.hpp"
 
 void Initialize();
-bool CheckCoD4XVersion();
+bool GetCoD4XCRC32(std::string& hash);
 
 HMODULE dummy;
 
@@ -51,18 +51,20 @@ void Initialize()
     if (!iw3mp)
         return;
 
-    if (!CheckCoD4XVersion())
+    std::string crc32;
+
+    if (!GetCoD4XCRC32(crc32) || !offsets::Init(crc32))
     {
-        MessageBox(NULL, "CoD4X version mismatch, CoD4QOL has been unloaded.\nSupported CoD4X versions are: " COD4QOL_SUPPORTEDVERSIONS ".\n\nYou may need to update your game or manually download a newer version of CoD4QOL, otherwise you will have to wait for a new version of CoD4QOL and manually update it later.\n\nBe sure to always update CoD4QOL first before updating CoD4X!" , "CoD4QOL", MB_ICONWARNING);
+        std::string message = "CoD4X version mismatch, CoD4QOL has been unloaded.\nSupported CoD4X versions are: " + offsets::GetSupportedVersions() + ".\n\nCoD4QOL downloads support for new CoD4X versions automatically: make sure you are connected to the internet and restart your game.\n\nIf this keeps happening, support for this CoD4X version hasn't been published yet.";
+        MessageBox(NULL, message.c_str(), "CoD4QOL", MB_ICONWARNING);
         return;
     }
 
-    offsets::InitOffsets();
     game::SetCoD4xFunctionOffsets();
     hooks::InitializeHooks();
 }
 
-bool CheckCoD4XVersion()
+bool GetCoD4XCRC32(std::string& hash)
 {
     if (!game::cod4x_entry)
         return false;
@@ -83,21 +85,9 @@ bool CheckCoD4XVersion()
     file.close();
 
     CRC32 crc32;
-    std::string hash = crc32(data, size);
+    hash = crc32(data, size);
     delete[] data;
 
-    for (std::string supported_hash : supported_cod4x_crc32)
-    {
-        std::cout << "Comparing CRC32: " << hash << " with " << supported_hash << std::endl;
-
-        if (hash == supported_hash)
-        {
-            std::cout << "Passed CRC32 check!" << std::endl;
-            offsets::SetCRC32(supported_hash);
-            return true;
-        }
-    }
-
-    std::cout << "Failed CRC32 check!" << std::endl;
-    return false;
+    std::cout << "CoD4X CRC32: " << hash << std::endl;
+    return true;
 }

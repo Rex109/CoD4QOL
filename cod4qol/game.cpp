@@ -335,17 +335,15 @@ void game::hookedCmd_Vstr_f()
 
 int game::hookedScreenshotRequest(int a1, int a2)
 {
-	static const DWORD ss_switch = offsets::GetOffset("ss_switch");
-
 	std::cout << "Received screenshot request" << std::endl;
 
 	if (commands::qol_getss->current.integer != 0)
 		commands::iPrintLnBold("[^3CoD4QOL^7]: ^1You are currently being screenshotted");
 
 	if (commands::qol_getss->current.integer == 2)
-		hooks::write_addr(ss_switch, "\xEB", 1);
+		offsets::ApplyPatch("ss_switch");
 	else
-		hooks::write_addr(ss_switch, "\x74", 1);
+		offsets::RemovePatch("ss_switch");
 
 	return pScreenshotRequest(a1, a2);
 }

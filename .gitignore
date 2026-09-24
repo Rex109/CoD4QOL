@@ -396,3 +396,7 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+# Offsets bundled at build time, downloaded by the pre-build event
+res/offsets.json
+res/offsets.json.tmp

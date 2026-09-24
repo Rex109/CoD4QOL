@@ -1,102 +1,413 @@
 #include "offsets.hpp"
 #include <unordered_map>
 #include <string>
-#include <cassert>
+#include <vector>
+#include <fstream>
+#include <sstream>
+#include <filesystem>
+#include <algorithm>
 #include "game.hpp"
+#include "hooks.hpp"
 #include "defines.hpp"
+#include "resource.h"
+#include "json.hpp"
 
-std::unordered_map<std::string, offsets::offset_set> offset_map;
-std::unordered_map<std::string, offsets::data_set> data_map;
+typedef struct
+{
+	DWORD address;
+	std::string bytes;
+	std::string original;
+}patch_write_t;
+
+typedef struct
+{
+	std::vector<patch_write_t> writes;
+	bool applied;
+}patch_t;
+
+//Every offset this build of CoD4QOL needs, a CoD4X version missing any of these counts as unsupported.
+//Offsets that are only needed on some versions (like mousefix) are left out and simply not patched when null.
+const std::vector<std::string> required_offsets = {
+	"safechecks", "faststartup", "DB_LoadXZoneFromGfxConfig", "CG_Respawn", "ScreenshotRequest", "menufps",
+	"hwnd", "iwd_flag_localized", "iwd_flag_lang", "iwd_restriction", "ss_switch", "steam_auth_a", "steam_auth_b",
+	"BG_WeaponNames", "Cmd_AddCommand_fnc", "Sys_CreateConsole", "Cvar_RegisterBool", "Cvar_RegisterEnum",
+	"Cvar_RegisterString", "Cvar_RegisterFloat", "Cvar_RegisterVec4", "Cvar_RegisterInt",
+	"FS_AddSingleIwdFileForGameDirectory", "DB_BuildOSPath", "CG_DrawUpperRightDebugInfo"
+};
+
+std::unordered_map<std::string, DWORD> offset_map;
+std::unordered_map<std::string, patch_t> patch_map;
+std::vector<std::string> supported_versions;
 
 std::string current_crc32;
+std::string current_version;
 
-void offsets::InitOffsets()
+static std::string GetLocalPath()
 {
-	//Hooks
-	AddOffset("safechecks", { {COD4QOL_COD4X_CRC32_214, (game::cod4x_entry + 0x7B4F0)}, {COD4QOL_COD4X_CRC32_213_INSTALLER, (game::cod4x_entry + 0x7AA10)}, {COD4QOL_COD4X_CRC32_213, (game::cod4x_entry + 0x78AC0)}, {COD4QOL_COD4X_CRC32_212, (game::cod4x_entry + 0x82E40)}, {COD4QOL_COD4X_CRC32_211, (game::cod4x_entry + 0x43580)} });
-	AddOffset("faststartup", { {COD4QOL_COD4X_CRC32_214, (game::cod4x_entry + 0x30B40)}, {COD4QOL_COD4X_CRC32_213_INSTALLER, (game::cod4x_entry + 0x30700)}, {COD4QOL_COD4X_CRC32_213, (game::cod4x_entry + 0x2EAB0)}, {COD4QOL_COD4X_CRC32_212, (game::cod4x_entry + 0x30F00)}, {COD4QOL_COD4X_CRC32_211, (game::cod4x_entry + 0x3AA7C)} });
-	AddOffset("DB_LoadXZoneFromGfxConfig", { {COD4QOL_COD4X_CRC32_214, (game::cod4x_entry + 0x359B0)}, {COD4QOL_COD4X_CRC32_213_INSTALLER, (game::cod4x_entry + 0x35560)}, {COD4QOL_COD4X_CRC32_213, (game::cod4x_entry + 0x33920)}, {COD4QOL_COD4X_CRC32_212, (game::cod4x_entry + 0x3C180)}, {COD4QOL_COD4X_CRC32_211, (game::cod4x_entry + 0x8327E)} });
-	AddOffset("CG_Respawn", { {COD4QOL_COD4X_CRC32_214, (game::cod4x_entry + 0x37730)}, {COD4QOL_COD4X_CRC32_213_INSTALLER, (game::cod4x_entry + 0x372E0)}, {COD4QOL_COD4X_CRC32_213, (game::cod4x_entry + 0x35670)}, {COD4QOL_COD4X_CRC32_212, (game::cod4x_entry + 0x3DF00)}, {COD4QOL_COD4X_CRC32_211, (game::cod4x_entry + 0x3B45)} });
-	AddOffset("ScreenshotRequest", { {COD4QOL_COD4X_CRC32_214, (game::cod4x_entry + 0xAA890)}, {COD4QOL_COD4X_CRC32_213_INSTALLER, (game::cod4x_entry + 0xA9DB0)}, {COD4QOL_COD4X_CRC32_213, (game::cod4x_entry + 0xA7B50)}, {COD4QOL_COD4X_CRC32_212, (game::cod4x_entry + 0xB21E0)}, {COD4QOL_COD4X_CRC32_211, (game::cod4x_entry + 0xEA610)} });
-	AddOffset("menufps", { {COD4QOL_COD4X_CRC32_214, (game::cod4x_entry + 0x5F2C1)}, {COD4QOL_COD4X_CRC32_213_INSTALLER, (game::cod4x_entry + 0x5E931)}, {COD4QOL_COD4X_CRC32_213, (game::cod4x_entry + 0x5CCF1)}, {COD4QOL_COD4X_CRC32_212, (game::cod4x_entry + 0x66531)}, {COD4QOL_COD4X_CRC32_211, (game::cod4x_entry + 0x2B0A1)} });
-	AddOffset("mousefix", { {COD4QOL_COD4X_CRC32_214, 0}, {COD4QOL_COD4X_CRC32_213_INSTALLER, (game::cod4x_entry + 0x7651A)}, {COD4QOL_COD4X_CRC32_213, (game::cod4x_entry + 0x744AA)}, {COD4QOL_COD4X_CRC32_212, (game::cod4x_entry + 0x7E14A)}, {COD4QOL_COD4X_CRC32_211, (game::cod4x_entry + 0x801EC)} });
+	std::filesystem::path dir;
 
-	//General
-	AddOffset("hwnd", { {COD4QOL_COD4X_CRC32_214, (game::cod4x_entry + 0x4410820)}, {COD4QOL_COD4X_CRC32_213_INSTALLER, (game::cod4x_entry + 0x4410880)}, {COD4QOL_COD4X_CRC32_213, (game::cod4x_entry + 0x4342880)}, {COD4QOL_COD4X_CRC32_212, (game::cod4x_entry + 0x443BA00)}, {COD4QOL_COD4X_CRC32_211, (game::cod4x_entry + 0x43FE9A0)} });
-	AddOffset("iwd_flag_localized", { {COD4QOL_COD4X_CRC32_214, (game::cod4x_entry + 0x2DFA6)}, {COD4QOL_COD4X_CRC32_213_INSTALLER, (game::cod4x_entry + 0x2DB66)}, {COD4QOL_COD4X_CRC32_213, (game::cod4x_entry + 0x2C016)}, {COD4QOL_COD4X_CRC32_212, (game::cod4x_entry + 0x2E366)}, {COD4QOL_COD4X_CRC32_211, (game::cod4x_entry + 0x386E2)} });
-	AddOffset("iwd_flag_lang", { {COD4QOL_COD4X_CRC32_214, (game::cod4x_entry + 0x2DFAD)}, {COD4QOL_COD4X_CRC32_213_INSTALLER, (game::cod4x_entry + 0x2DB6D)}, {COD4QOL_COD4X_CRC32_213, (game::cod4x_entry + 0x2C01D)}, {COD4QOL_COD4X_CRC32_212, (game::cod4x_entry + 0x2E36D)}, {COD4QOL_COD4X_CRC32_211, (game::cod4x_entry + 0x386EC)} });
-	AddOffset("ss_switch", { {COD4QOL_COD4X_CRC32_214, (game::cod4x_entry + 0xAA8AB)}, {COD4QOL_COD4X_CRC32_213_INSTALLER, (game::cod4x_entry + 0xA9DCB)}, {COD4QOL_COD4X_CRC32_213, (game::cod4x_entry + 0xA7B6B)}, {COD4QOL_COD4X_CRC32_212, (game::cod4x_entry + 0xB21FB)}, {COD4QOL_COD4X_CRC32_211, (game::cod4x_entry + 0xEA62B)} });
-	AddOffset("steam_auth_a", { {COD4QOL_COD4X_CRC32_214, (game::cod4x_entry + 0x10212)}, {COD4QOL_COD4X_CRC32_213_INSTALLER, (game::cod4x_entry + 0x101F2)}, {COD4QOL_COD4X_CRC32_213, (game::cod4x_entry + 0x10282)}, {COD4QOL_COD4X_CRC32_212, (game::cod4x_entry + 0x10982)}, {COD4QOL_COD4X_CRC32_211, (game::cod4x_entry + 0x1A70A)} });
-	AddOffset("steam_auth_b", { {COD4QOL_COD4X_CRC32_214, (game::cod4x_entry + 0x1021B)}, {COD4QOL_COD4X_CRC32_213_INSTALLER, (game::cod4x_entry + 0x101FB)}, {COD4QOL_COD4X_CRC32_213, (game::cod4x_entry + 0x1028B)}, {COD4QOL_COD4X_CRC32_212, (game::cod4x_entry + 0x1098B)}, {COD4QOL_COD4X_CRC32_211, (game::cod4x_entry + 0x1A717)} });
-	AddOffset("BG_WeaponNames", { {COD4QOL_COD4X_CRC32_214, (game::cod4x_entry + 0x3E3A40)}, {COD4QOL_COD4X_CRC32_213_INSTALLER, (game::cod4x_entry + 0x3E3A40)}, {COD4QOL_COD4X_CRC32_213, (game::cod4x_entry + 0x315A40)}, {COD4QOL_COD4X_CRC32_212, (game::cod4x_entry + 0x408A40)}, {COD4QOL_COD4X_CRC32_211, (game::cod4x_entry + 0x443DDE0)} });
+	if (game::fs_savepath && game::fs_savepath->current.string && *game::fs_savepath->current.string)
+		dir = game::fs_savepath->current.string;
+	else
+	{
+		//Shouldn't happen, but never lose the file: fall back to the folder cod4qol.asi is in
+		char path[MAX_PATH];
+		GetModuleFileNameA(game::GetCurrentModule(), path, MAX_PATH);
+		dir = std::filesystem::path(path).parent_path();
+		std::cout << "fs_savepath is not available, using " << dir.string() << std::endl;
+	}
 
-	//Functions
-	AddOffset("Cmd_AddCommand_fnc", { {COD4QOL_COD4X_CRC32_214, (game::cod4x_entry + 0x5C760)}, {COD4QOL_COD4X_CRC32_213_INSTALLER, (game::cod4x_entry + 0x5BDD0)}, {COD4QOL_COD4X_CRC32_213, (game::cod4x_entry + 0x5A230)}, {COD4QOL_COD4X_CRC32_212, (game::cod4x_entry + 0x639B0)}, {COD4QOL_COD4X_CRC32_211, (game::cod4x_entry + 0x2116C)} });
-	AddOffset("Sys_CreateConsole", { {COD4QOL_COD4X_CRC32_214, (game::cod4x_entry + 0x78010)}, {COD4QOL_COD4X_CRC32_213_INSTALLER, (game::cod4x_entry + 0x77530)}, {COD4QOL_COD4X_CRC32_213, (game::cod4x_entry + 0x75510)}, {COD4QOL_COD4X_CRC32_212, (game::cod4x_entry + 0x7F160)}, {COD4QOL_COD4X_CRC32_211, (game::cod4x_entry + 0x7F503)} });
-	AddOffset("Cvar_RegisterBool", { {COD4QOL_COD4X_CRC32_214, (game::cod4x_entry + 0x59990)}, {COD4QOL_COD4X_CRC32_213_INSTALLER, (game::cod4x_entry + 0x59000)}, {COD4QOL_COD4X_CRC32_213, (game::cod4x_entry + 0x571E0)}, {COD4QOL_COD4X_CRC32_212, (game::cod4x_entry + 0x60BE0)}, {COD4QOL_COD4X_CRC32_211, (game::cod4x_entry + 0x2D8F2)} });
-	AddOffset("Cvar_RegisterEnum", { {COD4QOL_COD4X_CRC32_214, (game::cod4x_entry + 0x593F0)}, {COD4QOL_COD4X_CRC32_213_INSTALLER, (game::cod4x_entry + 0x58A60)}, {COD4QOL_COD4X_CRC32_213, (game::cod4x_entry + 0x56EB0)}, {COD4QOL_COD4X_CRC32_212, (game::cod4x_entry + 0x60640)}, {COD4QOL_COD4X_CRC32_211, (game::cod4x_entry + 0x2DCAF)} });
-	AddOffset("Cvar_RegisterString", { {COD4QOL_COD4X_CRC32_214, (game::cod4x_entry + 0x59710)}, {COD4QOL_COD4X_CRC32_213_INSTALLER, (game::cod4x_entry + 0x58D80)}, {COD4QOL_COD4X_CRC32_213, (game::cod4x_entry + 0x57460)}, {COD4QOL_COD4X_CRC32_212, (game::cod4x_entry + 0x60960)}, {COD4QOL_COD4X_CRC32_211, (game::cod4x_entry + 0x2D87D)} });
-	AddOffset("Cvar_RegisterFloat", { {COD4QOL_COD4X_CRC32_214, (game::cod4x_entry + 0x59C10)}, {COD4QOL_COD4X_CRC32_213_INSTALLER, (game::cod4x_entry + 0x59280)}, {COD4QOL_COD4X_CRC32_213, (game::cod4x_entry + 0x57970)}, {COD4QOL_COD4X_CRC32_212, (game::cod4x_entry + 0x60E60)}, {COD4QOL_COD4X_CRC32_211, (game::cod4x_entry + 0x2D9DA)} });
-	AddOffset("Cvar_RegisterVec4", { {COD4QOL_COD4X_CRC32_214, (game::cod4x_entry + 0x5A680)}, {COD4QOL_COD4X_CRC32_213_INSTALLER, (game::cod4x_entry + 0x59CF0)}, {COD4QOL_COD4X_CRC32_213, (game::cod4x_entry + 0x58190)}, {COD4QOL_COD4X_CRC32_212, (game::cod4x_entry + 0x618D0)}, {COD4QOL_COD4X_CRC32_211, (game::cod4x_entry + 0x2DB45)} });
-	AddOffset("Cvar_RegisterInt", { {COD4QOL_COD4X_CRC32_214, (game::cod4x_entry + 0x59EC0)}, {COD4QOL_COD4X_CRC32_213_INSTALLER, (game::cod4x_entry + 0x59530)}, {COD4QOL_COD4X_CRC32_213, (game::cod4x_entry + 0x576E0)}, {COD4QOL_COD4X_CRC32_212, (game::cod4x_entry + 0x61110)}, {COD4QOL_COD4X_CRC32_211, (game::cod4x_entry + 0x2D967)} });
-	AddOffset("FS_AddSingleIwdFileForGameDirectory", { {COD4QOL_COD4X_CRC32_214, (game::cod4x_entry + 0x2DF50)}, {COD4QOL_COD4X_CRC32_213_INSTALLER, (game::cod4x_entry + 0x2DB10)}, {COD4QOL_COD4X_CRC32_213, (game::cod4x_entry + 0x2BFC0)}, {COD4QOL_COD4X_CRC32_212, (game::cod4x_entry + 0x2E310)}, {COD4QOL_COD4X_CRC32_211, (game::cod4x_entry + 0x3867C)} });
-	AddOffset("DB_BuildOSPath", { {COD4QOL_COD4X_CRC32_214, (game::cod4x_entry + 0x2CF10)}, {COD4QOL_COD4X_CRC32_213_INSTALLER, (game::cod4x_entry + 0x2CAD0)}, {COD4QOL_COD4X_CRC32_213, (game::cod4x_entry + 0x2AFE0)}, {COD4QOL_COD4X_CRC32_212, (game::cod4x_entry + 0x2D2D0)}, {COD4QOL_COD4X_CRC32_211, (game::cod4x_entry + 0x37FDF)} });
-	AddOffset("CG_DrawUpperRightDebugInfo", { {COD4QOL_COD4X_CRC32_214, (game::cod4x_entry + 0x392B0)}, {COD4QOL_COD4X_CRC32_213_INSTALLER, (game::cod4x_entry + 0x38E60)}, {COD4QOL_COD4X_CRC32_213, (game::cod4x_entry + 0x37150)}, {COD4QOL_COD4X_CRC32_212, (game::cod4x_entry + 0x3FA80)}, {COD4QOL_COD4X_CRC32_211, (game::cod4x_entry + 0x2CAB)} });
+	std::error_code ec;
+	std::filesystem::create_directories(dir, ec);
 
-	//Strings
-	AddData("steam_auth_a", { {COD4QOL_COD4X_CRC32_214, {"\x90\x90", 2}}, {COD4QOL_COD4X_CRC32_213_INSTALLER, {"\x90\x90", 2}}, {COD4QOL_COD4X_CRC32_213, {"\x90\x90", 2}}, {COD4QOL_COD4X_CRC32_212, {"\x90\x90", 2}}, {COD4QOL_COD4X_CRC32_211, {"\x90\x90\x90\x90\x90\x90", 6}} });
-	AddData("steam_auth_b", { {COD4QOL_COD4X_CRC32_214, {"\xE9\xC0\x01\x00\x00\x90", 6}}, {COD4QOL_COD4X_CRC32_213_INSTALLER, {"\xE9\xC0\x01\x00\x00\x90", 6}}, {COD4QOL_COD4X_CRC32_213, {"\xE9\xC0\x01\x00\x00\x90", 6}}, {COD4QOL_COD4X_CRC32_212, {"\xE9\xC0\x01\x00\x00\x90", 6}}, {COD4QOL_COD4X_CRC32_211, {"\x90\x90\x90\x90\x90\x90", 6}} });
-	AddData("steam_auth_a_original", { {COD4QOL_COD4X_CRC32_214, {"\x75\x0D", 2}}, {COD4QOL_COD4X_CRC32_213_INSTALLER, {"\x75\x0D", 2}}, {COD4QOL_COD4X_CRC32_213, {"\x75\x0D", 2}}, {COD4QOL_COD4X_CRC32_212, {"\x75\x0D", 2}}, {COD4QOL_COD4X_CRC32_211, {"\x0F\x85\xDB\x00\x00\x00", 6}} });
-	AddData("steam_auth_b_original", { {COD4QOL_COD4X_CRC32_214, {"\x0F\x84\xBF\x01\x00\x00", 6}}, {COD4QOL_COD4X_CRC32_213_INSTALLER, {"\x0F\x84\xBF\x01\x00\x00", 6}}, {COD4QOL_COD4X_CRC32_213, {"\x0F\x84\xBF\x01\x00\x00", 6}}, {COD4QOL_COD4X_CRC32_212, {"\x0F\x84\xBF\x01\x00\x00", 6}}, {COD4QOL_COD4X_CRC32_211, {"\x0F\x85\xCE\x00\x00\x00", 6}} });
+	return (dir / COD4QOL_OFFSETS_FILE).string();
 }
 
-void offsets::AddOffset(std::string id, offsets::offset_set offset)
+static bool ReadTextFile(const std::string& path, std::string& out)
 {
-	assert(offset_map.find(id) == offset_map.end());
+	std::ifstream file(path, std::ios::binary);
 
-	offset_map[id] = offset;
+	if (!file.is_open())
+		return false;
+
+	std::stringstream buffer;
+	buffer << file.rdbuf();
+	out = buffer.str();
+
+	return true;
 }
 
-DWORD offsets::GetOffset(std::string id)
+static void WriteTextFile(const std::string& path, const std::string& text)
 {
-	assert(!current_crc32.empty());
-	assert(offset_map.find(id) != offset_map.end());
+	std::ofstream file(path, std::ios::binary | std::ios::trunc);
 
-	DWORD offset = offset_map[id][current_crc32];
+	if (!file.is_open())
+	{
+		std::cout << "Failed to write " << path << std::endl;
+		return;
+	}
 
-	std::cout << "Requested offset for " << id << ": " << offset << std::endl;
-
-	return offset;
+	file.write(text.data(), text.size());
 }
 
-void offsets::AddData(std::string id, offsets::data_set data)
+static bool LoadEmbedded(std::string& out)
 {
-	assert(data_map.find(id) == data_map.end());
+	HMODULE module = game::GetCurrentModule();
+	HRSRC hRes = FindResource(module, MAKEINTRESOURCE(COD4QOL_OFFSETS), RT_RCDATA);
 
-	data_map[id] = data;
+	if (!hRes)
+		return false;
+
+	HGLOBAL hData = LoadResource(module, hRes);
+
+	if (!hData)
+		return false;
+
+	out.assign(reinterpret_cast<const char*>(LockResource(hData)), SizeofResource(module, hRes));
+
+	return true;
 }
 
-offsets::data_t offsets::GetData(std::string id)
+//libcurl can't be used here: this runs inside DllMain, where its resolver thread would never get to start.
+//The curl.exe that ships with Windows 10 1803+ runs in its own process, so it isn't affected.
+static bool Download(const char* url, const std::string& path)
 {
-	assert(data_map.find(id) != data_map.end());
+	char system_dir[MAX_PATH];
 
-	offsets::data_t data = data_map[id][current_crc32];
+	if (!GetSystemDirectoryA(system_dir, MAX_PATH))
+		return false;
 
-	std::cout << "Requested data for " << id << std::endl;
+	std::string curl = std::string(system_dir) + "\\curl.exe";
 
-	return data;
+	if (!std::filesystem::exists(curl))
+	{
+		std::cout << "Can't download offsets, curl.exe was not found" << std::endl;
+		return false;
+	}
+
+	std::string command = "\"" + curl + "\" -sfL --max-time 10 -o \"" + path + "\" \"" + url + "\"";
+
+	STARTUPINFOA si = { sizeof(si) };
+	PROCESS_INFORMATION pi = {};
+
+	if (!CreateProcessA(NULL, command.data(), NULL, NULL, FALSE, CREATE_NO_WINDOW, NULL, NULL, &si, &pi))
+	{
+		std::cout << "Failed to start curl.exe: " << GetLastError() << std::endl;
+		return false;
+	}
+
+	DWORD exit_code = 1;
+
+	if (WaitForSingleObject(pi.hProcess, 15000) == WAIT_OBJECT_0)
+		GetExitCodeProcess(pi.hProcess, &exit_code);
+	else
+		TerminateProcess(pi.hProcess, 1);
+
+	CloseHandle(pi.hThread);
+	CloseHandle(pi.hProcess);
+
+	if (exit_code != 0)
+		std::cout << "Failed to download offsets, curl.exe exited with code " << exit_code << std::endl;
+
+	return exit_code == 0;
 }
 
-void offsets::SetCRC32(std::string crc32)
+static DWORD GetCoD4XImageSize()
 {
-	assert(std::find(supported_cod4x_crc32.begin(), supported_cod4x_crc32.end(), crc32) != supported_cod4x_crc32.end());
+	const IMAGE_DOS_HEADER* dos = reinterpret_cast<const IMAGE_DOS_HEADER*>(game::cod4x_entry);
+	const IMAGE_NT_HEADERS* nt = reinterpret_cast<const IMAGE_NT_HEADERS*>(game::cod4x_entry + dos->e_lfanew);
 
+	return nt->OptionalHeader.SizeOfImage;
+}
+
+//Offsets are relative to cod4x_021.dll, anything outside of it is rejected
+static bool ParseRVA(const nlohmann::ordered_json& value, DWORD size, DWORD& rva)
+{
+	if (!value.is_string())
+		return false;
+
+	try
+	{
+		rva = std::stoul(value.get<std::string>(), nullptr, 16);
+	}
+	catch (...)
+	{
+		return false;
+	}
+
+	return rva != 0 && rva + size <= GetCoD4XImageSize();
+}
+
+static bool ParseBytes(const nlohmann::ordered_json& value, std::string& out)
+{
+	if (!value.is_string())
+		return false;
+
+	std::istringstream stream(value.get<std::string>());
+	std::string byte;
+
+	while (stream >> byte)
+	{
+		if (byte.size() != 2 || !isxdigit(static_cast<unsigned char>(byte[0])) || !isxdigit(static_cast<unsigned char>(byte[1])))
+			return false;
+
+		out.push_back(static_cast<char>(std::stoul(byte, nullptr, 16)));
+	}
+
+	return !out.empty();
+}
+
+//Loads offsets and patches for crc32 from an offsets.json, only replaces the current ones if everything is valid
+static bool LoadFromJson(const std::string& text, const std::string& crc32, const char* source)
+{
+	nlohmann::ordered_json root = nlohmann::ordered_json::parse(text, nullptr, false);
+
+	if (root.is_discarded() || !root.contains("versions") || !root["versions"].is_object())
+	{
+		std::cout << "Offsets from " << source << " are malformed" << std::endl;
+		return false;
+	}
+
+	for (const auto& entry : root["versions"])
+	{
+		if (!entry.contains("version") || !entry["version"].is_string())
+			continue;
+
+		std::string name = entry["version"].get<std::string>();
+
+		if (std::find(supported_versions.begin(), supported_versions.end(), name) == supported_versions.end())
+			supported_versions.push_back(name);
+	}
+
+	auto version = root["versions"].find(crc32);
+
+	if (version == root["versions"].end() || !version->is_object() || !version->contains("offsets") || !(*version)["offsets"].is_object())
+	{
+		std::cout << "Offsets from " << source << " don't support this CoD4X version" << std::endl;
+		return false;
+	}
+
+	std::unordered_map<std::string, DWORD> new_offsets;
+	std::unordered_map<std::string, patch_t> new_patches;
+
+	for (const auto& [id, value] : (*version)["offsets"].items())
+	{
+		//Not needed on this CoD4X version
+		if (value.is_null())
+			continue;
+
+		DWORD rva;
+
+		if (!ParseRVA(value, 0, rva))
+		{
+			std::cout << "Offsets from " << source << " have an invalid value for " << id << std::endl;
+			return false;
+		}
+
+		new_offsets[id] = game::cod4x_entry + rva;
+	}
+
+	for (const std::string& id : required_offsets)
+	{
+		if (new_offsets.find(id) == new_offsets.end())
+		{
+			std::cout << "Offsets from " << source << " are missing " << id << std::endl;
+			return false;
+		}
+	}
+
+	if (version->contains("patches") && (*version)["patches"].is_object())
+	{
+		for (const auto& [id, writes] : (*version)["patches"].items())
+		{
+			if (!writes.is_array())
+				return false;
+
+			patch_t patch = {};
+
+			for (const auto& write : writes)
+			{
+				patch_write_t patch_write = {};
+				DWORD rva;
+
+				if (!write.is_object() || !write.contains("bytes") || !write.contains("address") || !ParseBytes(write["bytes"], patch_write.bytes) || !ParseRVA(write["address"], patch_write.bytes.size(), rva))
+				{
+					std::cout << "Offsets from " << source << " have an invalid patch for " << id << std::endl;
+					return false;
+				}
+
+				patch_write.address = game::cod4x_entry + rva;
+				patch.writes.push_back(patch_write);
+			}
+
+			new_patches[id] = patch;
+		}
+	}
+
+	offset_map = new_offsets;
+	patch_map = new_patches;
+	current_version = (*version).value("version", "unknown");
+
+	std::cout << "Loaded offsets for CoD4X " << current_version << " from " << source << std::endl;
+
+	return true;
+}
+
+bool offsets::Init(const std::string& crc32)
+{
 	std::cout << "Setting CRC32 to: " << crc32 << std::endl;
 
 	current_crc32 = crc32;
+
+	const std::string local_path = GetLocalPath();
+	std::string text;
+
+	//First run or deleted file: start from the copy bundled at build time
+	if (!std::filesystem::exists(local_path) && LoadEmbedded(text))
+		WriteTextFile(local_path, text);
+
+	if (ReadTextFile(local_path, text) && LoadFromJson(text, crc32, "local file"))
+		return true;
+
+	//The bundled copy can be newer than the local one, e.g. after updating CoD4QOL while offline
+	if (LoadEmbedded(text) && LoadFromJson(text, crc32, "bundled file"))
+	{
+		WriteTextFile(local_path, text);
+		return true;
+	}
+
+	std::cout << "Downloading latest offsets..." << std::endl;
+
+	const std::string download_path = local_path + ".download";
+	bool loaded = Download(COD4QOL_OFFSETS_URL, download_path) && ReadTextFile(download_path, text) && LoadFromJson(text, crc32, "download");
+
+	if (loaded)
+		WriteTextFile(local_path, text);
+
+	std::error_code ec;
+	std::filesystem::remove(download_path, ec);
+
+	return loaded;
+}
+
+DWORD offsets::GetOffset(const std::string& id)
+{
+	auto it = offset_map.find(id);
+
+	if (it == offset_map.end())
+	{
+		std::cout << "Offset " << id << " is not available on this CoD4X version" << std::endl;
+		return 0;
+	}
+
+	std::cout << "Requested offset for " << id << ": " << it->second << std::endl;
+
+	return it->second;
+}
+
+bool offsets::ApplyPatch(const std::string& id)
+{
+	auto it = patch_map.find(id);
+
+	if (it == patch_map.end())
+	{
+		std::cout << "Patch " << id << " is not needed on this CoD4X version" << std::endl;
+		return false;
+	}
+
+	patch_t& patch = it->second;
+
+	for (patch_write_t& write : patch.writes)
+	{
+		if (!patch.applied)
+			write.original.assign(reinterpret_cast<const char*>(write.address), write.bytes.size());
+
+		hooks::write_addr(write.address, write.bytes.data(), write.bytes.size());
+	}
+
+	patch.applied = true;
+
+	return true;
+}
+
+bool offsets::RemovePatch(const std::string& id)
+{
+	auto it = patch_map.find(id);
+
+	if (it == patch_map.end() || !it->second.applied)
+		return false;
+
+	patch_t& patch = it->second;
+
+	//Restore in reverse order so overlapping writes come back correctly
+	for (auto write = patch.writes.rbegin(); write != patch.writes.rend(); ++write)
+		hooks::write_addr(write->address, write->original.data(), write->original.size());
+
+	patch.applied = false;
+
+	return true;
 }
 
 std::string offsets::GetCRC32()
 {
 	return current_crc32;
+}
+
+std::string offsets::GetVersion()
+{
+	return current_version;
+}
+
+std::string offsets::GetSupportedVersions()
+{
+	if (supported_versions.empty())
+		return "unknown";
+
+	//offsets.json lists the newest version first
+	std::string result;
+
+	for (auto it = supported_versions.rbegin(); it != supported_versions.rend(); ++it)
+		result += (result.empty() ? "" : ", ") + *it;
+
+	return result;
 }

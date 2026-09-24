@@ -75,10 +75,16 @@
     <PreBuildEvent>
       <Command>for /f "tokens=*" %%i in ('git describe --dirty --always') do (
     echo #define GIT_COMMIT_HASH "%%i" &gt; $(ProjectDir)CommitInfo.hpp
-)</Command>
+)
+curl.exe -sfL --max-time 30 -o "$(ProjectDir)..\res\offsets.json.tmp" https://raw.githubusercontent.com/Rex109/CoD4QOL-Patches/main/offsets.json &amp;&amp; move /y "$(ProjectDir)..\res\offsets.json.tmp" "$(ProjectDir)..\res\offsets.json" &gt;nul
+if exist "$(ProjectDir)..\res\offsets.json.tmp" del /q "$(ProjectDir)..\res\offsets.json.tmp"
+if not exist "$(ProjectDir)..\res\offsets.json" (echo error: res\offsets.json could not be downloaded from CoD4QOL-Patches &amp; exit /b 1)
+echo Bundling offsets.json from CoD4QOL-Patches
+exit /b 0</Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>echo #define GIT_COMMIT_HASH "" &gt; $(ProjectDir)CommitInfo.hpp</Command>
+      <Command>echo #define GIT_COMMIT_HASH "" &gt; $(ProjectDir)CommitInfo.hpp
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -105,10 +111,16 @@
     <PreBuildEvent>
       <Command>for /f "tokens=*" %%i in ('git describe --dirty --always') do (
     echo #define GIT_COMMIT_HASH "%%i" &gt; $(ProjectDir)CommitInfo.hpp
-)</Command>
+)
+curl.exe -sfL --max-time 30 -o "$(ProjectDir)..\res\offsets.json.tmp" https://raw.githubusercontent.com/Rex109/CoD4QOL-Patches/main/offsets.json &amp;&amp; move /y "$(ProjectDir)..\res\offsets.json.tmp" "$(ProjectDir)..\res\offsets.json" &gt;nul
+if exist "$(ProjectDir)..\res\offsets.json.tmp" del /q "$(ProjectDir)..\res\offsets.json.tmp"
+if not exist "$(ProjectDir)..\res\offsets.json" (echo error: res\offsets.json could not be downloaded from CoD4QOL-Patches &amp; exit /b 1)
+echo Bundling offsets.json from CoD4QOL-Patches
+exit /b 0</Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>echo #define GIT_COMMIT_HASH "" &gt; $(ProjectDir)CommitInfo.hpp</Command>
+      <Command>echo #define GIT_COMMIT_HASH "" &gt; $(ProjectDir)CommitInfo.hpp
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

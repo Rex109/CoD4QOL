@@ -9,42 +9,19 @@ void hooks::InitializeHooks()
 	std::cout << "Initializing hooks..." << std::endl;
 
 	//Removing cod4x safechecks
-	hooks::write_addr(offsets::GetOffset("safechecks"), "\xC3", 1);
+	offsets::ApplyPatch("safechecks");
 
 	//Fast startup
-	hooks::write_addr(offsets::GetOffset("faststartup"), "\xC3", 1);
+	offsets::ApplyPatch("faststartup");
 
 	//Unlock menu fps
-	hooks::write_addr(offsets::GetOffset("menufps"), "\x90\x90", 2);
+	offsets::ApplyPatch("menufps");
 
-	std::string cod4x_crc32 = offsets::GetCRC32();
-
-	//MouseFix, 21.4 already calls SetThreadExecutionState only once instead of on every window message
-	if (cod4x_crc32 == COD4QOL_COD4X_CRC32_211)
-		hooks::write_addr(offsets::GetOffset("mousefix"), "\x90\x90\x90\x90\x90", 5);
-	else if (cod4x_crc32 != COD4QOL_COD4X_CRC32_214)
-		hooks::write_addr(offsets::GetOffset("mousefix"), "\x90\x90\x90\x90\x90\x90\x90\x90\x90", 9);
+	//MouseFix, not needed from 21.4 onwards: SetThreadExecutionState is only called once instead of on every window message
+	offsets::ApplyPatch("mousefix");
 
 	//Remove localized IWD restrictions
-	if (cod4x_crc32 == COD4QOL_COD4X_CRC32_214)
-	{
-		hooks::write_addr(game::cod4x_entry + 0x30A5D, "\xEB", 1);
-	}
-	else if (cod4x_crc32 == COD4QOL_COD4X_CRC32_213_INSTALLER)
-	{
-		hooks::write_addr(game::cod4x_entry + 0x3061D, "\xEB", 1);
-	}
-	else if (cod4x_crc32 == COD4QOL_COD4X_CRC32_213)
-	{
-		hooks::write_addr(game::cod4x_entry + 0x2E9CD, "\xEB", 1);
-	}
-	else if (cod4x_crc32 == COD4QOL_COD4X_CRC32_212)
-	{
-		hooks::write_addr(game::cod4x_entry + 0x30E10, "\x90\x90\x90\x90\x90\x90", 6);
-		hooks::write_addr(game::cod4x_entry + 0x30E1D, "\xEB", 1);
-	}
-	else if (cod4x_crc32 == COD4QOL_COD4X_CRC32_211)
-		hooks::write_addr(game::cod4x_entry + 0x3A953, "\xE9\x88\x00\x00\x00\x90", 6);
+	offsets::ApplyPatch("iwd_restriction");
 
 	//Console name
 	game::pCon_LinePrefix = (game::Con_LinePrefix)(0x460613);
