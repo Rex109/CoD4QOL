@@ -11,6 +11,9 @@
 #include "defines.hpp"
 #include "resource.h"
 #include "json.hpp"
+#include "updater.hpp"
+#define CURL_STATICLIB
+#include "curl/curl.h"
 
 typedef struct
 {
@@ -108,48 +111,39 @@ static bool LoadEmbedded(std::string& out)
 	return true;
 }
 
-//libcurl can't be used here: this runs inside DllMain, where its resolver thread would never get to start.
-//The curl.exe that ships with Windows 10 1803+ runs in its own process, so it isn't affected.
-static bool Download(const char* url, const std::string& path)
+//This runs inside DllMain, while Windows holds the loader lock. libcurl resolves hostnames on a separate thread,
+//which can't start until the lock is released, so the timeout keeps a stuck download from freezing the game.
+static bool Download(const char* url, std::string& out)
 {
-	char system_dir[MAX_PATH];
+	curl_global_init(CURL_GLOBAL_ALL);
 
-	if (!GetSystemDirectoryA(system_dir, MAX_PATH))
-		return false;
+	CURL* curl = curl_easy_init();
 
-	std::string curl = std::string(system_dir) + "\\curl.exe";
+	curl_easy_setopt(curl, CURLOPT_URL, url);
+	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, updater::WriteCallback);
+	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &out);
+	curl_easy_setopt(curl, CURLOPT_USERAGENT, COD4QOL_NAME);
+	curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+	curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1L);
+	curl_easy_setopt(curl, CURLOPT_SSL_OPTIONS, CURLSSLOPT_NO_REVOKE);
+	curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 5L);
+	curl_easy_setopt(curl, CURLOPT_TIMEOUT, 10L);
 
-	if (!std::filesystem::exists(curl))
+	ULONGLONG start = GetTickCount64();
+	CURLcode res = curl_easy_perform(curl);
+
+	curl_easy_cleanup(curl);
+	curl_global_cleanup();
+
+	if (res != CURLE_OK)
 	{
-		std::cout << "Can't download offsets, curl.exe was not found" << std::endl;
+		std::cout << "Failed to download offsets after " << GetTickCount64() - start << "ms: " << curl_easy_strerror(res) << std::endl;
 		return false;
 	}
 
-	std::string command = "\"" + curl + "\" -sfL --max-time 10 -o \"" + path + "\" \"" + url + "\"";
+	std::cout << "Downloaded offsets in " << GetTickCount64() - start << "ms" << std::endl;
 
-	STARTUPINFOA si = { sizeof(si) };
-	PROCESS_INFORMATION pi = {};
-
-	if (!CreateProcessA(NULL, command.data(), NULL, NULL, FALSE, CREATE_NO_WINDOW, NULL, NULL, &si, &pi))
-	{
-		std::cout << "Failed to start curl.exe: " << GetLastError() << std::endl;
-		return false;
-	}
-
-	DWORD exit_code = 1;
-
-	if (WaitForSingleObject(pi.hProcess, 15000) == WAIT_OBJECT_0)
-		GetExitCodeProcess(pi.hProcess, &exit_code);
-	else
-		TerminateProcess(pi.hProcess, 1);
-
-	CloseHandle(pi.hThread);
-	CloseHandle(pi.hProcess);
-
-	if (exit_code != 0)
-		std::cout << "Failed to download offsets, curl.exe exited with code " << exit_code << std::endl;
-
-	return exit_code == 0;
+	return true;
 }
 
 static DWORD GetCoD4XImageSize()
@@ -318,16 +312,14 @@ bool offsets::Init(const std::string& crc32)
 
 	std::cout << "Downloading latest offsets..." << std::endl;
 
-	const std::string download_path = local_path + ".download";
-	bool loaded = Download(COD4QOL_OFFSETS_URL, download_path) && ReadTextFile(download_path, text) && LoadFromJson(text, crc32, "download");
+	text.clear();
 
-	if (loaded)
-		WriteTextFile(local_path, text);
+	if (!Download(COD4QOL_OFFSETS_URL, text) || !LoadFromJson(text, crc32, "download"))
+		return false;
 
-	std::error_code ec;
-	std::filesystem::remove(download_path, ec);
+	WriteTextFile(local_path, text);
 
-	return loaded;
+	return true;
 }
 
 DWORD offsets::GetOffset(const std::string& id)
