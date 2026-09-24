@@ -1,3 +1,6 @@
+//Must come before anything that includes Windows.h, which would otherwise pull in the old winsock.h (no getaddrinfo)
+#include <winsock2.h>
+#include <ws2tcpip.h>
 #include "offsets.hpp"
 #include <unordered_map>
 #include <string>
@@ -111,28 +114,102 @@ static bool LoadEmbedded(std::string& out)
 	return true;
 }
 
-//This runs inside DllMain, while Windows holds the loader lock. libcurl resolves hostnames on a separate thread,
-//which can't start until the lock is released, so the timeout keeps a stuck download from freezing the game.
+//Looks up the host of url on the current thread and returns it as a CURLOPT_RESOLVE list ("host:port:addr1,addr2").
+static curl_slist* ResolveHost(const char* url)
+{
+	CURLU* parsed = curl_url();
+	char* host = nullptr;
+	char* port = nullptr;
+	curl_slist* list = nullptr;
+
+	if (curl_url_set(parsed, CURLUPART_URL, url, 0) == CURLUE_OK &&
+		curl_url_get(parsed, CURLUPART_HOST, &host, 0) == CURLUE_OK &&
+		curl_url_get(parsed, CURLUPART_PORT, &port, CURLU_DEFAULT_PORT) == CURLUE_OK)
+	{
+		addrinfo hints = {};
+		hints.ai_family = AF_UNSPEC;
+		hints.ai_socktype = SOCK_STREAM;
+
+		addrinfo* result = nullptr;
+		int error = getaddrinfo(host, port, &hints, &result);
+
+		if (error == 0)
+		{
+			std::vector<std::string> addresses;
+
+			for (addrinfo* ai = result; ai; ai = ai->ai_next)
+			{
+				char ip[NI_MAXHOST];
+
+				if (getnameinfo(ai->ai_addr, static_cast<socklen_t>(ai->ai_addrlen), ip, sizeof(ip), nullptr, 0, NI_NUMERICHOST) != 0)
+					continue;
+
+				std::string address = ai->ai_family == AF_INET6 ? "[" + std::string(ip) + "]" : ip;
+
+				if (std::find(addresses.begin(), addresses.end(), address) == addresses.end())
+					addresses.push_back(address);
+			}
+
+			freeaddrinfo(result);
+
+			if (!addresses.empty())
+			{
+				std::string entry = std::string(host) + ":" + port + ":";
+
+				for (size_t i = 0; i < addresses.size(); i++)
+					entry += (i ? "," : "") + addresses[i];
+
+				list = curl_slist_append(nullptr, entry.c_str());
+			}
+		}
+		else
+			std::cout << "Failed to resolve " << host << ": " << error << std::endl;
+	}
+
+	curl_free(host);
+	curl_free(port);
+	curl_url_cleanup(parsed);
+
+	return list;
+}
+
+//This runs inside DllMain, while Windows holds the loader lock. libcurl normally looks hostnames up on a separate thread,
+//which can't start until the lock is released and would deadlock the game. The host is resolved here on the current
+//thread instead and handed to libcurl through CURLOPT_RESOLVE, so libcurl never needs that thread.
 static bool Download(const char* url, std::string& out)
 {
 	curl_global_init(CURL_GLOBAL_ALL);
 
+	curl_slist* resolve = ResolveHost(url);
+
+	if (!resolve)
+	{
+		curl_global_cleanup();
+		std::cout << "Failed to download offsets: couldn't resolve the host" << std::endl;
+		return false;
+	}
+
 	CURL* curl = curl_easy_init();
 
 	curl_easy_setopt(curl, CURLOPT_URL, url);
+	curl_easy_setopt(curl, CURLOPT_RESOLVE, resolve);
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, updater::WriteCallback);
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &out);
 	curl_easy_setopt(curl, CURLOPT_USERAGENT, COD4QOL_NAME);
-	curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+	//A redirect to another host would need a lookup on libcurl's thread again
+	curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 0L);
 	curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1L);
 	curl_easy_setopt(curl, CURLOPT_SSL_OPTIONS, CURLSSLOPT_NO_REVOKE);
 	curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 5L);
 	curl_easy_setopt(curl, CURLOPT_TIMEOUT, 10L);
+	//Safety net: if libcurl ever starts its lookup thread anyway, don't wait for it on cleanup (it can't run until DllMain returns)
+	curl_easy_setopt(curl, CURLOPT_QUICK_EXIT, 1L);
 
 	ULONGLONG start = GetTickCount64();
 	CURLcode res = curl_easy_perform(curl);
 
 	curl_easy_cleanup(curl);
+	curl_slist_free_all(resolve);
 	curl_global_cleanup();
 
 	if (res != CURLE_OK)
