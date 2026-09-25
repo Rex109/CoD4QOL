@@ -562,11 +562,17 @@ void game::R_CopyRenderTarget(IDirect3DDevice9* device, game::GfxRenderTargetId 
 
 void game::applyFsr1()
 {
+	static game::GfxRenderTarget* gfxRenderTargets = reinterpret_cast<game::GfxRenderTarget*>(0xD573EB0);
+	static game::GfxImage** resolvedPostSunCodeImage = reinterpret_cast<game::GfxImage**>(0xD5401B8);
+
 	float renderscale = commands::qol_renderscale->current.value;
 
-	if (renderscale != 1.0 )
+	if (renderscale != 1.0)
 	{
 		R_CopyRenderTarget(*game::dx9_device_ptr, game::GfxRenderTargetId::R_RENDERTARGET_RESOLVED_POST_SUN, game::GfxRenderTargetId::R_RENDERTARGET_SCENE);
+
+		game::GfxImage* originalCodeImage = *resolvedPostSunCodeImage;
+		*resolvedPostSunCodeImage = gfxRenderTargets[game::GfxRenderTargetId::R_RENDERTARGET_RESOLVED_POST_SUN].image;
 
 		float centerX = 0.5f;
 		float centerY = 0.5f;
@@ -581,6 +587,8 @@ void game::applyFsr1()
 
 		const auto postfx_fsr1 = game::Material_RegisterHandle("postfx_fsr1", 3);
 		game::RB_DrawFullScreenColoredQuad(postfx_fsr1, s0, t0, s1, t1, -1);
+
+		*resolvedPostSunCodeImage = originalCodeImage;
 	}
 }
 

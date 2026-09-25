@@ -34,11 +34,36 @@ typedef struct
 //Every offset this build of CoD4QOL needs, a CoD4X version missing any of these counts as unsupported.
 //Offsets that are only needed on some versions (like mousefix) are left out and simply not patched when null.
 const std::vector<std::string> required_offsets = {
-	"safechecks", "faststartup", "DB_LoadXZoneFromGfxConfig", "CG_Respawn", "ScreenshotRequest", "menufps",
-	"hwnd", "iwd_flag_localized", "iwd_flag_lang", "iwd_restriction", "ss_switch", "steam_auth_a", "steam_auth_b",
-	"BG_WeaponNames", "Cmd_AddCommand_fnc", "Sys_CreateConsole", "Cvar_RegisterBool", "Cvar_RegisterEnum",
-	"Cvar_RegisterString", "Cvar_RegisterFloat", "Cvar_RegisterVec4", "Cvar_RegisterInt",
-	"FS_AddSingleIwdFileForGameDirectory", "DB_BuildOSPath", "CG_DrawUpperRightDebugInfo"
+	//Hooks
+	"safechecks",
+	"faststartup",
+	"DB_LoadXZoneFromGfxConfig",
+	"CG_Respawn",
+	"ScreenshotRequest",
+	"menufps",
+
+	//General
+	"hwnd",
+	"iwd_flag_localized",
+	"iwd_flag_lang",
+	"iwd_restriction",
+	"ss_switch",
+	"steam_auth_a",
+	"steam_auth_b",
+	"BG_WeaponNames",
+
+	//Functions
+	"Cmd_AddCommand_fnc",
+	"Sys_CreateConsole",
+	"Cvar_RegisterBool",
+	"Cvar_RegisterEnum",
+	"Cvar_RegisterString",
+	"Cvar_RegisterFloat",
+	"Cvar_RegisterVec4",
+	"Cvar_RegisterInt",
+	"FS_AddSingleIwdFileForGameDirectory",
+	"DB_BuildOSPath",
+	"CG_DrawUpperRightDebugInfo"
 };
 
 std::unordered_map<std::string, DWORD> offset_map;
