@@ -15,6 +15,7 @@
 *<p align="center"><sub>Play the way YOU want</sub></p>*
 <br>
 A Call of Duty 4 X plugin that adds new settings, unlocks essential dvars and adds security options
+
 **Powered by [CoD4QOL-Patches](https://github.com/Rex109/CoD4QOL-Patches)**
 
 ## Features
