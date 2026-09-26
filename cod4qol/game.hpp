@@ -11,6 +11,7 @@
 #define	GENTITYNUM_BITS		10
 #define	MAX_GENTITIES		(1<<GENTITYNUM_BITS)
 
+#define	ENTITYNUM_NONE		(MAX_GENTITIES-1)
 #define	ENTITYNUM_WORLD		(MAX_GENTITIES-2)
 
 namespace game
@@ -2761,6 +2762,7 @@ namespace game
 	inline const char** modName = reinterpret_cast<const char**>(0xCAF7354);
 	inline const char** modDesc = reinterpret_cast<const char**>(0xCAF7358);
 	inline game::clientActive_t* clients = reinterpret_cast<game::clientActive_t*>(0xC5F930);
+	inline bool* gostand_held = reinterpret_cast<bool*>(0x8F1618);
 	inline game::WeaponDef** BG_WeaponNames;
 
 	inline int* dvar_modifiedFlags = reinterpret_cast<int*>(0x0CBA73F4);

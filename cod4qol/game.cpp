@@ -1114,7 +1114,7 @@ void game::hookedDB_BuildOSPath(const char* filename, int ff_dir, int pathlen, c
 
 void NoteJumpInput(const game::usercmd_s& cmd)
 {
-	const bool wantsJump = (cmd.buttons & 0x400) != 0;
+	const bool wantsJump = (cmd.buttons & 0x400) != 0 || *game::gostand_held;
 
 	if (wantsJump && !jumpHeld)
 		jumpPending = true;
@@ -1130,10 +1130,16 @@ void ApplyAutoBhop(game::usercmd_s& out)
 		return;
 	}
 
-	if ((out.buttons & 0x400) == 0 && !jumpPending)
+	if ((out.buttons & 0x400) == 0 && !*game::gostand_held && !jumpPending)
 	{
 		jumpEmitted = false;
 		return;
+	}
+
+	if (game::cg->predictedPlayerState.groundEntityNum != ENTITYNUM_NONE)
+	{
+		game::clients->stance = game::CL_STANCE_STAND;
+		out.buttons &= ~(0x100 | 0x200 | 0x1000);
 	}
 
 	if (jumpEmitted)
