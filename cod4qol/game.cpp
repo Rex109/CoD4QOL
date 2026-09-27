@@ -16,6 +16,8 @@ static int s_physDelta = 0;
 static bool jumpHeld = false;
 static bool jumpPending = false;
 static bool jumpEmitted = false;
+static bool gostandWasHeld = false;
+static bool gostandJump = false;
 static int16_t g_smoothViewangles[3] = { 0, 0, 0 };
 
 static int s_gfxTimeBase = 0;
@@ -1114,7 +1116,15 @@ void game::hookedDB_BuildOSPath(const char* filename, int ff_dir, int pathlen, c
 
 void NoteJumpInput(const game::usercmd_s& cmd)
 {
-	const bool wantsJump = (cmd.buttons & 0x400) != 0 || *game::gostand_held;
+	if (*game::gostand_held && !gostandWasHeld)
+		gostandJump = game::cg->predictedPlayerState.groundEntityNum == ENTITYNUM_NONE || (game::cg->predictedPlayerState.pm_flags & (0x1 | 0x2)) == 0;
+
+	gostandWasHeld = *game::gostand_held;
+
+	if (!gostandWasHeld)
+		gostandJump = false;
+
+	const bool wantsJump = (cmd.buttons & 0x400) != 0 || gostandJump;
 
 	if (wantsJump && !jumpHeld)
 		jumpPending = true;
@@ -1130,7 +1140,7 @@ void ApplyAutoBhop(game::usercmd_s& out)
 		return;
 	}
 
-	if ((out.buttons & 0x400) == 0 && !*game::gostand_held && !jumpPending)
+	if ((out.buttons & 0x400) == 0 && !gostandJump && !jumpPending)
 	{
 		jumpEmitted = false;
 		return;
