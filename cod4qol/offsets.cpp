@@ -293,6 +293,17 @@ static bool ParseBytes(const nlohmann::ordered_json& value, std::string& out)
 	return !out.empty();
 }
 
+//How new an offsets.json is, it goes up whenever the content changes. Files without one count as 0
+static int GetRevision(const std::string& text)
+{
+	nlohmann::ordered_json root = nlohmann::ordered_json::parse(text, nullptr, false);
+
+	if (root.is_discarded() || !root.is_object() || !root.contains("revision") || !root["revision"].is_number_integer())
+		return 0;
+
+	return root["revision"].get<int>();
+}
+
 //Loads offsets and patches for crc32 from an offsets.json, only replaces the current ones if everything is valid
 static bool LoadFromJson(const std::string& text, const std::string& crc32, const char* source)
 {
@@ -400,8 +411,14 @@ bool offsets::Init(const std::string& crc32)
 	bool has_local = ReadTextFile(local_path, local);
 	bool has_bundled = LoadEmbedded(bundled);
 
-	//Normal boot: the file saved in fs_savepath supports this CoD4X version
-	if (has_local && LoadFromJson(local, crc32, "local file"))
+	const int local_revision = has_local ? GetRevision(local) : -1;
+	const int bundled_revision = has_bundled ? GetRevision(bundled) : -1;
+	const bool prefer_bundled = has_bundled && bundled_revision > local_revision;
+
+	std::cout << "Offsets revision: local " << local_revision << ", bundled " << bundled_revision << std::endl;
+
+	//Normal boot: the file saved in fs_savepath supports this CoD4X version and isn't older than the bundled one
+	if (!prefer_bundled && has_local && LoadFromJson(local, crc32, "local file"))
 		return true;
 
 	//First run, or the copy bundled with this CoD4QOL build is newer than the saved one
@@ -410,6 +427,9 @@ bool offsets::Init(const std::string& crc32)
 		WriteTextFile(local_path, bundled);
 		return true;
 	}
+
+	if (prefer_bundled && has_local && LoadFromJson(local, crc32, "local file"))
+		return true;
 
 	std::cout << "Downloading latest offsets..." << std::endl;
 
